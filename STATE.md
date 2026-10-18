@@ -101,9 +101,26 @@ changed `select_wheel.tsv`'s row column. Gate: G1–G4 as before over both colum
 their hashes, and none is in the clear); five controls, the two new ones `held-leak` and `perturbed-pointer-fact`.
 The README's figures were reproduced by a measurer before the commit.
 
-### WHERE THE SITTING STANDS
+### (8) THE SESSION DASHBOARD, PROPOSED AND RULED (#3)
 
-Phase 0's two value columns are tabled and gated; the start list below is what remains. Nothing is red.
+The maintainer asked for a dashboard of where time goes and the project's metrics. Proposed, then ruled: both
+Claude's time and the maintainer's, split into Claude working, Claude waiting on tools, and the total; every figure
+classed by how it was obtained, after the dashboard the maintainer named (the original's `tools/session_metrics.py`,
+its #264: MEASURED, DERIVED, ESTIMATED, INFERRED, EXTRAPOLATED); a backfill "to the extent that you can"; built in
+the next session, after this one closes. The plan and the maintainer's words are in #3. Measured this sitting: the
+transcript carries per-turn wall time (`system/turn_duration`, on 11 turns only) and thinking time
+(`thinkingDurationMs`, 141 messages), but no tool duration (to be DERIVED from timestamps); `0de1913b` is a 3-record
+stub, and the drafting before R-001 ran in the original's 14z-205 (`995e7259`).
+
+### CLOSE (R-001, 2026-10-18)
+
+Delivered, all pushed: `CLAUDE.md` v1.0 and `SPEC.md` v0.2 accepted, with the follow-ups the maintainer ruled; the
+read-only guard and its edit lock (#2 found, fixed and closed the same sitting); the ticket list (#1 carried, #2, #3);
+`STATE.md`; phase 0's two value columns, 8,756 values in 56 tables with five held out. Gates at the close, on the
+committed tree: `tests/test_readonly_guard.py` and `tests/test_phase0_tables.py` (verdicts in the close commit's
+message). Not done: no rule-checker ran before any action ([VSR-48]; the tool does not exist yet). Left outside git:
+the export `build/export_bf92acd2` (542 MB, git-ignored, kept for the gate; `tools/export_original.py` remakes it)
+and this sitting's scratchpad exports. No background process is left running.
 
 # STANDING SECTIONS (current state — never archived)
 
@@ -118,8 +135,10 @@ none.
 
 ## The next session starts with
 
-1. The 30 generator constants (the census's `code` column).
-2. The keys the census does not count (`name`, `note` and the rest of its `IGNORE_KEYS`, JSON's `_` keys): carried
-   so the renderer can reproduce the manifests whole.
-3. The renderer (tables to manifests, parse-equal to the original's under its own `_minitoml`) and the byte-for-byte
-   build proof on an export; the five held values come from generators run on the reference sets.
+1. #3, the session dashboard: `tools/metrics.py`, its gate, the run log in the two gates, the backfill of R-001,
+   the dashboard.
+2. Phase 0: the 30 generator constants (the census's `code` column).
+3. Phase 0: the keys the census does not count (`name`, `note` and the rest of its `IGNORE_KEYS`, JSON's `_` keys),
+   carried so the renderer can reproduce the manifests whole.
+4. Phase 0: the renderer (tables to manifests, parse-equal to the original's under its own `_minitoml`) and the
+   byte-for-byte build proof on an export; the five held values come from generators run on the reference sets.
