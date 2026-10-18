@@ -26,6 +26,8 @@ import sys
 import tempfile
 
 ROOT = os.path.realpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+sys.path.insert(0, os.path.join(ROOT, "tools"))
+import runlog  # noqa: E402
 HOOK = os.path.join(ROOT, ".claude", "hooks", "guard_readonly.py")
 PARENT = os.path.dirname(ROOT)
 SCRATCH = os.path.realpath("/private/tmp/claude-%d" % os.getuid())
@@ -175,11 +177,15 @@ def main():
     if args[:1] == ["--hook"]:
         HOOK = os.path.realpath(args[1])
         args = args[2:]
+    mode = ("control:" + args[1]) if args[:1] == ["--control"] and len(args) > 1 else "normal" if HOOK == os.path.join(
+        ROOT, ".claude", "hooks", "guard_readonly.py") else "hook:" + HOOK
+    run, fired, dead = runlog.Run("test_readonly_guard", mode), [], []
     with tempfile.TemporaryDirectory(dir=SCRATCH if os.path.isdir(SCRATCH) else None) as tmp:
         if args[:1] == ["--control"]:
             name = args[1] if len(args) > 1 else ""
             if name not in CONTROLS:
                 print("REFUSED: no declared control named %r (declared: %s)" % (name, ", ".join(CONTROLS)))
+                run.record("REFUSED", declared=list(CONTROLS))
                 sys.exit(3)
             print("MODE: control %s (the shadow tool is the gate's input; the gate must FAIL)" % name)
             failures = check(shadow(name, tmp))
@@ -194,11 +200,16 @@ def main():
                 if broken == want:
                     print("CONTROL FIRED: %s (%d cases failed, exactly the %d it must break)" % (
                         name, len(broken), len(want)))
+                    fired.append(name)
                 else:
+                    dead.append(name)
                     print("CONTROL DEAD: %s (failed %d, expected exactly %d; differing: %s)" % (
                         name, len(broken), len(want), sorted(broken ^ want)[:8]))
                     failures.append(("control:" + name, "fired", "dead"))
-    print("VERDICT: %s (%d failing)" % ("PASS" if not failures else "FAIL", len(failures)))
+    verdict = "PASS" if not failures else "FAIL"
+    print("VERDICT: %s (%d failing)" % (verdict, len(failures)))
+    run.record(verdict, failed=[f[0] for f in failures], cases=len(CASES), declared=list(CONTROLS), fired=fired,
+               dead=dead)
     sys.exit(0 if not failures else 1)
 
 

@@ -44,6 +44,7 @@ from pathlib import Path
 ROOT = os.path.realpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 sys.path.insert(0, os.path.join(ROOT, "tools"))
 import phase0lib  # noqa: E402
+import runlog  # noqa: E402
 import tomli  # noqa: E402
 
 TABLES = os.path.join(ROOT, "docs", "project", "tables")
@@ -261,6 +262,8 @@ def ensure_export(pin):
 
 def main():
     args = sys.argv[1:]
+    run, fired, dead = runlog.Run("test_phase0_tables", ("control:" + args[args.index("--control") + 1])
+                                  if "--control" in args[:-1] else "normal"), [], []
     export = None
     if args[:1] == ["--export"]:
         export, args = os.path.realpath(args[1]), args[2:]
@@ -271,6 +274,7 @@ def main():
         name = args[1] if len(args) > 1 else ""
         if name not in CONTROLS:
             print("REFUSED: no declared control named %r (declared: %s)" % (name, ", ".join(CONTROLS)))
+            run.record("REFUSED", declared=list(CONTROLS))
             sys.exit(3)
         print("MODE: control %s (the perturbed copy is the gate's input; the gate must FAIL)" % name)
         failed, figures = checks(*perturbed(name, export))
@@ -280,7 +284,9 @@ def main():
             got, _ = checks(*perturbed(name, export))
             if got == CONTROLS[name]:
                 print("CONTROL FIRED: %s (failed %s, exactly as declared)" % (name, ",".join(sorted(got))))
+                fired.append(name)
             else:
+                dead.append(name)
                 print("CONTROL DEAD: %s (failed %s, declared %s)" % (name, ",".join(sorted(got)) or "nothing",
                                                                      ",".join(sorted(CONTROLS[name]))))
                 failed.add("control:" + name)
@@ -288,6 +294,9 @@ def main():
         print(f)
     print("VERDICT: %s%s" % ("PASS" if not failed else "FAIL", "" if not failed else " (" + ", ".join(sorted(failed))
                                                                 + ")"))
+    rows = re.match(r"rows (\d+)", figures[0]) if figures else None
+    run.record("PASS" if not failed else "FAIL", failed=failed, cases=int(rows.group(1)) if rows else None,
+               declared=list(CONTROLS), fired=fired, dead=dead)
     sys.exit(0 if not failed else 1)
 
 

@@ -6,6 +6,30 @@ head). A session key is `R-NNN`, one per sitting, never renamed or renumbered ([
 their own namespaces. A group's form, kept from the original: `## Session KEY — banner`, then `### opened with` and one
 `### (N) TITLE` section per piece of work. An open list holds only what is open.
 
+## Session R-002 — **(open) #3, the session dashboard.** Opened 2026-10-18 on Opus 5.5 (the ruled orchestrator); transcript `c6b8c007`.
+
+### opened with
+
+*"read state.nd"*, then *"yes"* to opening R-002 and starting on #3.
+
+### (1) #3: THE FIGURES, THEIR GATE, THE RUN LOG, THE BACKFILL
+
+`tools/metrics.py` writes `docs/project/metrics/figures.tsv` (one row per figure per session, `{value, class,
+source, rule}`, ABSENT rows for what no source holds); what each figure is and how it is timed:
+`docs/project/metrics/README.md`. `tools/runlog.py`: every gate appends one JSON line per run to
+`build/runs/runs.jsonl`; the two existing gates and the new one write it. Gate `tests/test_metrics.py`: a synthetic
+session whose every figure is known by construction, ten checks (C1–C10), five controls (`late-result`,
+`usage-twice`, `ask-as-tool`, `absent-filled`, `rule-dropped`), all FIRED, every mode FAIL. Its first green was read
+by its printed values ([VSR-21]): the first run's two reds were the fixture's (an answer placed at minute 202 where
+its design said 203), not the tool's.
+
+Found while building it: the transcript carries a `cost-state` record with the harness's own totals, which R-001's
+survey missed. On R-001 the DERIVED buckets agree with it: working is 5.8 % under its API time, and tool calls are
+12.2 % over its tool time once the two `AskUserQuestion` waits (610 s) are given to the maintainer. A worker
+transcript's `usage.output_tokens` is a streaming snapshot (201 against the harness's 4,600), so workers' tokens come
+from the harness. Backfilled: R-001 (88 figures) and 14z-205's drafting share (13; EXTRAPOLATED, an undercount, its
+rule says why).
+
 ## Session R-001 — **CLAUDE.md v1.0 validated, SPEC v0.2 accepted; the read-only guard installed; phase 0 started.** Opened 2026-10-18 on Opus 5.5 (the ruled orchestrator); transcript `dde4a561`.
 
 ### opened with
