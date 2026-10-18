@@ -12,14 +12,20 @@ Each aligned value becomes one table row of the shared schema (SCHEMA). Two depa
 - a TOML value spanning lines (the census keeps its first line, `[`) is carried whole, from the parse;
 - a value listed in docs/project/tables/facts/held.tsv (SPEC.md §0: runs that hold a whole vanilla or vs2 routine
   or table) is carried as `HELD:sha1=<SHA-1 of the census's value>`, never in the clear.
+The code column (the generators' module-level constants) is read by an AST walk instead (code_rows): the census's
+record names the constant, the source gives its whole value, as written.
 Usage: imported by tools/extract_tables.py and tests/test_phase0_tables.py.
 """
+import ast
 import functools
 import hashlib
+import io
 import json
 import os
 import re
 import sys
+import tokenize
+from collections import Counter
 from pathlib import Path
 
 import tomli
@@ -229,6 +235,94 @@ def aligned_rows(export_root, column):
                 value = "HELD:sha1=" + sha1(r.value)
             tables.setdefault(subject(r), []).append(
                 (manifest, r.kind, row, r.key, value, str(e[4]), pk, refs))
+    return tables, wanted, read
+
+
+def source_path(export_root, manifest):
+    """Where a table's `manifest` cell lives in the export: a generator (`tools/<name>.py`, the code column) or a
+    manifest under build/manifest/."""
+    if manifest.startswith("tools/"):
+        return Path(export_root) / manifest
+    return Path(export_root) / "build" / "manifest" / manifest
+
+
+def public_name(name):
+    return re.match(r"^[A-Z][A-Z0-9_]*$", name) is not None
+
+
+def module_constants(text):
+    """Every PUBLIC module-level constant of a generator, by an AST walk, in order: (name, value node, line). A public
+    name is the census's grammar, `[A-Z][A-Z0-9_]*`; `NAME = v` and `A, B = a, b` both bind constants, but the
+    census's line grammar sees only the first."""
+    out = []
+    for n in ast.parse(text).body:
+        if not isinstance(n, ast.Assign) or len(n.targets) != 1:
+            continue
+        t = n.targets[0]
+        if isinstance(t, ast.Name) and public_name(t.id):
+            out.append((t.id, n.value, n.lineno))
+        elif isinstance(t, ast.Tuple) and any(isinstance(e, ast.Name) and public_name(e.id) for e in t.elts):
+            if not (isinstance(n.value, ast.Tuple) and len(n.value.elts) == len(t.elts)):
+                raise SystemExit("line %d: a tuple of constants not bound element by element" % n.lineno)
+            out += [(e.id, v, n.lineno) for e, v in zip(t.elts, n.value.elts) if public_name(e.id)]
+    return out
+
+
+def as_written(segment):
+    """A value's source text on one line: its comments dropped, each line stripped, the lines joined by one space
+    (none after an opening bracket or before a closing one). A one-line value is its text unchanged."""
+    lines = segment.splitlines()
+    for tok in tokenize.generate_tokens(io.StringIO(segment).readline):
+        if tok.type == tokenize.COMMENT:
+            row, col = tok.start
+            lines[row - 1] = lines[row - 1][:col]
+    parts = [ln.strip() for ln in lines if ln.strip()]
+    out = parts[0]
+    for p in parts[1:]:
+        out += ("" if out[-1] in "([{" or p[0] in ")]}" else " ") + p
+    return out
+
+
+def trailing_comment(text, lineno):
+    """The comment that ends a source line, without its `#` and leading blanks (the census's provenance for a
+    generator constant); empty when there is none."""
+    line = text.splitlines()[lineno - 1]
+    for tok in tokenize.generate_tokens(io.StringIO(line + "\n").readline):
+        if tok.type == tokenize.COMMENT:
+            return tok.string[1:].lstrip()
+    return ""
+
+
+def code_rows(export_root):
+    """The code column: (rows by table, the census records, the files read with their SHA-1). code/constants holds
+    every constant the census counts; code/uncounted every other public module-level constant of the same
+    generators (the census's line grammar takes one name, so `A, B = a, b` escapes it)."""
+    root = Path(export_root)
+    a = load_census(root)
+    recs, problems = a.census(root)
+    if problems:
+        raise SystemExit("the original's census reports problems: %s" % problems[:3])
+    wanted = [r for r in recs if r.column == "code"]
+    counted = Counter((r.file, r.key) for r in wanted)
+    by_key = {(r.file, r.key): r for r in wanted}
+    tables, read = {}, {}
+    for gen in a.GENERATORS:
+        rel = "tools/" + gen
+        p = root / rel
+        if not p.exists():
+            continue
+        data = p.read_bytes()
+        read[rel] = hashlib.sha1(data).hexdigest()
+        text = data.decode()
+        for name, node, line in module_constants(text):
+            value = as_written(ast.get_source_segment(text, node))
+            r = by_key.get((rel, name))
+            pk, refs = prov_fields(r.prov if r else trailing_comment(text, line))
+            table = "code/constants" if r else "code/uncounted"
+            tables.setdefault(table, []).append((rel, "(module)", "(module)", name, value, str(line), pk, refs))
+    found = Counter((m, key) for rows in tables.values() for m, _k, _r, key, *_ in rows)
+    if counted - found:
+        raise SystemExit("census records with no module constant: %s" % sorted(counted - found)[:3])
     return tables, wanted, read
 
 

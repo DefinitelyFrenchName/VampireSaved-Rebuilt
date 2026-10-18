@@ -6,6 +6,34 @@ head). A session key is `R-NNN`, one per sitting, never renamed or renumbered ([
 their own namespaces. A group's form, kept from the original: `## Session KEY — banner`, then `### opened with` and one
 `### (N) TITLE` section per piece of work. An open list holds only what is open.
 
+## Session R-003 — **Phase 0: the generators' constants tabled (in progress).** Opened 2026-10-18 on Opus 5.5 (the ruled orchestrator).
+
+### opened with
+
+*"read state.md"*, then *"yes"* to opening R-003 and starting on the next-session list's item 1.
+
+### (1) PHASE 0: THE 30 GENERATOR CONSTANTS TABLED, AND THE 16 THE CENSUS CANNOT SEE
+
+The census's `code` column is the public module-level constants of six generators. `tools/phase0lib.py` now reads
+them by an AST walk, which `tools/extract_tables.py` writes into `docs/project/tables/code/constants.tsv` (the
+census's 30). Each value is the expression as written (hex stays hex), and a value that spans lines is carried
+whole, with its comments dropped.
+
+Found while building it: the census's line grammar takes one name, so the 16 constants bound in pairs
+(`SLICE_LO, SLICE_HI = …` and seven more pairs) escape it. Three counted values are written in terms of them
+(`DELTA_A = PLACE_A - SLICE_LO`, `LEN_A`, `LEN_B`). They are carried in `code/uncounted.tsv`. Gate
+`tests/test_phase0_tables.py`: G2–G4 extended to the code column (G4 compares token streams, so hex written as
+decimal fails). The new G6 checks that the code tables name every public constant, by an AST walk written apart
+from the extractor's, and that `uncounted` is exactly what the census misses. Four new controls (`perturbed-code`,
+`code-hex-as-decimal`, `uncounted-dropped`, `perturbed-generator`), all FIRED, every mode FAIL. Its first green was
+read by its printed values ([VSR-21]). The format and the figures are in `docs/project/tables/README.md`. A
+measurer reproduced every figure there before the commit.
+
+Paid for this sitting: the measurer ran the four control modes side by side, which showed that every run of the
+gate regenerated into the same scratch directory. Two concurrent runs could have compared each other's output. Its
+verdicts matched the sequential runs, but the gate now makes a new scratch directory for each run and removes it
+at the end ([VSR-143]).
+
 ## Session R-002 — **#3 built and closed: the figures, their gate, the run log, the dashboard; R-001 archived.** Opened 2026-10-18 on Opus 5.5 (the ruled orchestrator); transcript `c6b8c007`.
 
 ### opened with

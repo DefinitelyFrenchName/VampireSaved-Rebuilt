@@ -1,18 +1,25 @@
 """test_phase0_tables.py — the gate on phase 0's tables (SPEC.md §3; docs/project/tables/README.md).
 
-Checks every generated table under docs/project/tables/ (the gameplay column's four, the fact column's facts/*.tsv)
-against an export of the original at their pin:
+Checks every generated table under docs/project/tables/ (the gameplay column's four, the fact column's facts/*.tsv,
+the code column's code/*.tsv) against an export of the original at their pin:
   G1 CURRENT  the tables regenerate byte-for-byte from the export (tools/extract_tables.py), and no other generated
               table exists
-  G2 PINNED   the export's manifests have the SHA-1s the tables' headers name
+  G2 PINNED   the export's manifests and generators have the SHA-1s the tables' headers name
   G3 COVERED  per column, the original census's records and the table rows are the same multiset of (manifest, kind,
               key, value) — a census value that is the first line of a TOML value spanning lines matches the whole
-              literal it begins, and a held value matches its `HELD:sha1=` cell — and (manifest, kind, row, key) is
-              unique across the tables
+              literal it begins, a census value that is a generator value's first line (a lone bracket) or its
+              60-character cut matches the whole value it begins, and a held value matches its `HELD:sha1=` cell —
+              and (manifest, kind, row, key) is unique across the tables; code/uncounted is not the census's
+              (G6 holds it)
   G4 TRUE     every cell equals an independent parse of its manifest at (kind, row, key) (tomli / json), and a TOML
-              row's line in the manifest reads `key = value` when the value sits on one line
+              row's line in the manifest reads `key = value` when the value sits on one line; a code cell has the
+              token stream of its generator's value (comments aside: hex stays hex), evaluates equal to it, and its
+              line is the assignment's
   G5 HELD     every value of facts/held.tsv is in its table only as `HELD:sha1=<its SHA-1>`, the SHA-1 is the
               manifest's value's, and no cell anywhere carries a held value in the clear
+  G6 COMPLETE the code tables name every public module-level constant (`[A-Z][A-Z0-9_]*`, bound by any assignment
+              form) of the census's generators, by an independent AST walk, and code/uncounted holds exactly those
+              the census has no record of
 
 CONTROLS ([VSR-22], docs/project/must_fire_contract.md), each a perturbed copy built under build/tmp/:
   perturbed-value     the first `true` of variant_selection made `false`: G1, G3, G4 must fail
@@ -22,6 +29,10 @@ CONTROLS ([VSR-22], docs/project/must_fire_contract.md), each a perturbed copy b
                       G5 must fail
   perturbed-pointer-fact  the first row of facts/json_version_font under the `.` glyph (`/glyphs/./n`, the one key
                       a dotted path could not address) given another glyph row's value: G1, G3, G4 must fail
+  perturbed-code      DELTA of code/constants made 0x2751: G1, G3, G4 must fail
+  code-hex-as-decimal DELTA of code/constants written 10064, the same number in decimal: G1, G3, G4 must fail
+  uncounted-dropped   the last row of code/uncounted removed: G1, G6 must fail
+  perturbed-generator DELTA made 0x2751 in a copy of the export's build_gfx_donovan.py: G1, G2, G3, G4 must fail
 A normal run runs each control and reports it FIRED or DEAD; `--control <name>` makes the perturbed copy the gate's
 input and the gate must reach its own FAIL.
 
@@ -31,13 +42,17 @@ Usage: python3 tests/test_phase0_tables.py [--export DIR] [--control NAME]
 """
 import filecmp
 import glob
+import ast
 import hashlib
+import io
 import json
 import os
 import re
 import shutil
 import subprocess
 import sys
+import tempfile
+import tokenize
 from collections import Counter
 from pathlib import Path
 
@@ -48,21 +63,26 @@ import runlog  # noqa: E402
 import tomli  # noqa: E402
 
 TABLES = os.path.join(ROOT, "docs", "project", "tables")
-TMP = os.path.join(ROOT, "build", "tmp", "test_phase0_tables")
+# this run's own scratch, new for every run so concurrent runs never share it ([VSR-143]); made in main()
+TMP = None
 CONTROLS = {
     "perturbed-value": {"G1", "G3", "G4"},
     "dropped-row": {"G1", "G3"},
     "perturbed-manifest": {"G1", "G2", "G3", "G4"},
     "held-leak": {"G1", "G3", "G5"},
     "perturbed-pointer-fact": {"G1", "G3", "G4"},
+    "perturbed-code": {"G1", "G3", "G4"},
+    "code-hex-as-decimal": {"G1", "G3", "G4"},
+    "uncounted-dropped": {"G1", "G6"},
+    "perturbed-generator": {"G1", "G2", "G3", "G4"},
 }
 
 
 def generated(tables_dir):
     """Every generated table, relative to tables_dir (held.tsv is hand-written and not one of them)."""
     out = []
-    for p in sorted(glob.glob(os.path.join(tables_dir, "*.tsv")) + glob.glob(os.path.join(tables_dir, "facts",
-                                                                                           "*.tsv"))):
+    for p in sorted(glob.glob(os.path.join(tables_dir, "*.tsv")) + glob.glob(os.path.join(tables_dir, "facts", "*.tsv"))
+                    + glob.glob(os.path.join(tables_dir, "code", "*.tsv"))):
         if os.path.basename(p) != "held.tsv":
             out.append(os.path.relpath(p, tables_dir))
     return out
@@ -90,6 +110,46 @@ def literal(v, manifest):
     return tomli.loads("v = " + v)["v"]
 
 
+def column_of(name):
+    return "fact" if name.startswith("facts/") else "code" if name.startswith("code/") else "gameplay"
+
+
+def code_tokens(text):
+    """A Python expression's tokens, comments and line structure aside."""
+    skip = (tokenize.COMMENT, tokenize.NL, tokenize.NEWLINE, tokenize.INDENT, tokenize.DEDENT, tokenize.ENDMARKER)
+    return [t.string for t in tokenize.generate_tokens(io.StringIO(text).readline) if t.type not in skip]
+
+
+def generator_bindings(path):
+    """{name: (value source, line)} of every public module-level constant of a generator: each Name a module-level
+    assignment stores into (whatever its target's shape), with the matching element of the value. Written apart from
+    phase0lib.module_constants, which the extractor uses."""
+    text = Path(path).read_text()
+    out = {}
+
+    def bind(target, value, line):
+        if isinstance(target, ast.Name):
+            if re.fullmatch(r"[A-Z][A-Z0-9_]*", target.id):
+                out[target.id] = (ast.get_source_segment(text, value) if value is not None else None, line)
+        elif isinstance(target, (ast.Tuple, ast.List)):
+            elts = value.elts if isinstance(value, (ast.Tuple, ast.List)) else [None] * len(target.elts)
+            for t, v in zip(target.elts, elts):
+                bind(t, v, line)
+    for node in ast.parse(text).body:
+        if isinstance(node, ast.Assign):
+            for t in node.targets:
+                bind(t, node.value, node.lineno)
+        elif isinstance(node, ast.AnnAssign):
+            bind(node.target, node.value, node.lineno)
+    return out
+
+
+def code_value(source, names):
+    """A generator constant's value: its expression evaluated over the module's other constants (no builtins but
+    `range`)."""
+    return eval(compile(source, "<cell>", "eval"), {"__builtins__": {"range": range}}, names)
+
+
 def checks(tables_dir, export):
     failed, figures = set(), []
     names = generated(tables_dir)
@@ -98,8 +158,7 @@ def checks(tables_dir, export):
         p, s, r = read_table(os.path.join(tables_dir, n))
         pin = pin or p
         sha.update(s)
-        column = "fact" if n.startswith("facts/") else "gameplay"
-        rows += [(column,) + x for x in r]
+        rows += [(column_of(n), n) + x for x in r]
     held = phase0lib.read_held(os.path.join(tables_dir, "facts", "held.tsv"))
     figures.append("rows %d in %d tables, pin %s, held %d" % (len(rows), len(names), pin, len(held)))
     # G1: regenerate and compare, both ways
@@ -121,9 +180,8 @@ def checks(tables_dir, export):
         failed.add("G1")
     # G2: the export is the content the headers name
     bad = [m for m, h in sha.items()
-           if not hashlib.sha1(open(os.path.join(export, "build", "manifest", m), "rb").read()).hexdigest()
-           .startswith(h)]
-    figures.append("G2 manifests %d, SHA-1 mismatches %s" % (len(sha), bad or "none"))
+           if not hashlib.sha1(phase0lib.source_path(export, m).read_bytes()).hexdigest().startswith(h)]
+    figures.append("G2 manifests and generators %d, SHA-1 mismatches %s" % (len(sha), bad or "none"))
     if bad:
         failed.add("G2")
     # G3: per column, the census and the rows are the same multiset; ids unique across the tables
@@ -131,7 +189,7 @@ def checks(tables_dir, export):
     recs, _ = a.census(Path(export))
     held_sha = set(held.values())
     g3_bad = False
-    for column in ("gameplay", "fact"):
+    for column in ("gameplay", "fact", "code"):
         census = Counter()
         for r in recs:
             if r.column != column:
@@ -139,10 +197,18 @@ def checks(tables_dir, export):
             v = r.value
             if phase0lib.sha1(v) in held_sha:
                 v = "HELD:sha1=" + phase0lib.sha1(v)
-            census[(r.file[len("build/manifest/"):], r.kind, r.key, v)] += 1
+            census[(r.file if column == "code" else r.file[len("build/manifest/"):], r.kind, r.key, v)] += 1
+        cut = {(m, k, key): v for m, k, key, v in census if column == "code" and (len(v) == 60 or v in "[{(")}
         tabled = Counter()
-        for c, m, k, _row, key, v, *_ in rows:
-            if c == column:
+        for c, t, m, k, _row, key, v, *_ in rows:
+            if c == column and t == "code/uncounted.tsv":
+                continue
+            if c == column and column == "code":
+                # the census keeps a generator value's first line, or its first 60 characters; the table keeps it
+                if (m, k, key) in cut and v != cut[(m, k, key)] and v.startswith(cut[(m, k, key)]):
+                    v = cut[(m, k, key)]
+                tabled[(m, k, key, v)] += 1
+            elif c == column:
                 # the census keeps only the first line, `[`, of a TOML value spanning lines; the table keeps it whole
                 if (not m.endswith(".json") and v.startswith("[") and census.get((m, k, key, "["))
                         and not census.get((m, k, key, v))):
@@ -152,16 +218,43 @@ def checks(tables_dir, export):
         figures.append("G3 %-8s census %d, tabled %d, only-in-census %d, only-in-tables %d" % (
             column, sum(census.values()), sum(tabled.values()), only_c, only_t))
         g3_bad = g3_bad or only_c or only_t
-    dup = [k for k, c in Counter(r[1:5] for r in rows).items() if c > 1]
+    dup = [k for k, c in Counter(r[2:6] for r in rows).items() if c > 1]
     figures.append("G3 duplicate ids %d%s" % (len(dup), (": " + str(dup[0])) if dup else ""))
     if g3_bad or dup:
         failed.add("G3")
     # G4: every cell equals an independent parse, and a one-line value's line says so
     wrong, checked = [], 0
-    for _c, m, k, row, key, v, line, *_ in rows:
+    bindings, values = {}, {}
+
+    def evaluated(pairs):
+        """{name: value} of (name, source) pairs in module order; None for a value that does not evaluate."""
+        out = {}
+        for name, src in pairs:
+            try:
+                out[name] = code_value(src, out)
+            except Exception:                   # whatever the failure: G4 refuses a None
+                out[name] = None
+        return out
+    for c, _t, m, k, row, key, v, line, *_ in rows:
         if v.startswith("HELD:sha1="):
             continue
         checked += 1
+        if c == "code":
+            if m not in bindings:
+                bindings[m] = generator_bindings(phase0lib.source_path(export, m))
+                cells = {r[5]: r[6] for r in rows if r[0] == "code" and r[2] == m}
+                values[m] = (evaluated((n, s) for n, (s, _l) in bindings[m].items()),
+                             evaluated((n, cells[n]) for n in bindings[m] if n in cells))
+            src, at = bindings[m].get(key, (None, None))
+            want, mine = values[m][0].get(key), values[m][1].get(key)
+            try:
+                ok = (src is not None and code_tokens(v) == code_tokens(src) and str(at) == line
+                      and mine is not None and mine == want)
+            except (SyntaxError, tokenize.TokenError) as exc:
+                ok, src = False, "error %r" % exc
+            if not ok:
+                wrong.append("%s %s table %s generator %r" % (m, key, v[:40], str(src)[:40]))
+            continue
         try:
             got = phase0lib.semantic(export, m, k, row, key)
             ok = got == literal(v, m)
@@ -178,7 +271,7 @@ def checks(tables_dir, export):
     if wrong:
         failed.add("G4")
     # G5: held values are only their hashes, and the hash is the manifest's value's
-    cells = {(m, k, row, key): v for _c, m, k, row, key, v, *_ in rows}
+    cells = {(m, k, row, key): v for _c, _t, m, k, row, key, v, *_ in rows}
     leaks, mism = [], []
     for ident, h in held.items():
         if cells.get(ident) != "HELD:sha1=" + h:
@@ -195,6 +288,21 @@ def checks(tables_dir, export):
         len(held), len(mism), len(leaks), (": " + (mism + leaks)[0]) if mism or leaks else ""))
     if mism or leaks:
         failed.add("G5")
+    # G6: the code tables are complete, and code/uncounted is exactly what the census leaves out
+    counted = {(r.file, r.key) for r in recs if r.column == "code"}
+    every = {("tools/" + g, name) for g in a.GENERATORS if Path(export, "tools", g).exists()
+             for name in generator_bindings(Path(export, "tools", g))}
+    named = {(m, key) for c, _t, m, _k, _r, key, *_ in rows if c == "code"}
+    uncounted = {(m, key) for c, t, m, _k, _r, key, *_ in rows if t == "code/uncounted.tsv"}
+    missing, extra, wrong_side = every - named, named - every, uncounted & counted
+    short = (every - counted) - uncounted
+    figures.append("G6 public constants %d, census-counted %d, uncounted tabled %d, missing %d, unknown %d, "
+                   "uncounted but counted %d, uncounted not tabled %d%s" % (
+                       len(every), len(counted), len(uncounted), len(missing), len(extra), len(wrong_side),
+                       len(short), (": " + str(sorted(missing | extra | wrong_side | short)[0]))
+                       if missing or extra or wrong_side or short else ""))
+    if missing or extra or wrong_side or short:
+        failed.add("G6")
     return failed, figures
 
 
@@ -229,6 +337,13 @@ def perturbed(name, export):
     if name == "dropped-row":
         edit("roster.tsv", lambda lines: lines[:-1])
         return tables, export
+    if name in ("perturbed-code", "code-hex-as-decimal"):
+        new = "0x2751" if name == "perturbed-code" else str(0x2750)
+        edit("code/constants.tsv", lambda lines: [l.replace("\tDELTA\t0x2750\t", "\tDELTA\t%s\t" % new) for l in lines])
+        return tables, export
+    if name == "uncounted-dropped":
+        edit("code/uncounted.tsv", lambda lines: lines[:-1])
+        return tables, export
     if name == "held-leak":
         def leak(lines):
             i = next(i for i, l in enumerate(lines) if "\tHELD:sha1=" in l)
@@ -240,13 +355,18 @@ def perturbed(name, export):
             return lines
         edit("facts/site_thunk.tsv", leak)
         return tables, export
-    if name == "perturbed-manifest":
+    if name in ("perturbed-manifest", "perturbed-generator"):
         copy = os.path.join(base, "export")
         for d in ("build/manifest", "tools", "docs"):
             shutil.copytree(os.path.join(export, d), os.path.join(copy, d))
-        p = os.path.join(copy, "build", "manifest", "donovan.toml")
+        if name == "perturbed-manifest":
+            p, pat, to = os.path.join(copy, "build", "manifest", "donovan.toml"), r"(?m)^(only_variant_slot\s*=\s*)true", r"\1false"
+        else:
+            p, pat, to = os.path.join(copy, "tools", "build_gfx_donovan.py"), r"(?m)^(DELTA\s*=\s*)0x2750\b", r"\g<1>0x2751"
         text = open(p).read()
-        open(p, "w").write(re.sub(r"(?m)^(only_variant_slot\s*=\s*)true", r"\1false", text, count=1))
+        new = re.sub(pat, to, text, count=1)
+        assert new != text, "the control's perturbation did not apply"
+        open(p, "w").write(new)
         return tables, copy
     raise KeyError(name)
 
@@ -261,6 +381,16 @@ def ensure_export(pin):
 
 
 def main():
+    global TMP
+    os.makedirs(os.path.join(ROOT, "build", "tmp"), exist_ok=True)
+    TMP = tempfile.mkdtemp(prefix="test_phase0_tables.", dir=os.path.join(ROOT, "build", "tmp"))
+    try:
+        gate()
+    finally:
+        shutil.rmtree(TMP, ignore_errors=True)
+
+
+def gate():
     args = sys.argv[1:]
     run, fired, dead = runlog.Run("test_phase0_tables", ("control:" + args[args.index("--control") + 1])
                                   if "--control" in args[:-1] else "normal"), [], []
