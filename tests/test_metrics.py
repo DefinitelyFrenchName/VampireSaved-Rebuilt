@@ -15,6 +15,8 @@ equal the expected value AND carry the expected class, and every expected ABSENT
   C8 ABSENT    a session without a cost-state record, and one without a transcript, give ABSENT rows
   C9 SCHEMA    `metrics.py check` passes on the output, and fails on a known-bad row
   C10 SHARE    --share-pattern counts only the calls naming the pattern, as EXTRAPOLATED
+  C11 DROP     `metrics.py drop` removes exactly one session's rows, keeps every other row as it was, and refuses a key
+               with no rows
 
 CONTROLS ([VSR-22], docs/project/must_fire_contract.md):
   late-result      perturbed copy: the first Bash call's result 30 s later. C1, C7 must fail.
@@ -22,6 +24,7 @@ CONTROLS ([VSR-22], docs/project/must_fire_contract.md):
   ask-as-tool      shadow tool: AskUserQuestion timed as a tool. C1 must fail.
   absent-filled    shadow tool: a missing cost-state read as zeros. C8 must fail.
   rule-dropped     shadow tool: every row's rule blanked. C9 must fail.
+  drop-overreach   shadow tool: `drop` also removes the other sessions' time rows. C11 must fail.
 Shadow tools are copies under build/tmp/ (the tracked tool is never written). A normal run runs each control and
 reports it FIRED or DEAD; `--control <name>` makes the perturbed input the gate's input and the gate must FAIL.
 
@@ -49,13 +52,15 @@ SHADOWS = {
     "absent-filled": ('        cs = p["cost"]\n',
                       '        cs = p["cost"] or {"totalDuration": 0, "totalAPIDuration": 0, "totalToolDuration": 0,'
                       ' "totalCostUSD": 0, "modelUsage": {}}\n'),
+    "drop-overreach": ('        kept = [r for r in rows if r["session"] != a.key]',
+                       '        kept = [r for r in rows if r["session"] != a.key and r["section"] != "time"]'),
     "rule-dropped": ("        rows.append(dict(zip(COLUMNS, (key, section, metric, label, value, unit, cls, source, "
                      "rule))))",
                      "        rows.append(dict(zip(COLUMNS, (key, section, metric, label, value, unit, cls, source, "
                      "''))))"),
 }
 CONTROLS = {"late-result": {"C1", "C7"}, "usage-twice": {"C2"}, "ask-as-tool": {"C1"}, "absent-filled": {"C8"},
-            "rule-dropped": {"C9"}}
+            "rule-dropped": {"C9"}, "drop-overreach": {"C11"}}
 
 # (session, metric) -> (value as written, class); the fixture below is built to these numbers
 D, M, E, X, A = "DERIVED", "MEASURED", "ESTIMATED", "EXTRAPOLATED", "ABSENT"
@@ -270,7 +275,7 @@ def checks(tool, late=0.0, name="normal"):
     died = [(k, c, t) for k, c, t in logs if c]
     if died:
         figures.append("collect died: %s" % died)
-        return set(EXPECT) | {"C9"}, figures
+        return set(EXPECT) | {"C9", "C11"}, figures
     got = {}
     for line in open(out):
         if line.startswith("#") or line.startswith("session\t"):
@@ -298,6 +303,19 @@ def checks(tool, late=0.0, name="normal"):
         p.returncode, p.stdout.strip().splitlines()[-1] if p.stdout.strip() else "no output", q.returncode))
     if p.returncode != 0 or q.returncode != 1:
         failed.add("C9")
+    # C11: drop removes exactly R-903's rows, keeps the rest byte for byte, and refuses a key with no rows
+    dropped = os.path.join(base, "dropped.tsv")
+    shutil.copy(out, dropped)
+    d1 = subprocess.run([sys.executable, tool, "drop", "R-903", "--out", dropped], capture_output=True, text=True)
+    d2 = subprocess.run([sys.executable, tool, "drop", "R-999", "--out", dropped], capture_output=True, text=True)
+    before = [l for l in open(out) if not l.startswith("R-903\t")]
+    after = open(dropped).readlines()
+    n903 = sum(1 for l in open(out) if l.startswith("R-903\t"))
+    figures.append("C11  drop R-903: exit %d, %d rows before, %d removed, rest identical %s; drop of a key with no "
+                   "rows: exit %d" % (d1.returncode, n903, len(open(out).readlines()) - len(after), before == after,
+                                      d2.returncode))
+    if d1.returncode != 0 or n903 == 0 or before != after or d2.returncode != 1:
+        failed.add("C11")
     return failed, figures
 
 
@@ -350,7 +368,7 @@ def main():
         print(f)
     verdict = "PASS" if not failed else "FAIL"
     print("VERDICT: %s%s" % (verdict, "" if not failed else " (" + ", ".join(sorted(failed)) + ")"))
-    run.record(verdict, failed=failed, cases=sum(len(v) for v in EXPECT.values()) + 2, declared=list(CONTROLS),
+    run.record(verdict, failed=failed, cases=sum(len(v) for v in EXPECT.values()) + 5, declared=list(CONTROLS),
                fired=fired, dead=dead)
     sys.exit(0 if not failed else 1)
 

@@ -28,7 +28,22 @@ survey missed. On R-001 the DERIVED buckets agree with it: working is 5.8 % unde
 12.2 % over its tool time once the two `AskUserQuestion` waits (610 s) are given to the maintainer. A worker
 transcript's `usage.output_tokens` is a streaming snapshot (201 against the harness's 4,600), so workers' tokens come
 from the harness. Backfilled: R-001 (88 figures) and 14z-205's drafting share (13; EXTRAPOLATED, an undercount, its
-rule says why).
+rule says why). Committed `bb79816`, the three gates green on the staged tree.
+
+### (2) #3: THE DASHBOARD
+
+The view: "Rebuilt Session Ledger", a private claude.ai dashboard (https://claude.ai/artifact/EpBKcPyqtdSbePUso6jDd5)
+over one source, the tracked table uploaded as `figures.csv`. A tab per session; time (the four buckets beside the
+harness's cross-check, and session by session), activity, tokens and workers, commits by area, phase 0 against the
+census, gates and the inventory by class, health, gate runs, and every figure with its source and rule. Each figure
+shows its class as a chip. It is re-published from the table at each close (`docs/project/metrics/README.md`).
+
+### (3) 14z-205 RULED OUT OF THE TABLE
+
+The maintainer, on the dashboard: *"dashboard looks good, session 14z=205 that you inherited from Vampire Savior can
+honestly be removed."* Its 13 rows were dropped with a new `tools/metrics.py drop` (the table is never hand-edited);
+the gate gained C11 (drop removes exactly one session's rows and refuses a key with none) and its control
+`drop-overreach`. The backfill line of (1) is superseded by this: the table holds R-001 alone before R-002.
 
 ## Session R-001 — **CLAUDE.md v1.0 validated, SPEC v0.2 accepted; the read-only guard installed; phase 0 started.** Opened 2026-10-18 on Opus 5.5 (the ruled orchestrator); transcript `dde4a561`.
 

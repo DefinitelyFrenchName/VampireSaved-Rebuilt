@@ -35,6 +35,8 @@ Usage:
       KEY's rows in --out (default docs/project/metrics/figures.tsv) and prints them. --share-pattern makes the time
       figures a SHARE of a session that also did other work (a backfill): only the requests and tool calls whose tool
       inputs match the pattern (a regex) are counted, and the result is EXTRAPOLATED.
+  python3 tools/metrics.py drop KEY [--out FILE]
+      removes KEY's rows from the table (a session the maintainer ruled out of it); refuses a key with no rows.
   python3 tools/metrics.py check [FILE]
       every row has a class among the five or ABSENT, a source, a rule unless MEASURED, and a value exactly when not
       ABSENT; exit 1 if not.
@@ -581,11 +583,23 @@ def main():
     c.add_argument("--runs", default=runlog.RUNS)
     c.add_argument("--out", default=FIGURES)
     c.add_argument("--share-pattern")
+    dp = sp.add_parser("drop")
+    dp.add_argument("key")
+    dp.add_argument("--out", default=FIGURES)
     k = sp.add_parser("check")
     k.add_argument("file", nargs="?", default=FIGURES)
     a = ap.parse_args()
     if a.cmd == "check":
         return check(a.file)
+    if a.cmd == "drop":
+        rows = read_figures(a.out)
+        kept = [r for r in rows if r["session"] != a.key]
+        if len(kept) == len(rows):
+            print("%s: no rows in %s; nothing dropped" % (a.key, os.path.relpath(a.out, ROOT)))
+            return 1
+        write_figures(a.out, kept)
+        print("%s: %d rows dropped from %s" % (a.key, len(rows) - len(kept), os.path.relpath(a.out, ROOT)))
+        return 0
     path, how = a.transcript, "--transcript"
     if not path:
         tid, how = transcript_of(a.repo, a.key)

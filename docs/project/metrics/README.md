@@ -68,11 +68,11 @@ the close. Sessions before R-002 have no run log, so their gate figures are ABSE
 ## The backfill
 
 - **R-001**: collected from its transcript (`dde4a561`), which carries a `cost-state` record.
-- **14z-205** (the original's session in which `SPEC.md` and `CLAUDE.md` were drafted, transcript `995e7259`): the
-  session did other work too, so only a SHARE is counted, with `--share-pattern '(?i)rebuil|tests_inventory|
-  classify_tests|#120'`. Only the requests and tool calls whose inputs match are counted, so drafting done in prose
-  or in thinking, or in calls that do not name the rebuild, is missed: an undercount, EXTRAPOLATED. Its whole-session
-  figures (span, thinking, timed turns) are labelled as such. The transcript has no `cost-state` record.
+- **The drafting before R-001** ran in the original's session 14z-205 (transcript `995e7259`), alongside that
+  session's other work. It is NOT in the table. Its share was collected once in R-002 (`--share-pattern`, an
+  EXTRAPOLATED undercount) and dropped the same sitting, on the maintainer's ruling (2026-10-18): *"session 14z=205
+  that you inherited from Vampire Savior can honestly be removed."* `--share-pattern` stays in the tool and its gate
+  (C10) for a session that shares its transcript with other work.
 - `0de1913b` holds 3 records and no work: not collected.
 
 ## Gotchas paid for
