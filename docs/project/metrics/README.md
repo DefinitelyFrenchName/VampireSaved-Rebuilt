@@ -80,6 +80,11 @@ the close. Sessions before R-002 have no run log, so their gate figures are ABSE
 - **A worker transcript's `usage.output_tokens` is a streaming snapshot** (16–25 a message, measured R-002): the three
   measurers of R-001 read as 201 output tokens there, and as 4,600 in the harness's total for their model. Workers'
   tokens come from the harness's totals, never from their transcripts.
+- **A guard refusal is the hook's own error result, not any text carrying its message.** Counted by the message
+  alone, R-001 had 4 refusals and R-002 1: gate outputs and a survey of R-001's errors quote it. The rule now
+  requires an error result whose text begins `PreToolUse:<tool> hook error:`: R-001 has 2 (its STATE records both),
+  R-002 none. The gate's fixture quotes the message in a passing result, and the control `guard-by-text` proves
+  that case is read.
 - **An `AskUserQuestion` call is a tool call in the transcript**, but its time is the maintainer's: R-001's two
   questions held 610 s, more than all its other tool calls together (365 s).
 

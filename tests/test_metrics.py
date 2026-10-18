@@ -25,6 +25,7 @@ CONTROLS ([VSR-22], docs/project/must_fire_contract.md):
   absent-filled    shadow tool: a missing cost-state read as zeros. C8 must fail.
   rule-dropped     shadow tool: every row's rule blanked. C9 must fail.
   drop-overreach   shadow tool: `drop` also removes the other sessions' time rows. C11 must fail.
+  guard-by-text    shadow tool: any result quoting the guard's message counts as a refusal. C3 must fail.
 Shadow tools are copies under build/tmp/ (the tracked tool is never written). A normal run runs each control and
 reports it FIRED or DEAD; `--control <name>` makes the perturbed input the gate's input and the gate must FAIL.
 
@@ -52,6 +53,8 @@ SHADOWS = {
     "absent-filled": ('        cs = p["cost"]\n',
                       '        cs = p["cost"] or {"totalDuration": 0, "totalAPIDuration": 0, "totalToolDuration": 0,'
                       ' "totalCostUSD": 0, "modelUsage": {}}\n'),
+    "guard-by-text": ('                k["guard"] = k["error"] and re.match(',
+                      '                k["guard"] = GUARD_MARK in (text or "") or re.match('),
     "drop-overreach": ('        kept = [r for r in rows if r["session"] != a.key]',
                        '        kept = [r for r in rows if r["session"] != a.key and r["section"] != "time"]'),
     "rule-dropped": ("        rows.append(dict(zip(COLUMNS, (key, section, metric, label, value, unit, cls, source, "
@@ -60,7 +63,7 @@ SHADOWS = {
                      "''))))"),
 }
 CONTROLS = {"late-result": {"C1", "C7"}, "usage-twice": {"C2"}, "ask-as-tool": {"C1"}, "absent-filled": {"C8"},
-            "rule-dropped": {"C9"}, "drop-overreach": {"C11"}}
+            "rule-dropped": {"C9"}, "drop-overreach": {"C11"}, "guard-by-text": {"C3"}}
 
 # (session, metric) -> (value as written, class); the fixture below is built to these numbers
 D, M, E, X, A = "DERIVED", "MEASURED", "ESTIMATED", "EXTRAPOLATED", "ABSENT"
@@ -145,7 +148,7 @@ def transcript(late=0.0):
     rec(1, type="api-request", id="r1")
     asst(3, "r1", "m1", [{"type": "text", "text": "x"}], out=100, think=40, thinking_ms=120000)
     asst(5, "r1", "m1", [use("t1", "Bash", {"command": "python3 tests/test_x.py"})], out=100, think=40)
-    result(15 + late, "t1")
+    result(15 + late, "t1", "VERDICT: PASS; a case quoted: BLOCKED by guard_readonly: ../y")  # not a refusal
     rec(16, type="api-request", id="r2")
     asst(20, "r2", "m2", [use("t2", "AskUserQuestion", {"questions": []})])
     result(80, "t2")

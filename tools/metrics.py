@@ -125,7 +125,10 @@ def parse(recs):
                 k["end"] = at
                 k["error"] = bool(c.get("is_error"))
                 text = c.get("content") if isinstance(c.get("content"), str) else json.dumps(c.get("content"))
-                k["guard"] = GUARD_MARK in (text or "")
+                # a refusal is the hook's own error result; a result merely quoting the message (a gate's output, a
+                # survey of an older transcript) is not one (measured R-002: R-001 counted 4 by the text alone, 2 real)
+                k["guard"] = k["error"] and re.match(r"PreToolUse:\w+ hook error: .*?" + GUARD_MARK, text or "",
+                                                     re.S) is not None
         origin = r.get("origin")
         if isinstance(origin, dict) and origin.get("kind"):
             prompts.append((at, "human" if origin["kind"] == "human" else "background", r.get("promptSource")))
@@ -362,7 +365,7 @@ def collect(key, path, repo, runs, share=None, how=""):
               sum(1 for c in p["calls"].values() if c["error"]), "", "MEASURED", tsrc)
             F("health", "guard_refusals", "Read-only guard refusals",
               sum(1 for c in p["calls"].values() if c["guard"]), "", "MEASURED", tsrc,
-              "tool results carrying %r" % GUARD_MARK)
+              "tool results marked error whose text begins `PreToolUse:<tool> hook error:` and carries %r" % GUARD_MARK)
             F("events", "requests_unanswered", "API requests with no answer on record", p["unanswered"], "",
               "MEASURED", tsrc)
             # -- tokens, the orchestrator by model, then the workers
