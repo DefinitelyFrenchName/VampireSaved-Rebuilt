@@ -22,9 +22,8 @@ There is one table per TOML kind, `facts/<kind>.tsv` (45 kinds, plus the top-lev
 per JSON manifest, `facts/json_<path>.tsv` (6), for 52 tables. A row's other fields (its gameplay keys) sit in the gameplay
 tables under the same `(manifest, kind, row)`.
 
-**What is not carried.** The census does not count a manifest's prose and labels: `name`, `note`, `description` and
-the other keys of its `IGNORE_KEYS`, nor JSON's `_comment`-style keys. A row's `name` is its id here. The rest is for
-the renderer step, which must reproduce the manifests whole.
+**What the census does not count** (a row's `name`, its `note`, and the other keys of the census's `IGNORE_KEYS`,
+and JSON's `_` keys) is carried apart, under `uncounted/` (below). A row's `name` is also its id in every table.
 
 **Hex, and what is held out.** The maintainer ruled that the fact column's 649 hex fields (6,420 bytes) are carried
 as written, as discrete values (`SPEC.md` §0; `CLAUDE.md` [VSR-8]). The 7 runs longer than 64 bytes were each
@@ -40,6 +39,38 @@ generators, not from disassembly.
 
   The rebuild derives these from the reference sets: three by the original's generators (`gen_index_window_thunk.py`,
   `gen_hitclass_map_thunk.py`), two by generators phase 1 writes.
+
+## The uncounted tables (2,528 values the census does not count), under `uncounted/`
+
+The census skips a TOML key of its `IGNORE_KEYS` and every JSON `_` key. The phase-0 renderer must reproduce the
+manifests whole, so these values are carried too, in 18 tables:
+- **one per TOML key, `uncounted/<key>.tsv`** (17 tables): `note` 627, `kind` 583, `name` 526, `status` 370, `input`
+  145, `notes` 145, `profile` 43, `art` 18, `class` 9, `source` 9, `build` 6, `common` 5, `schema` 4, `extract` 3,
+  `placement_suffix` 3, `same_as` 3, `description` 1;
+- **`uncounted/json_underscore.tsv`**: the JSON manifests' 28 `_` keys (`_comment`, `_src`, `_*_note`, …), each
+  value whole.
+
+They are filed by key because a reviewer asks for "every `status`", not for "what is in reconciliation.toml". They
+are kept apart from the census's tables, like `code/uncounted.tsv`, so the census's columns stay its own.
+
+**Not all of them are prose.** The census ignores these keys because they are not behavioural, and most are labels
+and notes. But some say what the build does: a `space` row's `class` is `raw` or `crypt`; a `file` row's `source`
+names the zip member it comes from; `kind`, `status` and `profile` qualify rows of the reconciliation maps. They are
+facts in all but the census's accounting.
+
+**How the schema reads here.**
+- `value` is the literal as written. The census's line grammar cuts a TOML line at its first `#`, and a note may
+  cite a ticket (`#169`), so a TOML literal is the shortest cut of its line at a `#` (or the whole line) that parses
+  to the value. A JSON value is written as the other JSON tables write it (`json.dumps`).
+- `prov_kind` and `prov_refs` are `none` and `-`: the census attributes nothing to a value it does not count. Many
+  notes carry their provenance in their own text (`MEASURED 14z-120`).
+
+**What is still not in any table.** Four canonical manifests hold no value at all (`charmap_donovan.toml`,
+`charmap_huitzil.toml`, `charmap_pyron.toml` and `fsm_census.toml` are comments only), so no table's header pins
+their SHA-1. TOML comments, and each manifest's layout (key order, `[x]` against `[[x]]`), are not carried either:
+the acceptance is that rendered manifests are parse-equal to the original's, and the renderer decides what it needs.
+
+**No ROM bytes** ([VSR-8]): the 2,519 string values (105,464 characters) hold no run of 17 or more hex bytes.
 
 ## The code tables (the census's `code` column, 30 values), under `code/`
 
@@ -119,15 +150,19 @@ The gate is `python3 tests/test_phase0_tables.py`. It has six checks:
 - G3: per column, the census and the tables are the same multiset, with unique row ids (`code/uncounted` is not the
   census's, and G6 holds it).
 - G4: every cell equals an independent parse (`tomli` / `json`) of its manifest, and a one-line TOML value's line
-  reads `key = value`. A code cell has the same token stream as its generator's expression (so hex written as
+  reads `key = value` and then only a comment (a string may hold a `#`). A code cell has the same token stream as its generator's expression (so hex written as
   decimal fails) and evaluates to the same value, and its line is the assignment's.
 - G5: a held value is only its hash, its hash is the manifest's value's, and no cell carries a held value in the
   clear.
 - G6: the code tables name every public module-level constant of the census's generators, found by an AST walk
   written apart from the extractor's, and `code/uncounted` holds exactly those the census has no record of.
+- G7: the gameplay, fact and uncounted tables hold every value of every canonical manifest exactly once, found by a
+  walk of each manifest's parse written apart from the extractor's.
 
-Its nine declared controls are perturbed copies: `perturbed-value`, `dropped-row`, `perturbed-manifest`, `held-leak`,
-`perturbed-pointer-fact`, `perturbed-code`, `code-hex-as-decimal`, `uncounted-dropped` and `perturbed-generator`.
+Its twelve declared controls are perturbed copies: `perturbed-value`, `dropped-row`, `perturbed-manifest`,
+`held-leak`, `perturbed-pointer-fact`, `perturbed-code`, `code-hex-as-decimal`, `uncounted-dropped`,
+`perturbed-generator`, `note-dropped`, `perturbed-note` and `note-cut-at-hash` (a note cut at its `#`, as a line
+grammar cutting at the first `#` would read it).
 Each must fail exactly its declared checks, and `--control <name>` runs the gate on the copy, where it must FAIL.
 Every run works in its own new scratch directory under `build/tmp/`, removed when it ends, so runs can go side by
 side ([VSR-143]).
@@ -141,3 +176,8 @@ Measured at the code column's extraction (R-003): 8,802 rows in 58 tables (gamep
 16 uncounted), 26 manifests and 6 generators pinned. G1–G6 pass: 0 only-in-census and 0 only-in-tables in each
 column, 0 duplicate ids, 8,797 cells checked and 0 wrong, 5 held and 0 in the clear, 46 public constants and 0
 missing. All nine controls FIRED, and the four new control modes each give `VERDICT: FAIL`.
+
+Measured at the uncounted values' extraction (R-003): 11,330 rows in 76 tables (the 8,802 above and 2,528
+uncounted in 18). G1–G7 pass: 11,325 cells checked and 0 wrong; 30 canonical manifests (4 with no value) hold
+11,284 values, all 11,284 in the tables, 0 missing and 0 unknown. All twelve controls FIRED, and the three new
+control modes each give `VERDICT: FAIL`.

@@ -1,7 +1,8 @@
 """test_phase0_tables.py — the gate on phase 0's tables (SPEC.md §3; docs/project/tables/README.md).
 
 Checks every generated table under docs/project/tables/ (the gameplay column's four, the fact column's facts/*.tsv,
-the code column's code/*.tsv) against an export of the original at their pin:
+the code column's code/*.tsv, the values the census does not count under uncounted/) against an export of the
+original at their pin:
   G1 CURRENT  the tables regenerate byte-for-byte from the export (tools/extract_tables.py), and no other generated
               table exists
   G2 PINNED   the export's manifests and generators have the SHA-1s the tables' headers name
@@ -14,16 +15,20 @@ the code column's code/*.tsv) against an export of the original at their pin:
   G4 TRUE     every cell equals an independent parse of its manifest at (kind, row, key) (tomli / json), and a TOML
               row's line in the manifest reads `key = value` when the value sits on one line; a code cell has the
               token stream of its generator's value (comments aside: hex stays hex), evaluates equal to it, and its
-              line is the assignment's
+              line is the assignment's; a one-line value's line is `key = <the cell>` and then only a comment
+              (a string may hold a `#`)
   G5 HELD     every value of facts/held.tsv is in its table only as `HELD:sha1=<its SHA-1>`, the SHA-1 is the
               manifest's value's, and no cell anywhere carries a held value in the clear
   G6 COMPLETE the code tables name every public module-level constant (`[A-Z][A-Z0-9_]*`, bound by any assignment
               form) of the census's generators, by an independent AST walk, and code/uncounted holds exactly those
               the census has no record of
+  G7 WHOLE    the gameplay, fact and uncounted tables hold every value of every canonical manifest exactly once,
+              by an independent walk of each manifest's parse (TOML: every key of every row; JSON: every scalar,
+              and every `_` key whole)
 
 CONTROLS ([VSR-22], docs/project/must_fire_contract.md), each a perturbed copy built under build/tmp/:
   perturbed-value     the first `true` of variant_selection made `false`: G1, G3, G4 must fail
-  dropped-row         the last row of roster removed: G1, G3 must fail
+  dropped-row         the last row of roster removed: G1, G3, G7 must fail (a manifest value is gone too)
   perturbed-manifest  one `only_variant_slot` flipped in a copy of the export's donovan.toml: G1, G2, G3, G4 must fail
   held-leak           the first HELD cell of facts/site_thunk replaced by the manifest's value in the clear: G1, G3,
                       G5 must fail
@@ -33,6 +38,10 @@ CONTROLS ([VSR-22], docs/project/must_fire_contract.md), each a perturbed copy b
   code-hex-as-decimal DELTA of code/constants written 10064, the same number in decimal: G1, G3, G4 must fail
   uncounted-dropped   the last row of code/uncounted removed: G1, G6 must fail
   perturbed-generator DELTA made 0x2751 in a copy of the export's build_gfx_donovan.py: G1, G2, G3, G4 must fail
+  note-dropped        the last row of uncounted/note removed: G1, G7 must fail
+  perturbed-note      the first `note` of uncounted/note given one more character: G1, G4 must fail
+  note-cut-at-hash    the first `notes` value holding a `#` cut there and closed, as a line grammar cutting at the
+                      first `#` would read it: G1, G4 must fail
 A normal run runs each control and reports it FIRED or DEAD; `--control <name>` makes the perturbed copy the gate's
 input and the gate must reach its own FAIL.
 
@@ -67,7 +76,7 @@ TABLES = os.path.join(ROOT, "docs", "project", "tables")
 TMP = None
 CONTROLS = {
     "perturbed-value": {"G1", "G3", "G4"},
-    "dropped-row": {"G1", "G3"},
+    "dropped-row": {"G1", "G3", "G7"},
     "perturbed-manifest": {"G1", "G2", "G3", "G4"},
     "held-leak": {"G1", "G3", "G5"},
     "perturbed-pointer-fact": {"G1", "G3", "G4"},
@@ -75,6 +84,9 @@ CONTROLS = {
     "code-hex-as-decimal": {"G1", "G3", "G4"},
     "uncounted-dropped": {"G1", "G6"},
     "perturbed-generator": {"G1", "G2", "G3", "G4"},
+    "note-dropped": {"G1", "G7"},
+    "perturbed-note": {"G1", "G4"},
+    "note-cut-at-hash": {"G1", "G4"},
 }
 
 
@@ -82,7 +94,8 @@ def generated(tables_dir):
     """Every generated table, relative to tables_dir (held.tsv is hand-written and not one of them)."""
     out = []
     for p in sorted(glob.glob(os.path.join(tables_dir, "*.tsv")) + glob.glob(os.path.join(tables_dir, "facts", "*.tsv"))
-                    + glob.glob(os.path.join(tables_dir, "code", "*.tsv"))):
+                    + glob.glob(os.path.join(tables_dir, "code", "*.tsv"))
+                    + glob.glob(os.path.join(tables_dir, "uncounted", "*.tsv"))):
         if os.path.basename(p) != "held.tsv":
             out.append(os.path.relpath(p, tables_dir))
     return out
@@ -111,7 +124,51 @@ def literal(v, manifest):
 
 
 def column_of(name):
-    return "fact" if name.startswith("facts/") else "code" if name.startswith("code/") else "gameplay"
+    for prefix, column in (("facts/", "fact"), ("code/", "code"), ("uncounted/", "uncounted")):
+        if name.startswith(prefix):
+            return column
+    return "gameplay"
+
+
+def manifest_values(path):
+    """Every value of one manifest as (kind, row, key) identities, by a walk of its parse written apart from
+    phase0lib's. TOML: a top-level scalar is ((top), (top), key); a top-level table is one row of its kind; an array
+    of tables is one row per element, named `name`, `name#n` when the name repeats in its kind, `#n` without one.
+    JSON: a dict member's row is its parent's pointer and a list element's row is its own, with key `[]`; a `_` key
+    is one value whatever it holds."""
+    out = []
+    if path.endswith(".json"):
+        def ptr(parts):
+            return "".join("/" + str(x).replace("~", "~0").replace("/", "~1") for x in parts) or "(top)"
+
+        def walk(node, kinds, at):
+            if isinstance(node, dict):
+                for k, v in node.items():
+                    if k.startswith("_") or not isinstance(v, (dict, list)):
+                        out.append((".".join(kinds) or "(top)", ptr(at), k))
+                    else:
+                        walk(v, kinds + [k], at + [k])
+            elif isinstance(node, list):
+                for i, v in enumerate(node):
+                    if isinstance(v, (dict, list)):
+                        walk(v, kinds + ["[]"], at + [i])
+                    else:
+                        out.append((".".join(kinds) or "(top)", ptr(at + [i]), "[]"))
+        walk(json.loads(Path(path).read_text()), [], [])
+        return out
+    doc = tomli.loads(Path(path).read_text())
+    for top, v in doc.items():
+        if isinstance(v, dict):
+            rows = [(v.get("name", "#1"), v)]
+        elif isinstance(v, list) and v and all(isinstance(x, dict) for x in v):
+            names = Counter(x.get("name") for x in v)
+            rows = [(("%s#%d" % (x["name"], i) if names[x["name"]] > 1 else x["name"]) if "name" in x
+                     else "#%d" % i, x) for i, x in enumerate(v, 1)]
+        else:
+            out.append(("(top)", "(top)", top))
+            continue
+        out += [(top, row, k) for row, x in rows for k in x]
+    return out
 
 
 def code_tokens(text):
@@ -260,9 +317,12 @@ def checks(tables_dir, export):
             ok = got == literal(v, m)
             if ok and line != "-":
                 text = Path(export, "build", "manifest", m).read_text().splitlines()[int(line) - 1]
-                one = re.match(r"^\s*%s\s*=\s*(.*?)\s*(#.*)?$" % re.escape(key), text.split("#")[0] + "#")
-                spans = one and phase0lib.partial(one.group(1).rstrip(","))
-                ok = one is not None and (spans or one.group(1).rstrip(",").strip() == v)
+                # the cell, then nothing but a comma, blanks and a comment: a string may hold a `#`
+                one = re.match(r"^\s*%s\s*=\s*" % re.escape(key), text)
+                rest = text[one.end():] if one else ""
+                spans = one and phase0lib.partial(rest.split("#")[0].strip().rstrip(","))
+                ok = one is not None and (spans or (rest.startswith(v) and
+                                                    re.fullmatch(r",?\s*(#.*)?", rest[len(v):]) is not None))
         except (KeyError, IndexError, StopIteration, ValueError, TypeError) as exc:
             ok, got = False, "error %r" % exc
         if not ok:
@@ -303,6 +363,18 @@ def checks(tables_dir, export):
                        if missing or extra or wrong_side or short else ""))
     if missing or extra or wrong_side or short:
         failed.add("G6")
+    # G7: the manifest tables are the manifests whole
+    walked = Counter((rel[len("build/manifest/"):],) + ident for rel in a.canon(Path(export))
+                     for ident in manifest_values(str(Path(export) / rel)))
+    held_ids = Counter(r[2:6] for r in rows if r[0] != "code")
+    absent, unknown = walked - held_ids, held_ids - walked
+    empty = [rel for rel in a.canon(Path(export)) if not manifest_values(str(Path(export) / rel))]
+    figures.append("G7 manifests %d (%d with no value), values %d, in the tables %d, missing %d, unknown %d%s" % (
+        len(a.canon(Path(export))), len(empty), sum(walked.values()), sum(held_ids.values()),
+        sum(absent.values()), sum(unknown.values()),
+        (": " + str(sorted(absent | unknown)[0])) if absent or unknown else ""))
+    if absent or unknown:
+        failed.add("G7")
     return failed, figures
 
 
@@ -343,6 +415,21 @@ def perturbed(name, export):
         return tables, export
     if name == "uncounted-dropped":
         edit("code/uncounted.tsv", lambda lines: lines[:-1])
+        return tables, export
+    if name == "note-dropped":
+        edit("uncounted/note.tsv", lambda lines: lines[:-1])
+        return tables, export
+    if name in ("perturbed-note", "note-cut-at-hash"):
+        table, key = ("uncounted/note.tsv", "note") if name == "perturbed-note" else ("uncounted/notes.tsv", "notes")
+
+        def change(lines):
+            i = next(i for i, l in enumerate(lines) if ("\t%s\t\"" % key) in l
+                     and (name == "perturbed-note" or "#" in l.split("\t")[4]))
+            f = lines[i].split("\t")
+            f[4] = f[4][:-1] + "x\"" if name == "perturbed-note" else f[4][:f[4].index("#")] + "\""
+            lines[i] = "\t".join(f)
+            return lines
+        edit(table, change)
         return tables, export
     if name == "held-leak":
         def leak(lines):

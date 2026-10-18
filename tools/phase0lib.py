@@ -326,6 +326,64 @@ def code_rows(export_root):
     return tables, wanted, read
 
 
+def toml_as_written(line, want):
+    """A one-line TOML value's literal as its line writes it, without the trailing comment: the line's census grammar
+    cuts at the first `#`, which a string may hold (a note citing `#120`), so the literal is the shortest cut of the
+    line at a `#` (or the whole line) that parses to the value."""
+    rest = line.split("=", 1)[1]
+    for cut in [i for i, ch in enumerate(rest) if ch == "#"] + [len(rest)]:
+        try:
+            if tomli.loads("v = " + rest[:cut])["v"] == want:
+                return rest[:cut].strip()
+        except tomli.TOMLDecodeError:
+            pass
+    raise SystemExit("no literal on line %r parses to %r" % (line[:60], want))
+
+
+def uncounted_rows(export_root, counted):
+    """Every manifest value the census does not count, as table rows by subject: a TOML key of its IGNORE_KEYS
+    (`uncounted/<key>`), and a JSON `_` key, whose value is carried whole (`uncounted/json_underscore`). `counted` is
+    the set of (manifest, kind, row, key) the gameplay and fact tables already hold. The census attributes nothing to
+    a value it does not count, so prov is `none`/`-`."""
+    root = Path(export_root)
+    a = load_census(root)
+    tables, read = {}, {}
+    for rel in a.canon(root):
+        data = (root / rel).read_bytes()
+        read[rel] = hashlib.sha1(data).hexdigest()
+        text = data.decode("utf-8", errors="replace")
+        manifest = rel[len("build/manifest/"):]
+        if rel.endswith(".json"):
+            def walk(node, path, where):
+                if isinstance(node, dict):
+                    for k, v in node.items():
+                        if k.startswith("_"):
+                            tables.setdefault("uncounted/json_underscore", []).append(
+                                (manifest, ".".join(path) or "(top)", pointer(where), k, json.dumps(v), "-", "none",
+                                 "-"))
+                        else:
+                            walk(v, path + [str(k)], where + [k])
+                elif isinstance(node, list):
+                    for i, v in enumerate(node):
+                        walk(v, path + ["[]"], where + [i])
+            walk(json.loads(text), [], [])
+            continue
+        doc = parsed(str(root / rel))
+        for e in toml_key_lines(a, text):
+            kind, ordinal, key, raw, line = e
+            row = toml_locator(doc, e)
+            if (manifest, kind, row, key) in counted:
+                continue
+            if key not in a.IGNORE_KEYS:
+                raise SystemExit("%s line %d: [[%s]].%s is neither counted nor ignored by the census" % (
+                    rel, line, kind, key))
+            want = semantic(export_root, manifest, kind, row, key)
+            value = toml_literal(want) if partial(raw) else toml_as_written(text.splitlines()[line - 1], want)
+            tables.setdefault("uncounted/" + key, []).append(
+                (manifest, kind, row, key, value, str(line), "none", "-"))
+    return tables, read
+
+
 def semantic(export_root, manifest, kind, row, key):
     """The value at (kind, row, key) by an independent parse (tomli / json), as a Python value."""
     path = str(Path(export_root) / "build" / "manifest" / manifest)

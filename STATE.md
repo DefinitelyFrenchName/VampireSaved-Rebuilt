@@ -32,7 +32,24 @@ measurer reproduced every figure there before the commit.
 Paid for this sitting: the measurer ran the four control modes side by side, which showed that every run of the
 gate regenerated into the same scratch directory. Two concurrent runs could have compared each other's output. Its
 verdicts matched the sequential runs, but the gate now makes a new scratch directory for each run and removes it
-at the end ([VSR-143]).
+at the end ([VSR-143]). Committed `a002c98`, the three gates green on the staged tree.
+
+### (2) PHASE 0: THE 2,528 VALUES THE CENSUS DOES NOT COUNT, AND THE MANIFESTS WHOLE
+
+The census skips the keys of its `IGNORE_KEYS` and JSON's `_` keys. They are carried now, so the renderer can
+reproduce the manifests whole: `docs/project/tables/uncounted/<key>.tsv`, one per TOML key (17 tables), and
+`uncounted/json_underscore.tsv` (28 values), 2,528 rows. Not all of them are prose: a `space` row's `class` is
+raw or crypt, and a `file` row's `source` names its zip member. The census's line grammar cuts a line at its first
+`#`, and notes cite tickets, so a literal is recovered from the whole line (the shortest cut at a `#` that parses
+to the value). The gate's G4 line check had the same cut and now reads past it. The new G7 (WHOLE) proves, by an
+independent walk of each manifest's parse, that the tables hold all 11,284 values of the 30 canonical manifests
+exactly once. Four manifests are comments only, so no table pins their SHA-1: that is for the renderer. Three new
+controls, among them `note-cut-at-hash`, which plants the cut. Format and figures in
+`docs/project/tables/README.md`.
+
+Paid for this sitting: `dropped-row`'s declaration predicted too few failing checks once G7 existed (a dropped
+gameplay row is also a missing manifest value). The declaration was corrected from the printed values, and the gate
+was not loosened.
 
 ## Session R-002 — **#3 built and closed: the figures, their gate, the run log, the dashboard; R-001 archived.** Opened 2026-10-18 on Opus 5.5 (the ruled orchestrator); transcript `c6b8c007`.
 
