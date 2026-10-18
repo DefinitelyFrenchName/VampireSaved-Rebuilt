@@ -1,0 +1,205 @@
+id	action	reason
+mame-fbneo-instruments:MFI-1	keep	emulator-as-instrument fact; names no original implementation in the rule
+mame-fbneo-instruments:MFI-2	keep	emulator-as-instrument fact; names no original implementation in the rule
+mame-fbneo-instruments:MFI-3	keep	emulator-as-instrument fact; names no original implementation in the rule
+mame-fbneo-instruments:MFI-4	keep	emulator-as-instrument fact; names no original implementation in the rule
+mame-fbneo-instruments:MFI-5	keep	emulator-as-instrument fact; names no original implementation in the rule
+mame-fbneo-instruments:MFI-6	keep	emulator-as-instrument fact; names no original implementation in the rule
+mame-fbneo-instruments:MFI-7	keep	emulator-as-instrument fact; names no original implementation in the rule
+mame-fbneo-instruments:MFI-8	keep	emulator-as-instrument fact; names no original implementation in the rule
+mame-fbneo-instruments:MFI-9	keep	emulator-as-instrument fact; names no original implementation in the rule
+mame-fbneo-instruments:MFI-10	keep	emulator-as-instrument fact; names no original implementation in the rule
+mame-fbneo-instruments:MFI-11	keep	emulator-as-instrument fact; names no original implementation in the rule
+mame-fbneo-instruments:MFI-12	keep	emulator-as-instrument fact; names no original implementation in the rule
+mame-fbneo-instruments:MFI-13	keep	emulator-as-instrument fact; names no original implementation in the rule
+mame-fbneo-instruments:MFI-14	keep	emulator-as-instrument fact; names no original implementation in the rule
+mame-fbneo-instruments:MFI-15	keep	emulator-as-instrument fact; names no original implementation in the rule
+mame-fbneo-instruments:MFI-16	keep	emulator-as-instrument fact; names no original implementation in the rule
+mame-fbneo-instruments:MFI-17	keep	emulator-as-instrument fact; names no original implementation in the rule
+mame-fbneo-instruments:MFI-18	keep	emulator-as-instrument fact; names no original implementation in the rule
+mame-fbneo-instruments:MFI-19	keep	emulator-as-instrument fact; names no original implementation in the rule
+mame-fbneo-instruments:MFI-20	keep	emulator-as-instrument fact; names no original implementation in the rule
+mame-fbneo-instruments:MFI-21	keep	emulator-as-instrument fact; names no original implementation in the rule
+mame-fbneo-instruments:MFI-22	keep	emulator-as-instrument fact; names no original implementation in the rule
+mame-fbneo-instruments:MFI-23	keep	emulator-as-instrument fact; names no original implementation in the rule
+mame-fbneo-instruments:MFI-24	keep	emulator-as-instrument fact; names no original implementation in the rule
+mame-fbneo-instruments:MFI-25	keep	emulator-as-instrument fact; names no original implementation in the rule
+mame-fbneo-instruments:MFI-26	keep	emulator-as-instrument fact; names no original implementation in the rule
+mame-fbneo-instruments:MFI-27	keep	emulator-as-instrument fact; names no original implementation in the rule
+mame-fbneo-instruments:MFI-28	keep	emulator-as-instrument fact; names no original implementation in the rule
+mame-fbneo-instruments:MFI-29	keep	emulator-as-instrument fact; names no original implementation in the rule
+mame-fbneo-instruments:MFI-30	keep	emulator-as-instrument fact; names no original implementation in the rule
+mame-fbneo-instruments:MFI-31	keep	emulator-as-instrument fact; names no original implementation in the rule
+mame-fbneo-instruments:MFI-32	keep	emulator-as-instrument fact; names no original implementation in the rule
+mame-fbneo-instruments:MFI-33	keep	emulator-as-instrument fact; names no original implementation in the rule
+mame-fbneo-instruments:MFI-34	keep	emulator-as-instrument fact; names no original implementation in the rule
+mame-fbneo-instruments:MFI-35	keep	emulator-as-instrument fact; names no original implementation in the rule
+mame-fbneo-instruments:MFI-36	keep	emulator-as-instrument fact; names no original implementation in the rule
+mame-fbneo-instruments:MFI-37	keep	emulator-as-instrument fact; names no original implementation in the rule
+mame-fbneo-instruments:MFI-38	keep	emulator-as-instrument fact; names no original implementation in the rule
+mame-fbneo-instruments:MFI-39	keep	emulator-as-instrument fact; names no original implementation in the rule
+mame-fbneo-instruments:MFI-40	keep	emulator-as-instrument fact; names no original implementation in the rule
+mame-fbneo-instruments:MFI-41	keep	emulator-as-instrument fact; names no original implementation in the rule
+mame-fbneo-instruments:MFI-42	keep	emulator-as-instrument fact; names no original implementation in the rule
+mame-fbneo-instruments:MFI-43	keep	emulator-as-instrument fact; names no original implementation in the rule
+mame-fbneo-instruments:MFI-44	keep	emulator-as-instrument fact; names no original implementation in the rule
+mame-fbneo-instruments:MFI-45	keep	emulator-as-instrument fact; names no original implementation in the rule
+mame-fbneo-instruments:MFI-46	keep	emulator-as-instrument fact; names no original implementation in the rule
+cps2-hardware:CPH-1	keep	redirect to MFI-43 (lifted to level 0), kept so the citation resolves
+cps2-hardware:CPH-2	keep	CPS-2 board fact
+cps2-hardware:CPH-3	keep	CPS-2 board fact
+cps2-hardware:CPH-4	keep	CPS-2 board fact
+cps2-hardware:CPH-5	keep	CPS-2 board fact
+cps2-hardware:CPH-6	keep	CPS-2 board fact
+cps2-hardware:CPH-7	adapt	named 'this project's cipher' (the original's tool); the fact is the emulators' <= test, the original's cipher kept as a parenthetical
+cps2-hardware:CPH-8	keep	CPS-2 board fact
+cps2-hardware:CPH-9	keep	CPS-2 board fact
+cps2-hardware:CPH-10	keep	CPS-2 board fact
+cps2-hardware:CPH-11	keep	CPS-2 board fact
+cps2-hardware:CPH-12	keep	redirect to MFI-44 (lifted to level 0), kept so the citation resolves
+cps2-hardware:CPH-13	keep	redirect to MFI-45 (lifted to level 0), kept so the citation resolves
+cps2-hardware:CPH-14	keep	CPS-2 board fact
+cps2-hardware:CPH-15	keep	CPS-2 board fact
+cps2-hardware:CPH-16	keep	CPS-2 board fact
+cps2-hardware:CPH-17	keep	CPS-2 board fact
+cps2-hardware:CPH-18	keep	redirect to MFI-46 (lifted to level 0), kept so the citation resolves
+cps2-hardware:CPH-19	keep	CPS-2 board fact
+cps2-hardware:CPH-20	keep	CPS-2 board fact
+cps2-hardware:CPH-21	keep	CPS-2 board fact
+cps2-hardware:CPH-22	keep	CPS-2 board fact
+cps2-hardware:CPH-23	keep	CPS-2 board fact
+cps2-hardware:CPH-24	keep	CPS-2 board fact
+cps2-hardware:CPH-25	keep	CPS-2 board fact
+cps2-hardware:CPH-26	adapt	named the original's Python helpers words_to_file_bytes/words_from_logical_bytes; restated as the conversion, the helpers kept as provenance
+cps2-hardware:CPH-27	keep	CPS-2 board fact
+cps2-hardware:CPH-28	keep	CPS-2 board fact
+cps2-hardware:CPH-29	keep	CPS-2 board fact
+cps2-hardware:CPH-30	flag	kept: the two-gated-block budget is a measured fact about the original's emulator profile patch; binds while phase 1 uses those binaries (SPEC 5.2), to be re-measured if the rebuild re-authors the patch
+cps2-emulation:CPE-1	keep	redirect to the same-number MFI rule, kept so [CPE-N] citations resolve
+cps2-emulation:CPE-2	keep	redirect to the same-number MFI rule, kept so [CPE-N] citations resolve
+cps2-emulation:CPE-3	keep	redirect to the same-number MFI rule, kept so [CPE-N] citations resolve
+cps2-emulation:CPE-4	keep	redirect to the same-number MFI rule, kept so [CPE-N] citations resolve
+cps2-emulation:CPE-5	keep	redirect to the same-number MFI rule, kept so [CPE-N] citations resolve
+cps2-emulation:CPE-6	keep	redirect to the same-number MFI rule, kept so [CPE-N] citations resolve
+cps2-emulation:CPE-7	keep	redirect to the same-number MFI rule, kept so [CPE-N] citations resolve
+cps2-emulation:CPE-8	keep	redirect to the same-number MFI rule, kept so [CPE-N] citations resolve
+cps2-emulation:CPE-9	keep	redirect to the same-number MFI rule, kept so [CPE-N] citations resolve
+cps2-emulation:CPE-10	keep	redirect to the same-number MFI rule, kept so [CPE-N] citations resolve
+cps2-emulation:CPE-11	keep	redirect to the same-number MFI rule, kept so [CPE-N] citations resolve
+cps2-emulation:CPE-12	keep	redirect to the same-number MFI rule, kept so [CPE-N] citations resolve
+cps2-emulation:CPE-13	keep	redirect to the same-number MFI rule, kept so [CPE-N] citations resolve
+cps2-emulation:CPE-14	keep	redirect to the same-number MFI rule, kept so [CPE-N] citations resolve
+cps2-emulation:CPE-15	keep	redirect to the same-number MFI rule, kept so [CPE-N] citations resolve
+cps2-emulation:CPE-16	keep	redirect to the same-number MFI rule, kept so [CPE-N] citations resolve
+cps2-emulation:CPE-17	keep	redirect to the same-number MFI rule, kept so [CPE-N] citations resolve
+cps2-emulation:CPE-18	keep	redirect to the same-number MFI rule, kept so [CPE-N] citations resolve
+cps2-emulation:CPE-19	keep	redirect to the same-number MFI rule, kept so [CPE-N] citations resolve
+cps2-emulation:CPE-20	keep	redirect to the same-number MFI rule, kept so [CPE-N] citations resolve
+cps2-emulation:CPE-21	keep	redirect to the same-number MFI rule, kept so [CPE-N] citations resolve
+cps2-emulation:CPE-22	keep	redirect to the same-number MFI rule, kept so [CPE-N] citations resolve
+cps2-emulation:CPE-23	keep	redirect to the same-number MFI rule, kept so [CPE-N] citations resolve
+cps2-emulation:CPE-24	keep	redirect to the same-number MFI rule, kept so [CPE-N] citations resolve
+cps2-emulation:CPE-25	keep	redirect to the same-number MFI rule, kept so [CPE-N] citations resolve
+cps2-emulation:CPE-26	keep	redirect to the same-number MFI rule, kept so [CPE-N] citations resolve
+cps2-emulation:CPE-27	keep	redirect to the same-number MFI rule, kept so [CPE-N] citations resolve
+cps2-emulation:CPE-28	keep	redirect to the same-number MFI rule, kept so [CPE-N] citations resolve
+cps2-emulation:CPE-29	keep	redirect to the same-number MFI rule, kept so [CPE-N] citations resolve
+cps2-emulation:CPE-30	keep	redirect to the same-number MFI rule, kept so [CPE-N] citations resolve
+cps2-emulation:CPE-31	keep	redirect to the same-number MFI rule, kept so [CPE-N] citations resolve
+cps2-emulation:CPE-32	keep	redirect to the same-number MFI rule, kept so [CPE-N] citations resolve
+cps2-emulation:CPE-33	keep	redirect to the same-number MFI rule, kept so [CPE-N] citations resolve
+cps2-emulation:CPE-34	keep	redirect to the same-number MFI rule, kept so [CPE-N] citations resolve
+cps2-emulation:CPE-35	keep	redirect to the same-number MFI rule, kept so [CPE-N] citations resolve
+cps2-emulation:CPE-36	keep	redirect to the same-number MFI rule, kept so [CPE-N] citations resolve
+cps2-emulation:CPE-37	keep	redirect to the same-number MFI rule, kept so [CPE-N] citations resolve
+cps2-emulation:CPE-38	keep	redirect to the same-number MFI rule, kept so [CPE-N] citations resolve
+cps2-emulation:CPE-39	keep	redirect to the same-number MFI rule, kept so [CPE-N] citations resolve
+cps2-emulation:CPE-40	keep	redirect to the same-number MFI rule, kept so [CPE-N] citations resolve
+cps2-emulation:CPE-41	keep	redirect to the same-number MFI rule, kept so [CPE-N] citations resolve
+cps2-emulation:CPE-42	keep	redirect to the same-number MFI rule, kept so [CPE-N] citations resolve
+vampire-savior-engine:VSE-1	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-2	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-3	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-4	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-5	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-6	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-7	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-8	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-9	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-10	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-11	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-12	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-13	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-14	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-15	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-16	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-17	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-18	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-19	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-20	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-21	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-22	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-23	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-24	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-25	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-26	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-27	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-28	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-29	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-30	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-31	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-32	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-33	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-34	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-35	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-36	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-37	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-38	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-39	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-40	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-41	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-42	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-43	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-44	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-45	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-46	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-47	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-48	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-49	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-50	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-51	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-52	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-53	keep	game fact (palette rows 0x10+ belong to P2); 'the masked legacy gate' is the oracle class the rebuild keeps ([VSR-14])
+vampire-savior-engine:VSE-54	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-55	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-56	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-57	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-58	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-59	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-60	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-61	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-62	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-63	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-64	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-65	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-66	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-67	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-68	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-69	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-70	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-71	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-72	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-73	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-74	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-75	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-76	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-77	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-78	adapt	'the crash guard' named the original's rig; now 'a crash guard', the lesson unchanged
+vampire-savior-engine:VSE-79	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-80	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-81	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-82	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-83	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-84	keep	game-engine fact, true with no port in mind
+vampire-savior-engine:VSE-85	keep	game-engine fact, true with no port in mind
+# counts keep=199 adapt=3 drop=0 flag=1

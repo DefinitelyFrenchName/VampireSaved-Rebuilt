@@ -1,0 +1,187 @@
+id	action	reason
+VSP-1	adapt	carried as [VSR-1]
+VSP-2	adapt	carried as [VSR-2]
+VSP-3	adapt	carried as [VSR-3]
+VSP-4	adapt	carried as [VSR-4]
+VSP-5	adapt	carried as [VSR-5]
+VSP-6	adapt	carried as [VSR-6]
+VSP-7	adapt	carried as [VSR-7]
+VSP-8	adapt	carried as [VSR-8]
+VSP-9	adapt	carried as [VSR-9], [VSR-10]
+VSP-10	adapt	carried as [VSR-37]
+VSP-11	adapt	carried as [VSR-31]
+VSP-12	adapt	carried as [VSR-32]
+VSP-13	adapt	carried as [VSR-33]
+VSP-14	adapt	carried as [VSR-34]
+VSP-15	adapt	carried as [VSR-35]
+VSP-16	adapt	carried as [VSR-36]
+VSP-162	adapt	carried as [VSR-30]
+VSP-17	adapt	carried as [VSR-28]
+VSP-182	adapt	carried as [VSR-29]
+VSP-18	adapt	carried as [VSR-20]
+VSP-19	adapt	carried as [VSR-21]
+VSP-166	adapt	adapted as [VSR-51]: the original's patch/manifest metadata named generically; the principle binds any generator
+VSP-20	adapt	carried as [VSR-19]
+VSP-21	adapt	carried as [VSR-40]
+VSP-22	keep	kept as [VSR-52]: a principle about evidence by absence; binds any implementation
+VSP-23	keep	kept as [VSR-53]: a working principle; binds any implementation
+VSP-24	adapt	carried as [VSR-13]
+VSP-25	adapt	carried as [VSR-14]
+VSP-26	adapt	carried as [VSR-14]
+VSP-27	adapt	adapted as [VSR-54]: the class definition and its figures kept; the checker's file name dropped
+VSP-28	adapt	adapted as [VSR-55]: the class kept; the checker and its test named generically
+VSP-29	adapt	adapted as [VSR-56]: the class kept; the checker's file names dropped
+VSP-30	adapt	adapted as [VSR-57]: the ruling kept; the checker's flag name dropped
+VSP-31	adapt	carried as [VSR-15]
+VSP-32	adapt	carried as [VSR-16]
+VSP-33	adapt	carried as [VSR-17], [VSR-18]
+VSP-34	adapt	adapted as [VSR-58]: the original's replay.lua/freeze script dropped; the lesson binds any masked comparator
+VSP-35	adapt	adapted as [VSR-59]: a game/engine fact kept; the original's audit script named generically
+VSP-36	adapt	adapted as [VSR-60]: the original's .sha1/.masked file kinds and audit script named generically
+VSP-37	adapt	adapted as [VSR-61]: a verification principle kept; 'CLAUDE.md §4' generalised to the governing spec
+VSP-38	keep	kept as [VSR-62]: a verification principle; binds any comparator
+VSP-39	keep	kept as [VSR-63]: an engine fact about hooks; binds any port
+VSP-40	keep	kept as [VSR-64]: a working principle; binds any harness
+VSP-41	adapt	kept as [VSR-65]: an engine fact; binds any port; text changed (carry_check B): `movea/moqeq` corrected to `movea/moveq`
+VSP-42	adapt	adapted as [VSR-66]: a board/engine fact kept; the original's pixel gate named generically
+VSP-43	adapt	adapted as [VSR-67]: the principle kept; the original's SNAP_FRAMES variable dropped
+VSP-44	adapt	adapted as [VSR-68]: the principle kept; the original's gate name and manifest field named generically
+VSP-45	adapt	adapted as [VSR-69]: the porting law kept; the original's extract_char.py named generically
+VSP-46	keep	kept as [VSR-70]: a 68k/engine porting fact; binds any relocator
+VSP-47	adapt	adapted as [VSR-71]: the fact kept; the original's [[layout_group]] manifest row named generically
+VSP-48	keep	kept as [VSR-72]: a porting fact; binds any relocator
+VSP-49	keep	kept as [VSR-73]: a porting fact (the Felicia wall-jump); binds any generator
+VSP-50	keep	kept as [VSR-74]: an attribution principle; binds any generator
+VSP-51	keep	kept as [VSR-75]: a porting principle; binds any source data
+VSP-52	adapt	adapted as [VSR-76]: the fact kept; the original's reconciliation kind name dropped
+VSP-53	adapt	adapted as [VSR-77]: the fact kept; the original's farm_port kind named generically
+VSP-54	keep	kept as [VSR-78]: an engine porting fact; binds any port
+VSP-55	keep	kept as [VSR-79]: an engine porting fact; binds any port
+VSP-56	keep	kept as [VSR-80]: a porting principle; binds any port
+VSP-57	adapt	adapted as [VSR-81]: the facts kept; the original's allow_engine flag named generically
+VSP-58	adapt	adapted as [VSR-82]: the instrument trap kept; the original's SET= variable dropped (a run object owns its rompath, SPEC §4, but must still verify what booted)
+VSP-59	adapt	adapted as [VSR-83]: the fact kept; the original's [[pcrel_escape_fix]] row named generically
+VSP-60	adapt	adapted as [VSR-84]: the lesson kept; 'manifests' named as source data
+VSP-61	adapt	adapted as [VSR-85]: the fact kept; the original's port_patch kind and grep over build/manifest dropped
+VSP-62	adapt	adapted as [VSR-86]: the method kept; the original's ':f' root suffix dropped
+VSP-63	adapt	adapted as [VSR-87]: a board fact kept; the original's ':fN' suffix and [[data_in_code]] row named generically
+VSP-64	keep	kept as [VSR-88]: an attribution principle
+VSP-65	adapt	adapted as [VSR-89]: the fact kept; the original's verify_pcrel_data.py named generically
+VSP-66	adapt	adapted as [VSR-90]: the fact kept; the original's census_regions.py named generically
+VSP-67	adapt	adapted as [VSR-91]: the lesson kept; the original's placements.json named generically
+VSP-68	adapt	adapted as [VSR-92]: the lesson kept; the original's ptr_allow option named generically
+VSP-69	adapt	adapted as [VSR-93]: the engine fact kept; the original's audit_fsm_census.py named generically
+VSP-70	keep	kept as [VSR-94]: a 68k/engine fact
+VSP-71	keep	kept as [VSR-95]: a game fact and its rig consequence
+VSP-72	adapt	adapted as [VSR-96]: the board fact kept; the original's hole names "a"/"b" and site_thunk row dropped
+VSP-73	adapt	adapted as [VSR-97]: the lesson kept; the original's thunk_hex/TT/region_subst syntax and gate name dropped
+VSP-74	adapt	adapted as [VSR-98]: moot by SPEC §4 (a schema-checked data format replaces the flat TOML subset); the lesson binds the schema
+VSP-75	keep	kept as [VSR-99]: an emulator/driver-descriptor fact; binds the rebuild's WIDE profiles
+VSP-76	adapt	adapted as [VSR-100]: moot in part by SPEC §4 (builds by content key, fresh); the pristine-assertion lesson binds
+VSP-77	adapt	adapted as [VSR-101]: the lesson kept; the original's patch_prg.py and gate named generically
+VSP-78	adapt	adapted as [VSR-102]: the lesson kept; binds any allocator the rebuild writes
+VSP-79	keep	kept as [VSR-103]: a measurement principle
+VSP-80	adapt	adapted as [VSR-104]: the lesson kept; the original's gate section reference dropped
+VSP-81	keep	kept as [VSR-105]: an engine fact and its method
+VSP-82	adapt	kept as [VSR-106]: an engine fact; text changed (carry_check B): cross-reference [VSP-61] renumbered to [VSR-85]
+VSP-83	adapt	adapted as [VSR-107]: the fact kept; the original's wide_ext region name generalised
+VSP-84	keep	kept as [VSR-108]: an engine fact
+VSP-85	adapt	adapted as [VSR-109]: the fact kept; the original's test_hui_pairs named generically
+VSP-86	keep	kept as [VSR-110]: an engine fact
+VSP-87	adapt	adapted as [VSR-111]: the fact kept; the original's test_hui_boot.sh named generically
+VSP-88	adapt	adapted as [VSR-112]: the lesson kept; the original's tool and gate names dropped
+VSP-89	keep	kept as [VSR-113]: a porting principle
+VSP-90	adapt	kept as [VSR-114]: an engine timing fact; text changed (carry_check B): `$FF8004` given its namespace, `RAM:$FF8004`
+VSP-91	adapt	adapted as [VSR-115]: the fact kept; the original's stubbed_sound row and keyons_vsavj file named generically
+VSP-92	flag	kept and flagged as [VSR-116]: the scoping lesson binds; whether the rebuild's schema has per-tenant overrides is not yet designed, so kept and flagged ([[tenant]]/recon_overlay syntax dropped)
+VSP-93	adapt	adapted as [VSR-117]: the register discipline kept; the original's gate name dropped
+VSP-94	adapt	adapted as [VSR-118]: the original's tag/HANDOFF registry named generically (SPEC §4: one registry, builds by content key); the reproducibility lesson binds
+VSP-95	adapt	adapted as [VSR-119]: re-pointing gates that name a build by path is moot by SPEC §4 (builds by content key, one registry); the reference and dead-leg lessons bind
+VSP-185	adapt	adapted as [VSR-120]: the name sweep is moot by SPEC §4 (builds by content key); the pinned-key half binds content keys; the original's harness half was withdrawn there (14z-197)
+VSP-96	drop	moot by SPEC §4: builds by content key replace hand-named build dirs, and inputs recorded at run time make a build's consumers computed, not grepped
+VSP-97	adapt	adapted as [VSR-121]: the original's build-dir tracking moot by SPEC §4 (builds by content key); the laundering lesson binds
+VSP-98	adapt	adapted as [VSR-122]: the policy kept; the original's cache path and grep list dropped
+VSP-99	flag	kept and flagged as [VSR-123]: the same-commit lesson binds; the rebuild's registry form (SPEC §4: one registry) is not yet designed
+VSP-100	adapt	adapted as [VSR-124]: the maintainer's rulings about the artifact kept (SPEC §2); the original's scripts, paths and gate names dropped (phase 3)
+VSP-101	adapt	adapted as [VSR-125]: the original's run_all_static.sh and registry files named generically; the SKIP lesson binds
+VSP-164	adapt	adapted as [VSR-126]: the original's run_all_emulator.sh/ci_emulator.tsv columns and flags dropped; the scope, prerequisite and timeout lessons bind
+VSP-165	adapt	adapted as [VSR-127]: the provenance classes kept; the original's PROVENANCE.md and gate names named generically
+VSP-181	adapt	carried as [VSR-22]
+VSP-183	adapt	carried as [VSR-48]
+VSP-184	adapt	carried as [VSR-48]
+VSP-176	adapt	carried as [VSR-45]
+VSP-177	adapt	adapted as [VSR-128]: the shell half (a comment after a line-continuation backslash) moot by SPEC §4 (no shell gates); the provisioning-control lesson binds any run object
+VSP-178	flag	kept and flagged as [VSR-129]: binds; inputs recorded at run time (SPEC §4) may make cadence computed, and the rebuild's release flow is phase 3, so kept and flagged
+VSP-102	drop	moot by SPEC §4: no shell gates and one runner (closing stdin when looping a gate list by hand); the not-portable-gate half is [VSR-125]'s SKIP lesson
+VSP-103	adapt	adapted as [VSR-130]: the lesson kept; 'grep tests/' replaced by the inputs recorded at run time (SPEC §4)
+VSP-104	adapt	adapted as [VSR-131]: moot in part by SPEC §4 (a run object owns its outputs); the lesson binds the run object
+VSP-105	adapt	adapted as [VSR-132]: the shell pipe moot by SPEC §4 (no shell gates; a run object owns its rompath); the propagation and fall-through lessons bind
+VSP-106	adapt	adapted as [VSR-133]: the original's build_fingerprint.py named generically
+VSP-107	adapt	adapted as [VSR-134]: binds phase 1's external suite (SPEC §5.2 cites it); the rebuild's own gates take the build from their run object (SPEC §4)
+VSP-108	adapt	adapted as [VSR-135]: path canonicalisation moot by SPEC §4 (a run object owns its paths); the print-what-opened and rejected-vs-died lessons bind
+VSP-109	adapt	adapted as [VSR-136]: the original's env -i/shell specifics named generically; binds any harness
+VSP-110	drop	moot by SPEC §4: no shell gates (backticks in double quotes, VAR=x funcname persistence, grep -vxF on a blank line, editing a running .sh); the git and gh usage traps are the original's environment, not the project's
+VSP-111	adapt	adapted as [VSR-137]: moot by SPEC §4 in its awk form (no shell gates); the crash-is-not-false lesson binds
+VSP-112	adapt	adapted as [VSR-138]: moot by SPEC §4 in its shell form; the three-outcome lesson binds
+VSP-113	adapt	adapted as [VSR-139]: the run record (SPEC §6) carries the commit; the stale-worktree lesson binds
+VSP-114	keep	kept as [VSR-140]: a verdict principle; binds any harness
+VSP-115	keep	kept as [VSR-141]: a verdict principle
+VSP-116	keep	kept as [VSR-142]: a verdict principle
+VSP-117	adapt	adapted as [VSR-143]: moot in part by SPEC §4 (a run object creates its sandbox fresh and refuses an existing one); the lesson is what that run object must enforce
+VSP-118	adapt	adapted as [VSR-144]: the original's _PRG_RE named generically; binds any fingerprint
+VSP-119	adapt	adapted as [VSR-145]: the original's WIDE_RECORD launcher and cache path dropped; the instrument facts bind
+VSP-120	adapt	kept as [VSR-146]: a game/rig fact; text changed (carry_check B): `$FF8782`/`$FF8B82` given their RAM: namespace
+VSP-121	adapt	adapted as [VSR-147]: a game fact kept; replay numbers marked as the original's corpus
+VSP-122	keep	kept as [VSR-148]: a game/rig fact
+VSP-123	adapt	adapted as [VSR-149]: a game/rig fact kept; the original's POKES= grammar restated as address and value
+VSP-124	adapt	kept as [VSR-150]: game/rig facts; text changed (carry_check B): `$FF8004/8008/800C` given its RAM: namespace
+VSP-125	adapt	adapted as [VSR-151]: the game fact kept; the original's GUARD_PROBE variables and audit name dropped
+VSP-126	keep	kept as [VSR-152]: a 68k/instrument fact
+VSP-127	adapt	adapted as [VSR-153]: moot in part by SPEC §4 (a run object owns its outputs); the lesson binds how rigs map to runs
+VSP-128	drop	moot by SPEC §4: schema-checked data (the original's replay.lua took ';'-separated DUMPS and died silently on commas; a malformed request is refused at parse time by construction)
+VSP-129	adapt	adapted as [VSR-154]: an instrument fact kept; the original's variable names dropped
+VSP-130	adapt	adapted as [VSR-155]: an instrument fact kept; the original's DUMPS= syntax restated
+VSP-131	keep	kept as [VSR-156]: a game/rig fact
+VSP-132	keep	kept as [VSR-157]: a game/rig fact
+VSP-133	keep	kept as [VSR-158]: a game/rig fact
+VSP-134	keep	kept as [VSR-159]: a measurement principle
+VSP-135	keep	kept as [VSR-160]: an instrument fact
+VSP-136	keep	kept as [VSR-161]: a game/instrument fact
+VSP-137	keep	kept as [VSR-162]: a verification principle
+VSP-138	keep	kept as [VSR-163]: a verification principle
+VSP-139	adapt	adapted as [VSR-164]: the principle kept; the original's Lua instrument names dropped
+VSP-140	adapt	adapted as [VSR-165]: instrument facts kept; binds the rebuild's own sampling point
+VSP-141	adapt	adapted as [VSR-166]: the fact kept; the original's pack name dropped
+VSP-142	adapt	adapted as [VSR-167]: the lesson kept; the original's placements.json named generically
+VSP-143	adapt	adapted as [VSR-168]: the principle kept; the original's manifest grep and xxd named generically
+VSP-144	keep	kept as [VSR-169]: an engine/measurement fact
+VSP-145	keep	kept as [VSR-170]: a 68k/measurement fact
+VSP-146	keep	kept as [VSR-171]: a measurement principle
+VSP-147	adapt	adapted as [VSR-172]: an instrument fact kept; the original's patch.json and tap variable named generically
+VSP-148	keep	kept as [VSR-173]: a measurement principle
+VSP-149	adapt	adapted as [VSR-174]: moot by SPEC §4 (one input player); the lesson binds its staging convention and the reading of the original's frame numbers
+VSP-150	adapt	adapted as [VSR-175]: the method kept; the original's three tool names dropped
+VSP-151	adapt	adapted as [VSR-176]: the game fact kept; the original's audit invocation dropped
+VSP-152	drop	the subject is only the original's guarded-replay tool and its variables (GUARD_PROBE, GUARD_TRACE, MASK_RANGES); the rebuild's harness defines its own debug interface
+VSP-167	keep	kept as [VSR-177]: a gate-scoping principle
+VSP-168	keep	kept as [VSR-178]: a gate-scoping principle and an engine fact
+VSP-169	keep	kept as [VSR-179]: a gate-scoping principle
+VSP-170	keep	kept as [VSR-180]: a gate-scoping principle
+VSP-171	keep	kept as [VSR-181]: a gate-scoping principle
+VSP-172	keep	kept as [VSR-182]: a gate-scoping principle
+VSP-173	keep	kept as [VSR-183]: a gate-scoping principle
+VSP-174	keep	kept as [VSR-184]: a gate-scoping principle (the gate name is the original's, as provenance)
+VSP-175	adapt	adapted as [VSR-185]: the ruling kept (maintainer, 2026-09-04); the original's expectation directory name dropped
+VSP-179	adapt	kept as [VSR-186]: a gate-scoping principle; text changed (carry_check B): `bank_map` written bank-map
+VSP-180	adapt	kept as [VSR-187]: a gate-scoping principle; text changed (carry_check B): cross-reference [VSP-148] renumbered to [VSR-173]
+VSP-153	keep	kept as [VSR-188]: an attribution principle
+VSP-154	adapt	adapted as [VSR-189]: the original's run_hui_behavior.sh named generically; builds by content key (SPEC §4)
+VSP-155	adapt	adapted as [VSR-190]: the principle kept; 'manifest rows' named as tenant A's data
+VSP-156	keep	kept as [VSR-191]: a verification principle
+VSP-157	adapt	adapted as [VSR-192]: the method kept; the original's GUARD_PROBE_HIST named generically
+VSP-158	adapt	kept as [VSR-193]: an attribution principle; text changed (carry_check B): cross-references [VSP-20], [VSP-71] renumbered to [VSR-19], [VSR-95]
+VSP-163	adapt	adapted as [VSR-194]: the fact kept; the original's bases.tsv path named generically
+VSP-159	adapt	adapted as [VSR-195]: the engine facts kept; the original's [[code_ptr]]/poke32 op names dropped
+VSP-160	adapt	adapted as [VSR-196]: the facts kept; the original's --strip-tiles flag named generically
+VSP-161	adapt	adapted as [VSR-197]: the method kept; the original's gate names dropped
+# counts keep=49 adapt=128 drop=5 flag=3

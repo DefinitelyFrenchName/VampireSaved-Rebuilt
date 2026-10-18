@@ -1,0 +1,174 @@
+id	action	reason
+mister-jtframe-core:MJC-1	keep	jtframe/MiSTer platform fact or measurement discipline; names no original implementation
+mister-jtframe-core:MJC-2	keep	jtframe/MiSTer platform fact or measurement discipline; names no original implementation
+mister-jtframe-core:MJC-3	keep	jtframe/MiSTer platform fact or measurement discipline; names no original implementation
+mister-jtframe-core:MJC-4	keep	patch-series mirror of the fork delta and pin ordering: platform/git discipline; 'the setup script' is generic
+mister-jtframe-core:MJC-5	keep	jtframe/MiSTer platform fact or measurement discipline; names no original implementation
+mister-jtframe-core:MJC-6	keep	jtframe/MiSTer platform fact or measurement discipline; names no original implementation
+mister-jtframe-core:MJC-7	adapt	uprev budget kept; 'the translator and both sim gates' (the original's rpl2siminputs and its two sim gates) generalised
+mister-jtframe-core:MJC-8	keep	jtframe/MiSTer platform fact or measurement discipline; names no original implementation
+mister-jtframe-core:MJC-9	keep	jtframe/MiSTer platform fact or measurement discipline; names no original implementation
+mister-jtframe-core:MJC-10	keep	jtframe/MiSTer platform fact or measurement discipline; names no original implementation
+mister-jtframe-core:MJC-11	keep	jtframe/MiSTer platform fact or measurement discipline; names no original implementation
+mister-jtframe-core:MJC-12	keep	jtframe/MiSTer platform fact or measurement discipline; names no original implementation
+mister-jtframe-core:MJC-13	keep	jtframe/MiSTer platform fact or measurement discipline; names no original implementation
+mister-jtframe-core:MJC-14	keep	jtframe/MiSTer platform fact or measurement discipline; names no original implementation
+mister-jtframe-core:MJC-15	keep	jtframe/MiSTer platform fact or measurement discipline; names no original implementation
+mister-jtframe-core:MJC-16	keep	jtframe/MiSTer platform fact or measurement discipline; names no original implementation
+mister-jtframe-core:MJC-17	keep	jtframe/MiSTer platform fact or measurement discipline; names no original implementation
+mister-jtframe-core:MJC-18	keep	jtframe/MiSTer platform fact or measurement discipline; names no original implementation
+mister-jtframe-core:MJC-19	keep	jtframe/MiSTer platform fact or measurement discipline; names no original implementation
+mister-jtframe-core:MJC-20	keep	jtframe/MiSTer platform fact or measurement discipline; names no original implementation
+mister-jtframe-core:MJC-22	keep	jtframe/MiSTer platform fact or measurement discipline; names no original implementation
+mister-jtframe-core:MJC-23	keep	jtframe/MiSTer platform fact or measurement discipline; names no original implementation
+mister-jtframe-core:MJC-24	keep	jtframe/MiSTer platform fact or measurement discipline; names no original implementation
+mister-jtframe-core:MJC-26	keep	jtframe/MiSTer platform fact or measurement discipline; names no original implementation
+mister-jtframe-core:MJC-29	keep	jtframe/MiSTer platform fact or measurement discipline; names no original implementation
+mister-jtframe-core:MJC-30	keep	jtframe/MiSTer platform fact or measurement discipline; names no original implementation
+mister-jtframe-core:MJC-31	keep	jtframe/MiSTer platform fact or measurement discipline; names no original implementation
+mister-jtframe-core:MJC-33	keep	jtframe/MiSTer platform fact or measurement discipline; names no original implementation
+mister-jtframe-core:MJC-36	keep	jtframe/MiSTer platform fact or measurement discipline; names no original implementation
+mister-jtframe-core:MJC-37	keep	scratch-clone simulation, no ROM-derived file in the tree, one clone per job: binds any lane
+mister-jtframe-core:MJC-39	keep	jtframe/MiSTer platform fact or measurement discipline; names no original implementation
+mister-jtframe-core:MJC-40	keep	jtframe/MiSTer platform fact or measurement discipline; names no original implementation
+mister-jtframe-core:MJC-41	keep	jtframe/MiSTer platform fact or measurement discipline; names no original implementation
+mister-jtframe-core:MJC-42	keep	jtframe/MiSTer platform fact or measurement discipline; names no original implementation
+mister-jtframe-core:MJC-43	keep	jtframe/MiSTer platform fact or measurement discipline; names no original implementation
+mister-jtframe-core:MJC-44	keep	jtframe/MiSTer platform fact or measurement discipline; names no original implementation
+mister-jtframe-core:MJC-45	keep	jtframe/MiSTer platform fact or measurement discipline; names no original implementation
+mister-jtframe-core:MJC-46	keep	jtframe/MiSTer platform fact or measurement discipline; names no original implementation
+mister-jtframe-core:MJC-47	keep	jtframe/MiSTer platform fact or measurement discipline; names no original implementation
+mister-jtframe-core:MJC-48	keep	jtframe/MiSTer platform fact or measurement discipline; names no original implementation
+mister-jtframe-core:MJC-49	keep	jtframe/MiSTer platform fact or measurement discipline; names no original implementation
+mister-jtframe-core:MJC-50	adapt	census-vs-probe principle and its must-fire kept; the original driver's --post-frames/--keep-banks flags dropped
+mister-jtframe-core:MJC-51	keep	jtframe/MiSTer platform fact or measurement discipline; names no original implementation
+mister-jtframe-core:MJC-52	keep	jtframe/MiSTer platform fact or measurement discipline; names no original implementation
+mister-jtframe-core:MJC-53	keep	jtframe/MiSTer platform fact or measurement discipline; names no original implementation
+mister-jtframe-core:MJC-54	adapt	never edit a running script kept (jtframe tooling is bash); 'freeze tests/ and tools/' (the original's dirs) generalised
+mister-jtframe-core:MJC-55	flag	kept as written: a shell-waiter trap (pgrep -f self-match); binds wherever a waiter is shell, which the rebuild's Python harness may avoid; maintainer to confirm keep vs drop
+mister-jtframe-core:MJC-56	keep	jtframe/MiSTer platform fact or measurement discipline; names no original implementation
+mister-jtframe-core:MJC-57	keep	jtframe/MiSTer platform fact or measurement discipline; names no original implementation
+mister-jtframe-core:MJC-58	keep	jtframe/MiSTer platform fact or measurement discipline; names no original implementation
+mister-jtframe-core:MJC-59	keep	jtframe/MiSTer platform fact or measurement discipline; names no original implementation
+mister-jtframe-core:MJC-60	keep	jtframe/MiSTer platform fact or measurement discipline; names no original implementation
+mister-jtframe-core:MJC-61	keep	jtframe/MiSTer platform fact or measurement discipline; names no original implementation
+mister-jtframe-core:MJC-62	adapt	named-seed release policy and bitstream-as-build-resource kept; the original's release/bitstreams/<seed>/ + CURRENT layout dropped (SPEC 4: one registry)
+mister-jtframe-core:MJC-63	keep	jtframe/MiSTer platform fact or measurement discipline; names no original implementation
+mister-jtframe-core:MJC-64	keep	jtframe/MiSTer platform fact or measurement discipline; names no original implementation
+mister-jtframe-core:MJC-65	keep	jtframe/MiSTer platform fact or measurement discipline; names no original implementation
+mister-jtframe-core:MJC-66	keep	jtframe/MiSTer platform fact or measurement discipline; names no original implementation
+mister-jtframe-core:MJC-67	keep	jtframe/MiSTer platform fact or measurement discipline; names no original implementation
+mister-jtframe-core:MJC-68	keep	jtframe/MiSTer platform fact or measurement discipline; names no original implementation
+mister-jtframe-core:MJC-69	keep	jtframe/MiSTer platform fact or measurement discipline; names no original implementation
+mister-jtframe-core:MJC-72	keep	jtframe/MiSTer platform fact or measurement discipline; names no original implementation
+mister-jtframe-core:MJC-73	keep	jtframe/MiSTer platform fact or measurement discipline; names no original implementation
+mister-cps2-wide-core:MSC-1	keep	redirect to [MJC-1] kept so citations resolve
+mister-cps2-wide-core:MSC-2	keep	redirect to [MJC-2] kept so citations resolve
+mister-cps2-wide-core:MSC-3	keep	redirect to [MJC-3] kept so citations resolve
+mister-cps2-wide-core:MSC-4	keep	redirect to [MJC-4] kept so citations resolve
+mister-cps2-wide-core:MSC-5	keep	redirect to [MJC-5] kept so citations resolve
+mister-cps2-wide-core:MSC-6	keep	redirect to [MJC-6] kept so citations resolve
+mister-cps2-wide-core:MSC-7	keep	redirect to [MJC-7] kept so citations resolve
+mister-cps2-wide-core:MSC-8	keep	redirect to [MJC-8] kept so citations resolve
+mister-cps2-wide-core:MSC-9	keep	redirect to [MJC-9] kept so citations resolve
+mister-cps2-wide-core:MSC-10	keep	redirect to [MJC-10] kept so citations resolve
+mister-cps2-wide-core:MSC-11	keep	redirect to [MJC-11] kept so citations resolve
+mister-cps2-wide-core:MSC-12	keep	redirect to [MJC-12] kept so citations resolve
+mister-cps2-wide-core:MSC-13	keep	redirect to [MJC-13] kept so citations resolve
+mister-cps2-wide-core:MSC-14	keep	redirect to [MJC-14] kept so citations resolve
+mister-cps2-wide-core:MSC-15	keep	redirect to [MJC-15] kept so citations resolve
+mister-cps2-wide-core:MSC-16	keep	redirect to [MJC-16] kept so citations resolve
+mister-cps2-wide-core:MSC-17	keep	redirect to [MJC-17] kept so citations resolve
+mister-cps2-wide-core:MSC-18	keep	redirect to [MJC-18] kept so citations resolve
+mister-cps2-wide-core:MSC-19	keep	redirect to [MJC-19] kept so citations resolve
+mister-cps2-wide-core:MSC-20	keep	redirect to [MJC-20] kept so citations resolve
+mister-cps2-wide-core:MSC-21	keep	CPS-2 core fact (tile code = SDRAM address) and its consequences
+mister-cps2-wide-core:MSC-22	keep	redirect to [MJC-22] kept so citations resolve
+mister-cps2-wide-core:MSC-23	keep	redirect to [MJC-23] kept so citations resolve
+mister-cps2-wide-core:MSC-24	keep	redirect to [MJC-24] kept so citations resolve
+mister-cps2-wide-core:MSC-25	keep	CPS-2 core fact (all-ones GFX word skips the draw loop)
+mister-cps2-wide-core:MSC-26	keep	redirect to [MJC-26] kept so citations resolve
+mister-cps2-wide-core:MSC-27	keep	format caps of the CPS-2 core: board/core facts
+mister-cps2-wide-core:MSC-28	adapt	promote-after-terminator law kept; 'the build's bank_word' (the original's tools/gfx_tiles.py) restated as the romset build's object-bank encoding
+mister-cps2-wide-core:MSC-29	keep	redirect to [MJC-29] kept so citations resolve
+mister-cps2-wide-core:MSC-30	keep	redirect to [MJC-30] kept so citations resolve
+mister-cps2-wide-core:MSC-31	keep	redirect to [MJC-31] kept so citations resolve
+mister-cps2-wide-core:MSC-32	keep	complemented key-range word: board/emulator/core fact; the vsavj value is in the original's committed skill guide
+mister-cps2-wide-core:MSC-33	keep	redirect to [MJC-33] kept so citations resolve
+mister-cps2-wide-core:MSC-34	keep	verification principle (data read vs code executed above the window)
+mister-cps2-wide-core:MSC-35	keep	Rule 1 v2 MiSTer form: the profile law ([VSR-2]) on FPGA
+mister-cps2-wide-core:MSC-36	keep	redirect to [MJC-36] kept so citations resolve
+mister-cps2-wide-core:MSC-37	keep	redirect to [MJC-37] kept so citations resolve
+mister-cps2-wide-core:MSC-38	keep	jtsim -load/-setname on CPS-2: platform fact
+mister-cps2-wide-core:MSC-39	keep	redirect to [MJC-39] kept so citations resolve
+mister-cps2-wide-core:MSC-40	keep	redirect to [MJC-40] kept so citations resolve
+mister-cps2-wide-core:MSC-41	keep	redirect to [MJC-41] kept so citations resolve
+mister-cps2-wide-core:MSC-42	keep	redirect to [MJC-42] kept so citations resolve
+mister-cps2-wide-core:MSC-43	keep	redirect to [MJC-43] kept so citations resolve
+mister-cps2-wide-core:MSC-44	keep	redirect to [MJC-44] kept so citations resolve
+mister-cps2-wide-core:MSC-45	keep	redirect to [MJC-45] kept so citations resolve
+mister-cps2-wide-core:MSC-46	keep	redirect to [MJC-46] kept so citations resolve
+mister-cps2-wide-core:MSC-47	keep	redirect to [MJC-47] kept so citations resolve
+mister-cps2-wide-core:MSC-48	keep	redirect to [MJC-48] kept so citations resolve
+mister-cps2-wide-core:MSC-49	keep	redirect to [MJC-49] kept so citations resolve
+mister-cps2-wide-core:MSC-50	keep	redirect to [MJC-50] kept so citations resolve
+mister-cps2-wide-core:MSC-51	keep	redirect to [MJC-51] kept so citations resolve
+mister-cps2-wide-core:MSC-52	keep	redirect to [MJC-52] kept so citations resolve
+mister-cps2-wide-core:MSC-53	keep	redirect to [MJC-53] kept so citations resolve
+mister-cps2-wide-core:MSC-54	keep	redirect to [MJC-54] kept so citations resolve
+mister-cps2-wide-core:MSC-55	keep	redirect to [MJC-55] kept so citations resolve
+mister-cps2-wide-core:MSC-56	keep	redirect to [MJC-56] kept so citations resolve
+mister-cps2-wide-core:MSC-57	keep	redirect to [MJC-57] kept so citations resolve
+mister-cps2-wide-core:MSC-58	keep	redirect to [MJC-58] kept so citations resolve
+mister-cps2-wide-core:MSC-59	keep	redirect to [MJC-59] kept so citations resolve
+mister-cps2-wide-core:MSC-60	keep	redirect to [MJC-60] kept so citations resolve
+mister-cps2-wide-core:MSC-61	keep	redirect to [MJC-61] kept so citations resolve
+mister-cps2-wide-core:MSC-62	keep	redirect to [MJC-62] kept so citations resolve
+mister-cps2-wide-core:MSC-63	keep	redirect to [MJC-63] kept so citations resolve
+mister-cps2-wide-core:MSC-64	keep	redirect to [MJC-64] kept so citations resolve
+mister-cps2-wide-core:MSC-65	keep	redirect to [MJC-65] kept so citations resolve
+mister-cps2-wide-core:MSC-66	keep	redirect to [MJC-66] kept so citations resolve
+mister-cps2-wide-core:MSC-67	keep	redirect to [MJC-67] kept so citations resolve
+mister-cps2-wide-core:MSC-68	keep	redirect to [MJC-68] kept so citations resolve
+mister-cps2-wide-core:MSC-69	keep	redirect to [MJC-69] kept so citations resolve
+mister-cps2-wide-core:MSC-70	keep	stated unknown of the core
+mister-cps2-wide-core:MSC-71	keep	stated unknown of the silicon
+mister-cps2-wide-core:MSC-72	keep	redirect to [MJC-72] kept so citations resolve
+mister-cps2-wide-core:MSC-73	keep	redirect to [MJC-73] kept so citations resolve
+mister-vampire-saved:MSV-1	adapt	roster demand figures kept as measured on the original's build (merged-m6); fit gate name dropped
+mister-vampire-saved:MSV-2	keep	what the roster's art demands of a CPS-2 core (needs a GFX map wider than 32 MB)
+mister-vampire-saved:MSV-3	flag	kept and labelled measured; the original's skill quotes the 14z-113 census (45,736 + 6,245) while its mister_core.md 2 records 45,736 + 6,272 at 14z-117; both carried, the 366 difference is the 14z-113 one
+mister-vampire-saved:MSV-4	adapt	re-freeze-deliberately principle kept; audit_mister_map_fit gate name dropped; extents labelled the original's
+mister-vampire-saved:MSV-5	adapt	SDRAM map numbers kept as measured on the original's build at its freeze (SPEC 3: placement may differ)
+mister-vampire-saved:MSV-6	adapt	QSound split kept as the original's placement; the forcing argument and [MSC-19] bind
+mister-vampire-saved:MSV-7	adapt	group-C bank assignment kept as the original's placement and its reasoning
+mister-vampire-saved:MSV-8	adapt	trim mandatory under WIDE v1 declared sizes kept; .rom size/header words labelled the original's build; gate name dropped
+mister-vampire-saved:MSV-9	adapt	seven streams labelled the original's placement; the 2026-08-23 ruling and the module-placement law kept
+mister-vampire-saved:MSV-10	adapt	bank load figures kept as measured on the original's WIDE image, caveat kept
+mister-vampire-saved:MSV-11	adapt	group-C region cannot grow: labelled the original's placement
+mister-vampire-saved:MSV-12	adapt	per-core work-RAM offset kept as the original's cps2w fact; tools/run_sim_jtcps2.sh and gate name dropped
+mister-vampire-saved:MSV-13	adapt	three-way reservation fact kept; the original's allocator start labelled; the rebuild's allocator must honour it
+mister-vampire-saved:MSV-14	adapt	synthesis-cannot-go-stale principle kept; tools/mk_mister_page.py --check and run_all_static dropped
+mister-vampire-saved:MSV-15	adapt	vsavjw catalogue entry facts and generated-from-zip principle kept; tools/gen_vsavjw_xml.py dropped
+mister-vampire-saved:MSV-16	adapt	MiSTer tail of every re-freeze kept; gen_vsavjw_xml.py and emu/jtcores-patches/ dropped
+mister-vampire-saved:MSV-17	adapt	qsoundw own-region mapping kept as the original's; length 0x0F0000 is its build's trim
+mister-vampire-saved:MSV-18	adapt	one-zip packaging and the silent-wrong-art lesson kept, labelled the original's; patched member names are its build's
+mister-vampire-saved:MSV-19	drop	only the original's MRA script (tools/mister_mra.sh) and its flags; lessons already in [MJC-37], [MJC-65], [MJC-68]; stub kept
+mister-vampire-saved:MSV-20	adapt	per-platform self-sufficient release layer and every-version-every-platform kept; the original's paths, packager and gate dropped (phase 3)
+mister-vampire-saved:MSV-21	adapt	every part resolves kept; 31/22 labelled the original's build; tools/check_mra_parts.py and test_mra_parts.sh dropped
+mister-vampire-saved:MSV-22	flag	STOCK CONTROL principle kept; the original's skill said 'maintainer asked, did not rule' but its mister_field.md 2 records the ruling of 2026-08-29 (14z-118); the rebuilt line states the ruling, maintainer to confirm
+mister-vampire-saved:MSV-23	adapt	frozen anchors kept as measured on the original's builds; the tenant anchor rests on its WIDE .rom size, so re-derived on a rebuilt image
+mister-vampire-saved:MSV-24	keep	game fact (sound-state-fed opponent lottery) and the label-the-subset oracle principle
+mister-vampire-saved:MSV-25	adapt	fetch demonstration figures labelled measured on the original's build; gate named as the original's
+mister-vampire-saved:MSV-26	adapt	QSound extension fetch figures labelled the original's build; gate named as the original's
+mister-vampire-saved:MSV-27	adapt	core-vs-core inertness instrument principle kept; the two gates named as the original's
+mister-vampire-saved:MSV-28	adapt	tenant-pick replays (the reused corpus) kept; picks labelled the original's builds and made a claim to confirm on a rebuilt romset
+mister-vampire-saved:MSV-29	adapt	OBJ-list oracle figures labelled the original's build; internal check number '3z' and walker tool name dropped
+mister-vampire-saved:MSV-30	adapt	know-the-cost principle and measured sim runtimes kept (class M); runner tiers, --sim-dir/--pos-log flags and rpl2siminputs.py dropped
+mister-vampire-saved:MSV-31	keep	field-test principle: hardware verdicts are by eye
+mister-vampire-saved:MSV-32	keep	field-test procedure: never without the control
+mister-vampire-saved:MSV-33	keep	triage procedure: failure mode and timed loop are game/core facts
+mister-vampire-saved:MSV-34	adapt	field reports are recordings ([VSR-19]) kept with naming and exception guard; tests/inp/, run_inp_guarded.sh, test_inp_corpus.sh dropped
+mister-vampire-saved:MSV-35	adapt	board-is-a-witness principle kept; '#99' marked as the original's issue (the rebuild's tickets are its own)
+mister-vampire-saved:MSV-36	adapt	artifacts outside the tree go stale, sweep on retraction kept; the original's bundle dir and release path dropped
+# counts keep=135 adapt=33 drop=1 flag=3

@@ -1,0 +1,88 @@
+id	action	reason
+.claude/agents/measurer.md§frontmatter+body	keep	nothing names the original's tooling (worker_spec.md path exists in the rebuild); copied byte-identical, model: sonnet + effort: high KEPT
+.claude/agents/reader.md§frontmatter+body	keep	as measurer; copied byte-identical, model: sonnet + effort: high KEPT
+.claude/agents/rule-checker.md§frontmatter+body	adapt	description named tools/rulecheck.py -> "the rule-checker tool ... (docs/project/rule_checker.md)"; model claude-opus-5-5, effort high, omitClaudeMd true KEPT
+.claude/agents/*§model field	flag	brief said "no model field, since the original pins none": FALSE at 6dee2be7 (measurer/reader model: sonnet, rule-checker model: claude-opus-5-5; "never with a model parameter" means the CALL). Kept: a definition with no model/effort runs on the caller's (probe A4/A9) and the static cap gate requires both; the pinned reader is VSR-48. Orchestrator to confirm
+worker_spec.md§header (what this is)	adapt	C1/QP5 named as the original's procedure check, cut 2026-10-15 (#288); "call gate ... a proposal until installed" corrected to installed 2026-09-23 (14z-177, DECISIONS_HISTORY quote)
+worker_spec.md§why a spec	keep	maintainer quote verbatim
+worker_spec.md§the template	keep	verbatim; INPUTS example "build dir" -> "build" (SPEC §4: builds by content key)
+worker_spec.md§TASK	adapt	"QP5 not yet in the checklist" (stale) -> the original's QP5, ruled 2026-09-23
+worker_spec.md§INPUTS	adapt	dropped the original's "S4 gate, step 2" pointer
+worker_spec.md§COMMANDS	keep	120 s timeout lesson kept with its paid runs as provenance
+worker_spec.md§RETURN	adapt	"once QP3 is widened" (stale) -> widened QP3 ruled 2026-09-23 in the original
+worker_spec.md§MUST NOT	adapt	tools/agent/probe_agents.sh A7, tests/test_agent_defs.sh -> "measured in the original", "a static gate on the definitions"
+worker_spec.md§STOP	keep	verbatim
+worker_spec.md§what a spec does not do	adapt	"C1" -> "the checker"; "S4 gate, to be built" dropped
+rule_checker.md§what this document is	adapt	tools/rulecheck.py described as the original's implementation to be rebuilt in Python or Rust; no CLI; #152 quote kept
+rule_checker.md§SINCE 2026-10-15 before an action only	keep	#288 ruling quoted; 2026-10-16 (14z-203) "Yes, make that a working rule" and "let's keep 1 for now..." quoted; push-hook unwiring detail dropped
+rule_checker.md§the failure it exists to catch	keep	both paid cases kept; fixture/gotcha paths pointed at the original
+rule_checker.md§[VSP-183] when + decision kinds	adapt	procedure kind removed (cut); ticket closure noted as an action per the 2026-10-15 ruling; --decision flag dropped
+rule_checker.md§[VSP-183] claim lint (#185)	adapt	kept as principle (ruled 2026-10-01); tools/claim_lint.py, backtest figures and gate dropped
+rule_checker.md§[VSP-183] pre-prepare check (#272)	adapt	kept as principle with its ruling quote (2026-10-12) and kept-flags-only (2026-10-13); replay figures and packet_check.py dropped
+rule_checker.md§[VSP-183] what goes in	adapt	packet, no narrative, staging with SHA-1, line ranges staged separately (#156) kept; build/rulecheck/<id>/ path dropped
+rule_checker.md§[VSP-183] read limit (#258)	keep	measured Read-tool limits (256 KB error, 25,000-token partial view, estimator bytes/2.0+2 per line) and the index rule with the maintainer's 2026-10-11 quote kept; gate/control names dropped
+rule_checker.md§[VSP-183] packet complete	keep	verbatim lesson
+rule_checker.md§[VSP-183] who reads it	adapt	pinned reader kept; rulecheck.py spawned/collect/readers CLI replaced by what recording checks
+rule_checker.md§[VSP-183] record is bound	adapt	kept as principle (run 2026-09-24-134 Q4); gate/control names dropped
+rule_checker.md§[VSP-183] merge per fork (#217)	adapt	ruling quote and refusal list kept; --cites flag and gate names dropped
+rule_checker.md§[VSP-183] what comes out	keep	six lines; record refuses prose
+rule_checker.md§checklist Q1-Q5 + answer format	keep	VERBATIM between the same markers (sha1 of the marked block identical to the original)
+rule_checker.md§bounds on Q3 and Q4	keep	new section from DECISIONS_HISTORY "Ruled 2026-09-17 (14z-163)", ruling "my decision is 'both'" quoted; consolidates the original's "What the first runs measured" ruling sentence
+rule_checker.md§[VSP-184] binding / resolve per question	adapt	per-label resolution kept; "never chain resolve and prepare in one command" restated as: a refused resolution never has the next run prepared over it
+rule_checker.md§[VSP-184] blame-the-instrument is a ticket (#271)	keep	maintainer quotes kept; run-id counts dropped
+rule_checker.md§[VSP-184] recurring finding is a red	adapt	threshold (three subjects, two sessions) kept; tools/recurrence_alarm.py and recurrence.tsv dropped
+rule_checker.md§[VSP-184] documentation-packet recheck route (#270)	drop	the close's documentation packet is cut (#288); close_checks.py/close_standing.py implementation
+rule_checker.md§[VSP-184] output verbatim to the maintainer	keep	moved under RECORD
+rule_checker.md§[VSP-184] must-fire half (plant, calibration)	keep	plant pairing, random a/b, two readers in one message, uncaught plant voids, positive/negative calibration, recalibration on checklist/model change
+rule_checker.md§[VSP-184] mechanical binding: a freeze	adapt	registry.tsv/M18 birth row/test_rule_checker.sh -> "every row of the build registry after the checker's birth"
+rule_checker.md§[VSP-184] procedure push binding	drop	unwired 2026-10-16 (#288); pre_push.py implementation
+rule_checker.md§what the first runs measured	drop	operational history; its ruling carried in "bounds on Q3 and Q4"; pointer paragraph at the end
+rule_checker.md§the first real runs (14z-164)	drop	operational history; pointer paragraph
+rule_checker.md§the model (14z-167) / effort (14z-177) / context (14z-178) / recalibrated	adapt	condensed to "Why the reader is pinned": the three measured unbound parameters and why the definition states each; run ranges dropped
+rule_checker.md§will not catch: echo figures	keep	condensed, run id kept
+rule_checker.md§will not catch: grep instead of read	keep	condensed
+rule_checker.md§will not catch: extract cut while worker running	drop	procedure-family extract defect (cut); extract.py implementation
+rule_checker.md§will not catch: operational slips / unwritten premise / own silence / outside the questions	keep	verbatim in substance
+rule_checker.md§will not catch: two procedure items	drop	procedure family cut
+rule_checker.md§fixtures (four evidence)	keep	table verbatim; files pointed at the original
+rule_checker.md§fixtures (six procedure)	drop	cut family; pointer to the original's table
+rule_checker.md§fixture rules	adapt	.txt-suffix trick restated as "stored so no registry counts it as a gate"; extract.py re-cut detail dropped
+rule_checker.md§the ledger	adapt	columns and gate checks kept; paths dropped; session-key lesson (#209) kept as principle, --session flag history dropped
+rule_checker.md§the push hook's refusal hint (#210)	drop	pre_push.py hint text; hook unwired
+rule_checker.md§THE PROCEDURE FAMILY	keep	kept as the record, marked CUT 2026-10-15 (#288), with its 2026-09-23 rulings quoted; checklist QP1-QP5 VERBATIM between the same markers (sha1 identical); revisit #289
+rule_checker.md§operational history	adapt	one pointer paragraph to the original, as the brief asks
+agent_architecture_scope.md§banner (orchestrator superseded)	keep	2026-09-25 ruling quoted in swarm.md §1
+agent_architecture_scope.md§status banner (S1-S5 landed)	drop	slice history; pointer in swarm.md header
+agent_architecture_scope.md§the ask	keep	verbatim in swarm.md
+agent_architecture_scope.md§1 the failure, measured	adapt	census table dropped (the original's history); the mechanism kept as C0.1's reason with the "eleven gaps" figure
+agent_architecture_scope.md§2 platform rows	adapt	the rows the structure rests on (call model beats definition; no effort/model -> caller's; tools bind; frontmatter hooks do not fire; project hook sees agent_type; --agent loses the default prompt; CLAUDE.md + memory unless omitClaudeMd) kept as measured facts with version provenance; probe script names dropped
+agent_architecture_scope.md§3 what exists	drop	describes the original's state at 2026-09-23
+agent_architecture_scope.md§4 principle (bind mechanically, judge the rest)	keep	swarm.md "The principle"
+agent_architecture_scope.md§4 C0.1 no invisible jobs	adapt	kept as rule; agentlib.py/pre_bash.py names dropped
+agent_architecture_scope.md§4 C0.2	adapt	kept as the measured reason a judgement check goes to a model ("Move it to C1" quoted)
+agent_architecture_scope.md§4 C0.3 the close sweep	adapt	kept as rule (still a close step in the original's session_close.md); sweep.py internals, roots and lsof details dropped
+agent_architecture_scope.md§4 C0.4 edit locks	adapt	kept as rule with "Install + protect" and #290's "Lock them" quotes; the Bash-write gap kept
+agent_architecture_scope.md§4 C0.4 agent definitions locked	flag	the original's 2026-09-29 ruling record calls the agent definitions edit-locked, but its settings deny list does not name .claude/agents; swarm.md says whether the rebuild locks them is open
+agent_architecture_scope.md§4 C1 procedural checker	drop	cut 2026-10-15 (#288); recorded in swarm.md §3 with the ruling quote; checklist kept in rule_checker.md
+agent_architecture_scope.md§4 O the orchestrator	keep	plain session (14z-178 "Plain session") + Opus 5.5 High (2026-09-25) quoted
+agent_architecture_scope.md§4 W the workers	keep	caps on call and definition (14z-177 rulings quoted), call gate installed ("I'll install it", "done")
+agent_architecture_scope.md§5 slices	drop	the original's build log; pointer
+agent_architecture_scope.md§6 rulings (block binds the task at fault)	keep	ruling (1) quoted verbatim as the governing constraint; hard block vs written resolve kept
+agent_architecture_scope.md§6 rulings (2)-(5)	adapt	(2) context split carried into the rule-checker's context-free reader; (3) push/close trigger superseded by #288 (before an action); (4) template kept; (5) order is history
+agent_architecture_scope.md§7 what it will not catch	keep	all six items; QP1 wording generalised (procedure check cut)
+DECISIONS_HISTORY§2026-09-29 no max effort	keep	verbatim quote, swarm.md §6
+DECISIONS_HISTORY§2026-10-05 worker model dropped	keep	verbatim quote, swarm.md §2
+DECISIONS_HISTORY§2026-09-23 forks pass	keep	"Allow forks (Recommended)", swarm.md §5
+DECISIONS_HISTORY§2026-09-25 /btw fork exempt	keep	quoted, swarm.md §5
+DECISIONS_HISTORY§2026-10-16 #290 green guard	adapt	quoted; git-hook paths and --no-verify/core.hooksPath mechanics generalised to "bypasses refused by the Bash hook"
+STATE_HISTORY§14z-180 use the swarm	keep	maintainer quotes from the original's STATE_HISTORY; the session's working practice marked as practice, not a ruling
+must_fire_contract.md§what this document is	adapt	principle of record; tests/lib/controls.sh, classify.sh, census paths dropped; BBX R10/R29/R30 provenance and the 2026-09-08 / 2026-10-10 rulings kept
+must_fire_contract.md§the declaration	adapt	grammar (# MUST-FIRE: header line, regex, em dash) dropped; name/shape/sentence, the three shapes and the "none, and why" form kept
+must_fire_contract.md§the firing	adapt	CONTROL FIRED/DEAD column-0 lines dropped; FIRED/DEAD reporting and "NO fourth verdict" (maintainer 2026-09-10) kept
+must_fire_contract.md§the executable form	adapt	CONTROL=<name> env mode and exit 3 dropped; mode-must-reach-own-FAIL and the five-verdict table kept (DIED cites VSP-108)
+must_fire_contract.md§the pattern	adapt	perturb() / EXPECT / variable names dropped; one perturbation used by control and mode, section-only modes (#268), refuse where it cannot run kept
+must_fire_contract.md§the runners	adapt	run_all_static/run_all_emulator/battery flags and readout dropped; the cadence rulings (2026-09-14, #269 2026-10-12, 2026-09-10 release) kept as the original's, to be re-decided against the rebuild's costs
+must_fire_contract.md§the census	adapt	three classes kept as the original's; test_must_fire_census.sh dropped; ported gates arrive declaring (SPEC §5.3)
+must_fire_contract.md§what the contract does not do	keep	verbatim in substance, plus Q4's quote
+rule_checker.md§[VSP-148] citation	flag	the original cites [VSP-148] for "two methods with one premise are one method"; its anchor heading is the capstone-mnemonic gotcha, the clause is in the skill's [VSP-148] summary; kept as cited
+# counts keep=34 adapt=37 drop=12 flag=3
