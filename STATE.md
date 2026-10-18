@@ -69,9 +69,25 @@ on the installed hook: 73 cases, `VERDICT: PASS`, both controls FIRED, both cont
 <original> archive bf92acd2 SPEC.md | tar -t` ran; `GIT_DIR=../ROMS/.git git reset --hard` was refused. The proposal
 file was removed once installed (it is in this sitting's history).
 
+### (6) PHASE 0: THE 236 GAMEPLAY VALUES TABLED
+
+The format, decided as `SPEC.md` §4 asks, with its reasons in `docs/project/tables/README.md`: one TSV per subject,
+one schema for all (`manifest, kind, row, key, value, line, prov_kind, prov_refs`), values as the manifest's literal,
+provenance as the census's attribution (vocabulary word and references) with the paragraph left at its pinned line.
+`tools/extract_gameplay_tables.py` imports the original's census from the export and aligns each record with its
+row (`tools/phase0lib.py`): `variant_selection` 182, `select_wheel` 42, `roster` 9, `hit_class_mask` 3 = the
+census's 236. Gate `tests/test_phase0_gameplay.py`: G1 regenerated equal, G2 the export's manifests are the pinned
+SHA-1s, G3 the census column and the tables are the same multiset, G4 every cell equals an independent parse; three
+controls (perturbed-value, dropped-row, perturbed-manifest). Exports now live under `build/` (git-ignored), inside
+the tree. The figures in the README were reproduced by a measurer before the commit.
+
+Paid for this sitting: the first control declarations predicted too few failing checks (a changed value also moves
+G3's multiset); the declarations were corrected from the printed values, not the gate loosened. The JSON alignment
+first compared the wrong tuple fields; fixed by one tuple layout for TOML and JSON.
+
 ### WHERE THE SITTING STANDS
 
-Phase 0's next steps are the start list below. Nothing is red; there is no suite beyond the guard's gate.
+Phase 0's gameplay column is tabled and gated; the start list below is what remains. Nothing is red.
 
 # STANDING SECTIONS (current state — never archived)
 
@@ -86,10 +102,9 @@ none.
 
 ## The next session starts with
 
-1. Phase 0, gameplay values first (`SPEC.md` §3): choose and record the table format (`SPEC.md` §4, "the manifest
-   subset": a schema-checked format, rows keyed by manifest, kind and row name, each value with its provenance block),
-   then extract the 236 gameplay values from the export of `bf92acd2` into `docs/project/tables/`.
-2. The rebuild's own census: every scalar the original's census counts mapped to exactly one table cell, gated, with
-   must-fire controls.
-3. Then the 8,520 facts by kind and the 30 generator constants; then the renderer (tables to manifests, parse-equal to
-   the original's) and the byte-for-byte build proof on an export.
+1. Phase 0, the `fact` column (8,520 values over 30 manifests): first decide how hex fields are carried ([VSR-8]
+   against the original's #120 ruling quoted in #1, *"adresses are fine, discrete values are fine. whole GFX or SFX
+   are not fine, whole algorithms are not fine either"*, which `CLAUDE.md` [VSR-8] does not yet carry): a question for
+   the maintainer before any hex is tabled. Then the facts by kind, with the gate's G3 extended to the column.
+2. The 30 generator constants (`code` column).
+3. The renderer (tables to manifests, parse-equal to the original's) and the byte-for-byte build proof on an export.
