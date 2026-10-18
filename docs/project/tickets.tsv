@@ -1,0 +1,12 @@
+# docs/project/tickets.tsv — THE TICKET INDEX of Vampire Saved Rebuilt. Every bug, cosmetic item and evolution, one
+# row per GitHub issue of DefinitelyFrenchName/VampireSaved-Rebuilt. THE SOURCE OF TRUTH FOR THE LIST (CLAUDE.md
+# [VSR-29]); a ticket's STORY is its GitHub issue, and what it established lives in the documents its row names.
+# Live documents name a ticket by its number and never restate its status. The four answer columns let the tree be
+# understood without GitHub: repro (how to reproduce it, or `none`), decided (what was ruled, and where it is
+# recorded), learned (where the lesson is written), wrong (what went wrong in handling it, or `none`). `?` marks an
+# answer not yet known. Columns, tab-separated:
+#   number  kind (bug|cosmetic|evolution)  status (open|done|declined|parked)  title  repro  decided  learned  wrong
+#   sessions (the R-NNN keys that worked on it)
+number	kind	status	title	repro	decided	learned	wrong	sessions
+1	evolution	open	What is left of the original's #120: review the drafts, phase 0, phase 1 setup, phases 1-4	none	SPEC.md §0 (phase 0 moved into this repository, the original read-only at bf92acd2, 2026-10-18)	?	none	R-001
+2	bug	done	The read-only guard misjudges git: archive refused; --git-dir/--work-tree/GIT_DIR, -c, fetch/config/branch/remote let writes through	python3 tests/test_readonly_guard.py (on the hook before the fix, 10 cases failed)	SPEC.md §0 (the fix, prepared by Claude as a proven file and installed by the maintainer 2026-10-18)	docs/project/hooks.md	none	R-001

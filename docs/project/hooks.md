@@ -49,4 +49,7 @@ a replay of the installing session's 31 calls in which only its own two edits of
 
 **How it changes.** Only the maintainer edits the hook and its settings ([VSR-49], the edit lock); hooks bind Claude,
 not the maintainer's own editor or shell. A session that needs a change proposes it as a proven file outside the
-locked paths (with the gate run against it) and the maintainer applies it.
+locked paths (with the gate run against it: `--hook <path>`) and the maintainer applies it. The git judgement was
+widened by #2 (installed 2026-10-18): 73 cases (48 block, 25 allow) since. Its lesson: where git acts is not only its
+working directory (`-C`, `--git-dir`, `--work-tree`, `GIT_DIR`, `GIT_WORK_TREE` all point it), and a subcommand is a
+read only in its reading forms (`fetch` writes the target's `.git`; `config`, `branch`, `remote` can).

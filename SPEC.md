@@ -64,6 +64,12 @@ text after each is how this spec applies it):
 - the commit phase 0 reads: **"bf92acd2, current HEAD (Recommended)"**: `bf92acd271e4` (the original's 14z-205),
   committed and reproducible; its checkout's uncommitted entries are ignored.
 
+The maintainer's answers on the two items R-001 left pending (2026-10-18, verbatim in bold): **"yes and yes"**:
+- the read-only guard's gaps: the fix, prepared by Claude as a proven file outside the edit-locked paths and installed
+  by the maintainer (#2, `docs/project/hooks.md`);
+- tickets: Claude opens GitHub issues on `VampireSaved-Rebuilt`, and `docs/project/tickets.tsv` is the list
+  (`CLAUDE.md` [VSR-29]).
+
 ## 1. What the rebuild is, and what it is not
 
 **The same project, rebuilt.** The goal, the non-goals and the background facts are the original's `SPEC.md` §1-§2 and its

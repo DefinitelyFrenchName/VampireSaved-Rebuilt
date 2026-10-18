@@ -29,7 +29,11 @@ INTERPRETERS = {"python", "python3", "perl", "ruby", "node", "osascript", "bash"
 WRAPPERS = {"sudo", "command", "env", "nohup", "time", "nice", "exec", "builtin"}
 GIT_TREE = {"checkout", "restore", "rm", "mv", "clean"}
 GIT_READ = {"status", "log", "show", "diff", "ls-files", "rev-parse", "cat-file", "grep", "blame", "describe",
-            "ls-tree", "shortlog", "branch", "remote", "config", "fetch"}
+            "ls-tree", "shortlog", "archive", "name-rev", "for-each-ref", "show-ref", "count-objects"}
+# read only in these forms: `config` with a reading flag, `branch`/`remote` listing; anything else of theirs writes
+GIT_READ_IF = {"config": {"--get", "--get-all", "--get-regexp", "--list", "-l", "--show-origin"},
+               "branch": {"--list", "-l", "-a", "-r", "-v", "-vv", "--show-current", "--contains"},
+               "remote": {"-v", "show", "get-url"}}
 WRITE_API = re.compile(r"open\([^)]*,\s*(mode\s*=\s*)?['\"][rbt]*[wax+]|write_text|write_bytes|"
                        r"\bos\.(remove|unlink|rename|replace|rmdir|removedirs|makedirs|mkdir|chmod|truncate|symlink|"
                        r"link|utime)\b|\bshutil\.|\.(unlink|rename|mkdir|touch|chmod|symlink_to|hardlink_to)\(|"
@@ -127,7 +131,11 @@ def mentions_protected(text, cwd):
 
 def check_segment(words, cwd, whole):
     """(reasons, new cwd) for one simple command."""
+    assigned = {}
     while words and (re.match(r"^[A-Za-z_][A-Za-z0-9_]*=", words[0]) or os.path.basename(words[0]) in WRAPPERS):
+        if "=" in words[0] and re.match(r"^[A-Za-z_][A-Za-z0-9_]*=", words[0]):
+            key, _, value = words[0].partition("=")
+            assigned[key] = value
         words = words[1:]
         while words and words[0].startswith("-"):
             words = words[1:]
@@ -195,17 +203,36 @@ def check_segment(words, cwd, whole):
             return ["xargs runs %s on paths read from a pipeline that names a read-only path" % rest[0]], cwd
         return check_segment(rest, cwd, whole)[0] if rest else [], cwd
     if cmd == "git":
-        gcwd, i = cwd, 0
+        # where git acts: -C moves its directory; --git-dir/--work-tree and GIT_DIR/GIT_WORK_TREE name the
+        # repository and tree it writes, whatever the directory (R-001, ticket #1)
+        gcwd, places, i = cwd, [], 0
+        for var in ("GIT_DIR", "GIT_WORK_TREE"):
+            if var in assigned:
+                places.append(assigned[var])
         while i < len(args) and args[i].startswith("-"):
-            if args[i] == "-C" and i + 1 < len(args):
-                gcwd = resolve(args[i + 1], gcwd)
+            a = args[i]
+            if a in ("-C", "-c", "--git-dir", "--work-tree", "--namespace") and i + 1 < len(args):
+                if a == "-C":
+                    gcwd = resolve(args[i + 1], gcwd)
+                elif a in ("--git-dir", "--work-tree"):
+                    places.append(args[i + 1])
                 i += 1
+            elif a.startswith("--git-dir=") or a.startswith("--work-tree="):
+                places.append(a.split("=", 1)[1])
             i += 1
         sub = args[i] if i < len(args) else ""
-        if sub in GIT_READ:
+        rest = args[i + 1:]
+        if sub == "archive":
+            outs = [rest[j + 1] for j, a in enumerate(rest[:-1]) if a in ("-o", "--output")]
+            outs += [a.split("=", 1)[1] for a in rest if a.startswith("--output=")]
+            return check_paths(outs, cwd), cwd
+        if sub in GIT_READ or (sub in GIT_READ_IF and (any(a in GIT_READ_IF[sub] for a in rest) or
+                                                         (sub in ("branch", "remote") and not rest))):
             return [], cwd
-        if refusal(gcwd):
-            return ["git %s would run in %s: %s" % (sub, gcwd, refusal(gcwd))], cwd
+        for where in [gcwd] + [resolve(expand(pl, gcwd), gcwd) for pl in places
+                               if not unresolvable(expand(pl, gcwd))]:
+            if refusal(where):
+                return ["git %s would act on %s: %s" % (sub, where, refusal(where))], cwd
         if sub == "clone":
             ops = operands(args[i + 1:])
             return check_paths(ops[1:2], cwd), cwd

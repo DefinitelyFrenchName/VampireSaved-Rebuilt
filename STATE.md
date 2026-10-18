@@ -52,6 +52,23 @@ address), held in `donovan.toml`, `huitzil.toml`, `pyron.toml`, `shared_writes.t
 **Not done in this sitting:** no rule-checker ran before any action ([VSR-48]): the rebuild has no rule-checker tool
 yet (`docs/project/rule_checker.md` is its spec), so none of this sitting's commits had one.
 
+### (4) THE TWO PENDING ITEMS RULED: THE GUARD'S FIX PREPARED, TICKETS OPENED
+
+The maintainer: *"yes and yes"* (`SPEC.md` §0). The fix is `build/proposed/hooks/guard_readonly.py` (#2): where git
+acts now includes `--git-dir`/`--work-tree` (both forms) and `GIT_DIR`/`GIT_WORK_TREE`; `-c` values are skipped;
+`archive` is a read (its `-o` judged); `fetch` leaves the read list and `config`/`branch`/`remote` read only in their
+reading forms. The gate gained `--hook <path>` and 14 cases. On the proposal: 73 cases (48 block, 25 allow), PASS, both
+controls FIRED, both control modes FAIL. On the installed hook: FAIL on exactly the 10 cases #2 names. A replay of the
+sitting's 59 calls through both hooks: 0 differences. Tickets: `docs/project/tickets.tsv` holds #1 (the umbrella
+ticket carried from the original's #120, already open) and #2.
+
+### (5) #2 INSTALLED AND CLOSED
+
+The maintainer installed the proposal (`cp`, 2026-10-18); the installed hook is byte-identical to it (`cmp`). The gate
+on the installed hook: 73 cases, `VERDICT: PASS`, both controls FIRED, both control modes `VERDICT: FAIL`. Live: `git -C
+<original> archive bf92acd2 SPEC.md | tar -t` ran; `GIT_DIR=../ROMS/.git git reset --hard` was refused. The proposal
+file was removed once installed (it is in this sitting's history).
+
 ### WHERE THE SITTING STANDS
 
 Phase 0's next steps are the start list below. Nothing is red; there is no suite beyond the guard's gate.
@@ -65,16 +82,7 @@ validation of `CLAUDE.md` v1.0, the read-only sources, phase 0's place and pin).
 
 ## Decisions pending (human)
 
-1. **The guard's two gaps** (found 2026-10-18, R-001; the hook is edit-locked, so only the maintainer can change it).
-   (a) A false positive: `git -C <original> archive` is read-only but refused, because `archive` is not on the guard's
-   list of reading git subcommands (`git -C <dir> ls-tree`, `cat-file` and `show` pass, which is what
-   `tools/export_original.py` uses). (b) A false negative: `git --git-dir=…`, `--work-tree=…` and `GIT_DIR=` are not
-   judged, so a git command could write outside the tree that way. Options: the maintainer applies a fix (Claude
-   prepares it as a proven file outside the locked paths, the gate extended with both cases); or leave both, recorded.
-   **Recommendation:** the fix.
-2. **Tickets ([VSR-29]).** The rebuild has no ticket list yet. Options: Claude opens GitHub issues on
-   `VampireSaved-Rebuilt` (public) and keeps `docs/project/tickets.tsv` as the list; or the list lives in the tree
-   only until the maintainer opens issues. **Recommendation:** Claude opens the issues; item 1 would be the first.
+none.
 
 ## The next session starts with
 

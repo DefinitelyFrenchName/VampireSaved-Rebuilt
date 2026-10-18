@@ -14,7 +14,10 @@ hook is never written):
 A normal run runs each control and reports it FIRED or DEAD; `--control <name>` makes the shadow the gate's input and
 the gate must reach its own FAIL.
 
-Usage: python3 tests/test_readonly_guard.py [--control disarmed|lock-stripped]
+--hook <path> runs the gate on another copy of the hook (a proposed change, which the maintainer installs; the
+installed hook is edit-locked): the default is the installed one.
+
+Usage: python3 tests/test_readonly_guard.py [--hook <path>] [--control disarmed|lock-stripped]
 """
 import json
 import os
@@ -82,6 +85,16 @@ CASES = [
     ("bash-heredoc-write", b("python3 - <<'EOF'\nimport pathlib\npathlib.Path('../community/x').write_text('y')\n"
                              "EOF"), "block", "out"),
     ("bash-home-var", b("rm -rf $HOME/Desktop/x"), "block", "out"),
+    # the git forms of ticket #1: where git acts is -C, --git-dir/--work-tree and GIT_DIR/GIT_WORK_TREE
+    ("git-work-tree-checkout", b("git --git-dir=../ROMS/.git --work-tree=../ROMS checkout ."), "block", "out"),
+    ("git-work-tree-split", b("git --work-tree ../community checkout -- ."), "block", "out"),
+    ("git-env-git-dir", b("GIT_DIR=../ROMS/.git git reset --hard"), "block", "out"),
+    ("git-env-work-tree", b("GIT_WORK_TREE=../Images git checkout -- ."), "block", "out"),
+    ("git-dash-c-hides-sub", b("git -c core.quotepath=off -C ../ROMS checkout ."), "block", "out"),
+    ("git-fetch-original", b("git -C ../ROMS fetch origin"), "block", "out"),
+    ("git-config-set", b("git -C ../ROMS config user.name x"), "block", "out"),
+    ("git-branch-create", b("git -C ../ROMS branch scratch"), "block", "out"),
+    ("git-archive-out", b("git -C ../ROMS archive -o ../ROMS/x.tar HEAD"), "block", "out"),
     ("bash-heredoc-shell", b("bash <<'EOF'\nrm ../ROMS/vsav.zip\nEOF"), "block", "out"),
     ("bash-heredoc-var-line", b("python3 - <<'EOF'\np = '../ROMS/a'; open(p, 'w')\nEOF"), "block", "out"),
     # the edit lock
@@ -103,6 +116,11 @@ CASES = [
                        "print(zipfile.ZipFile(sys.argv[1]).namelist())\nEOF"), "allow", "ok"),
     ("read-cp-to-scratch", b("cp ../Images/P1-Pyron_P2-Jedah.JPG %s/x.jpg" % SCRATCH), "allow", "ok"),
     ("read-git-C-status", b("git -C ../ROMS status"), "allow", "ok"),
+    ("read-git-C-archive", b("git -C ../ROMS archive HEAD | tar -t"), "allow", "ok"),
+    ("read-git-archive-scratch", b("git -C ../ROMS archive -o %s/o.tar HEAD" % SCRATCH), "allow", "ok"),
+    ("read-git-C-config-get", b("git -C ../ROMS config --get remote.origin.url"), "allow", "ok"),
+    ("read-git-C-branch-list", b("git -C ../ROMS branch -a"), "allow", "ok"),
+    ("read-git-dir-log", b("git --git-dir=../ROMS/.git log -1"), "allow", "ok"),
     ("tree-write", w(ROOT + "/docs/project/hooks.md"), "allow", "ok"),
     ("tree-redirect", b("echo x > docs/x.txt 2>&1"), "allow", "ok"),
     ("tree-rm", b("rm -rf build/tmp"), "allow", "ok"),
@@ -152,7 +170,11 @@ def check(hook, log=True):
 
 
 def main():
+    global HOOK
     args = sys.argv[1:]
+    if args[:1] == ["--hook"]:
+        HOOK = os.path.realpath(args[1])
+        args = args[2:]
     with tempfile.TemporaryDirectory(dir=SCRATCH if os.path.isdir(SCRATCH) else None) as tmp:
         if args[:1] == ["--control"]:
             name = args[1] if len(args) > 1 else ""
