@@ -56,6 +56,14 @@ spec applies it):
 - the other inputs: **"in ../ROMS , ../Images , ../Videos and ../community are read-only sources of truth that were used
   in Vampire Saved and are still relevant."**: the rebuild reads all four, and only reads them (`CLAUDE.md` §7).
 
+The maintainer's answers on starting phase 0 (2026-10-18, AskUserQuestion; the option chosen, verbatim in bold; the
+text after each is how this spec applies it):
+- where phase 0 runs: **"Here, original read-only (Recommended)"**: the tables live in this repository, with
+  provenance (the original's commit, file and key); the original's checkout is read only through git
+  (`tools/export_original.py` exports a pinned commit into a fresh directory) and never written (§3);
+- the commit phase 0 reads: **"bf92acd2, current HEAD (Recommended)"**: `bf92acd271e4` (the original's 14z-205),
+  committed and reproducible; its checkout's uncommitted entries are ignored.
+
 ## 1. What the rebuild is, and what it is not
 
 **The same project, rebuilt.** The goal, the non-goals and the background facts are the original's `SPEC.md` §1-§2 and its
@@ -95,7 +103,7 @@ anchor):
 
 | phase | deliverable | acceptance |
 |---|---|---|
-| 0 (in the original, before phase 1; gameplay values first) | the measured facts extracted from `build/manifest/*.toml` and the generators into documented tables with provenance, until the rule-5 census reads them as in-table | the census; the original's builds reproduce byte-for-byte from the tables (`tests/test_m3a_reproducible.sh`) |
+| 0 (in this repository, the original read-only at `bf92acd2`, before phase 1; gameplay values first — §0) | the measured facts of the original's canonical manifests (`build/manifest/`, 30 files) and generators, extracted into documented tables with provenance in this repository: the tables are the rebuild's source data (the original's option B, value in the manifest and a table row beside it, has no manifest to sit beside here) | a census in this repository: every scalar the original's census counts maps to one table cell; manifests rendered from the tables equal the original's when parsed; and the original's build, run on an export of `bf92acd2` with the rendered manifests, reproduces its own output byte-for-byte |
 | 1 | the romset pipeline (extract, reconcile, generate, pack) and the FBNeo and MAME WIDE profiles, in the rebuild's repository | the external acceptance suite (§5, classes E1 and the F gates): the legacy oracle bit-identical to vanilla on every replay of the corpus under its frozen class; tenant content equal to the original's frozen expectations and to native vs2 on the parity gates |
 | 2 | the MiSTer core (jtcps2w) and its simulation lane | class M of §5 |
 | 3 | the releases: packaging, the applier, the launchers, the per-platform binaries | class R of §5 |
