@@ -1,0 +1,12 @@
+# held.tsv — THE VALUES HELD OUT OF THE TABLES, hand-written (SPEC.md §0, the maintainer's ruling on hex of 2026-10-18).
+# A run longer than 64 bytes is tabled only after it is checked as not a whole algorithm ([VSR-8]: "whole GFX or SFX
+# are not fine, whole algorithms are not fine either"). A run held here is carried in its table as
+# `HELD:sha1=<sha1>`, the SHA-1 of the manifest's literal (quotes included), so the gate can prove the value it stands
+# for without the bytes. Judged from each row's notes and the original's generators, not by disassembly (R-001).
+# Columns: manifest kind row key bytes sha1 reason derivation (how the rebuild obtains the bytes instead)
+manifest	kind	row	key	bytes	sha1	reason	derivation
+huitzil.toml	site_thunk	throw_arc_tables	thunk_hex	66	8f7c27ab6ea74279a4c37f56ab62c8cc6e6528da	vs2's full throw-arc tables	to be derived from vsav2 by a generator (phase 1); the original carries it as written
+huitzil.toml	site_thunk	beam_list_type6	thunk_hex	254	0a8593f6d745b8832efa98fef444e4f666ff70bd	vanilla's list-type-6 routine, relocated with a cut	to be derived from vsavj by a generator (phase 1); the original carries it as written
+huitzil.toml	site_thunk	index_window_018468	thunk_hex	470	709407238bded2739be673c707c6ec8e7ad34cac	vs2's four sub-state handlers (indices 80-83) run inline: whole vs2 routines	the original's tools/gen_index_window_thunk.py, run on the reference sets
+huitzil.toml	site_thunk	hitclass_map_extend	thunk_hex	94	ef9c8e47ac2c1904d2acfc96c62ad5183ab6fce3	vanilla's 64-entry hit-class byte map plus vs2's entries 64-79	the original's tools/gen_hitclass_map_thunk.py ("NEVER hand-type it"), run on the reference sets
+pyron.toml	site_thunk	hitclass_map_extend	thunk_hex	94	ef9c8e47ac2c1904d2acfc96c62ad5183ab6fce3	vanilla's 64-entry hit-class byte map plus vs2's entries 64-79	the original's tools/gen_hitclass_map_thunk.py ("NEVER hand-type it"), run on the reference sets

@@ -70,6 +70,13 @@ The maintainer's answers on the two items R-001 left pending (2026-10-18, verbat
 - tickets: Claude opens GitHub issues on `VampireSaved-Rebuilt`, and `docs/project/tickets.tsv` is the list
   (`CLAUDE.md` [VSR-29]).
 
+The maintainer's answer on the `fact` column's hex fields (2026-10-18, AskUserQuestion; verbatim in bold): **"As
+written, ruling into VSR-8 (Recommended)"**: the 649 hex fields are carried as the manifests write them, as discrete
+values under the ruling quoted in #1 (*"Fundamentally adresses are fine, discrete values are fine. whole GFX or SFX
+are not fine, whole algorithms are not fine either."*), which `CLAUDE.md` [VSR-8] now carries; each of the 7 runs
+longer than 64 bytes is checked and reported to the maintainer as not a whole algorithm, or held out, before it is
+tabled.
+
 ## 1. What the rebuild is, and what it is not
 
 **The same project, rebuilt.** The goal, the non-goals and the background facts are the original's `SPEC.md` §1-§2 and its

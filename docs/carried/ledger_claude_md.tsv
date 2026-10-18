@@ -7,7 +7,7 @@ VSR-4	was [VSP-4]
 VSR-5	was [VSP-5]	the VH2 provenance tag removed by the maintainer in v1.0 (vhunt2 dropped, SPEC.md §0)
 VSR-6	was [VSP-6]	
 VSR-7	was [VSP-7]	
-VSR-8	was [VSP-8]	
+VSR-8	was [VSP-8]	the maintainer's line on ROM bytes (quoted in #1) added 2026-10-18 (SPEC.md §0)
 VSR-9	the original's CLAUDE.md §3 (Environment), its instruments bullet	unnumbered in draft v0.1; numbered [VSR-9] by the maintainer in v1.0
 VSR-10	was §3, the analysis scripts	
 VSR-11	ruled 2026-10-18, #120: *"python or rust, as is most appropriate"*	

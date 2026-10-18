@@ -85,9 +85,25 @@ Paid for this sitting: the first control declarations predicted too few failing 
 G3's multiset); the declarations were corrected from the printed values, not the gate loosened. The JSON alignment
 first compared the wrong tuple fields; fixed by one tuple layout for TOML and JSON.
 
+### (7) PHASE 0: THE HEX RULING, AND THE 8,520 FACTS TABLED
+
+Asked how the fact column's 649 hex fields (6,420 bytes, the largest 470) are carried, the maintainer chose "As
+written, ruling into VSR-8" (`SPEC.md` §0): `CLAUDE.md` [VSR-8] now carries the #120 ruling's line, and each of the
+7 runs over 64 bytes was checked before tabling. 2 are the project's own resolvers, carried. 5 hold whole vanilla or
+vs2 routines or tables and are held out (`docs/project/tables/facts/held.tsv`, carried as `HELD:sha1=…`):
+`index_window_018468`, `hitclass_map_extend` (Huitzil and Pyron), `beam_list_type6`, `throw_arc_tables`. Three of
+them are produced by the original's generators.
+
+The extractor and the gate were generalized and renamed: `tools/extract_tables.py` (was `extract_gameplay_tables.py`)
+and `tests/test_phase0_tables.py` (was `test_phase0_gameplay.py`). Both columns: 8,756 rows in 56 tables (4 gameplay,
+52 under `facts/`). JSON rows are JSON Pointers now (the `.` glyph of `version_font.json` broke dotted paths), which
+changed `select_wheel.tsv`'s row column. Gate: G1–G4 as before over both columns, plus G5 (held values are only
+their hashes, and none is in the clear); five controls, the two new ones `held-leak` and `perturbed-pointer-fact`.
+The README's figures were reproduced by a measurer before the commit.
+
 ### WHERE THE SITTING STANDS
 
-Phase 0's gameplay column is tabled and gated; the start list below is what remains. Nothing is red.
+Phase 0's two value columns are tabled and gated; the start list below is what remains. Nothing is red.
 
 # STANDING SECTIONS (current state — never archived)
 
@@ -102,9 +118,8 @@ none.
 
 ## The next session starts with
 
-1. Phase 0, the `fact` column (8,520 values over 30 manifests): first decide how hex fields are carried ([VSR-8]
-   against the original's #120 ruling quoted in #1, *"adresses are fine, discrete values are fine. whole GFX or SFX
-   are not fine, whole algorithms are not fine either"*, which `CLAUDE.md` [VSR-8] does not yet carry): a question for
-   the maintainer before any hex is tabled. Then the facts by kind, with the gate's G3 extended to the column.
-2. The 30 generator constants (`code` column).
-3. The renderer (tables to manifests, parse-equal to the original's) and the byte-for-byte build proof on an export.
+1. The 30 generator constants (the census's `code` column).
+2. The keys the census does not count (`name`, `note` and the rest of its `IGNORE_KEYS`, JSON's `_` keys): carried
+   so the renderer can reproduce the manifests whole.
+3. The renderer (tables to manifests, parse-equal to the original's under its own `_minitoml`) and the byte-for-byte
+   build proof on an export; the five held values come from generators run on the reference sets.
