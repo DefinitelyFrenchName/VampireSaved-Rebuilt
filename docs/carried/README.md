@@ -9,6 +9,8 @@ counts them.
 - `ledger_facts.tsv`: `mame-fbneo-instruments`, `cps2-hardware`, `cps2-emulation`, `vampire-savior-engine`
 - `ledger_mister.tsv`: `mister-jtframe-core`, `mister-cps2-wide-core`, `mister-vampire-saved`
 - `ledger_port.tsv`: `vampire-saved-port` (each `[VSP-N]` and the `[VSR-N]` it became)
+- `ledger_claude_md.tsv`: `CLAUDE.md`'s rules [VSR-1]..[VSR-50], each with the rule, section or ruling of the original it
+  comes from (kept out of `CLAUDE.md` by the maintainer's ruling of 2026-10-18)
 - `ledger_swarm.tsv`: `.claude/agents/`, `docs/project/worker_spec.md`, `rule_checker.md`, `swarm.md`, `must_fire_contract.md`
 
 Checked mechanically against the original at its commit `6dee2be7`: every original rule ID is in a ledger; every `keep`

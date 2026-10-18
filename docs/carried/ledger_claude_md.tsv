@@ -1,0 +1,54 @@
+# The filiation of CLAUDE.md's rules [VSR-1]..[VSR-50]: which rule, section or ruling of the original (DefinitelyFrenchName/VampireSaved at 6dee2be7) each comes from. Kept out of CLAUDE.md by the maintainer's ruling of 2026-10-18 (CLAUDE.md v1.0). comes_from is draft v0.1's own annotation, verbatim (commit d11c9a3), unless note says otherwise.
+rule	comes_from	note
+VSR-1	was [VSP-1]	
+VSR-2	was [VSP-2], Rule 1 v2	
+VSR-3	was [VSP-3]	
+VSR-4	was [VSP-4]	
+VSR-5	was [VSP-5]	the VH2 provenance tag removed by the maintainer in v1.0 (vhunt2 dropped, SPEC.md §0)
+VSR-6	was [VSP-6]	
+VSR-7	was [VSP-7]	
+VSR-8	was [VSP-8]	
+VSR-9	the original's CLAUDE.md §3 (Environment), its instruments bullet	unnumbered in draft v0.1; numbered [VSR-9] by the maintainer in v1.0
+VSR-10	was §3, the analysis scripts	
+VSR-11	ruled 2026-10-18, #120: *"python or rust, as is most appropriate"*	
+VSR-12	was §4 "Oracle replays"	
+VSR-13	was [VSP-24]	
+VSR-14	was §4 "comparison classes", [VSP-25], [VSP-26]	
+VSR-15	was [VSP-31]	
+VSR-16	was [VSP-32]	
+VSR-17	was §4 "Test matrix growth"	
+VSR-18	was [VSP-33]	
+VSR-19	was [VSP-20]	
+VSR-20	was [VSP-18]	
+VSR-21	was [VSP-19]	
+VSR-22	was [VSP-181]	
+VSR-23	was §4 "Auto-detecting regression runner"	
+VSR-24	was §4 "Savestate hygiene"	
+VSR-25	ruled 2026-09-02 in the original	
+VSR-26	ruled 2026-09-15 in the original, #135, #142	
+VSR-27	ruled 2026-09-02 in the original	
+VSR-28	was [VSP-17]	
+VSR-29	was [VSP-182]	
+VSR-30	was [VSP-162]	
+VSR-31	was [VSP-11]	
+VSR-32	was [VSP-12]	
+VSR-33	was [VSP-13]	
+VSR-34	was [VSP-14]	
+VSR-35	was [VSP-15]	
+VSR-36	was [VSP-16]	
+VSR-37	was [VSP-10]	
+VSR-38	was §5, the three-way diff	v0.1's three-way diff narrowed to vsavj/vsav2 (vhunt2 dropped, SPEC.md §0)
+VSR-39	ruled 2026-09-15, re-worded by the maintainer 2026-09-16	
+VSR-40	was [VSP-21], maintainer 2026-08-05	
+VSR-41	ruled 2026-08-27 in the original	
+VSR-42	ruled 2026-08-31 in the original	
+VSR-43	the original's gotchas and its 14z-131 retraction, "after the maintainer required CAPTURES before accepting the finding"	
+VSR-44	the standing performance rule, maintainer 2026-08-15, and the combined-overhead condition	
+VSR-45	ruled 2026-10-17 and 2026-10-16 in the original, #290	
+VSR-46	ruled 2026-09-25 in the original	
+VSR-47	was the original's worker specs	
+VSR-48	was [VSP-183], [VSP-184]; when it runs, ruled 2026-10-16	
+VSR-49	was the original's agent hooks	
+VSR-50	`SPEC.md` §7	
+(removed)	was [VSP-9]	draft v0.1's [VSR-9], the reference sets and their SHA-1 check: removed by the maintainer in v1.0 (2026-10-18); vsavj as the reference implies its region, and the reference romsets in ../ROMS are only ever read (CLAUDE.md [VSR-8])
+# counts rules=50 removed=1

@@ -4,7 +4,7 @@
 Read it fully at the start of every session, then `SPEC.md` (until `STATE.md` exists, the spec is the plan of record).
 
 **Where it comes from.** It is the original project's `CLAUDE.md` (`DefinitelyFrenchName/VampireSaved` at `6dee2be7`)
-with everything specific to the original's IMPLEMENTATION removed and only its rules and principles kept, plus the standing principles of that project's rulings (`STATE.md` "Standing rulings", `DECISIONS_HISTORY.md`) that bind any implementation. Each rule is `**[VSR-N]**` and names the original rule it comes from (`was [VSP-N]`); the original's anchor holds the rule's reasons and the incident that taught it, until this repository re-homes them in its own `docs/`.
+with everything specific to the original's IMPLEMENTATION removed and only its rules and principles kept, plus the standing principles of that project's rulings (`STATE.md` "Standing rulings", `DECISIONS_HISTORY.md`) that bind any implementation. Each rule is `**[VSR-N]**`; which rule or ruling of the original it comes from is recorded in `docs/carried/ledger_claude_md.tsv`, not here, and the original's anchor holds the rule's reasons and the incident that taught it, until this repository re-homes them in its own `docs/`.
 The mission (§1) and the law (§2) keep the original's wording except where it named the original's own files.
 
 ## 1. Mission and prime constraint
@@ -15,7 +15,7 @@ Produce a modified `vsav` romset in which all 18 series characters (the 15+1 of 
 
 ## 2. Non-negotiable rules
 
-1. **[VSR-2] Emulator cores are never modified, except inside a ratified profile.** Only cartridge/driver *descriptors* (ROM region sizes, load maps, gfx decode lengths) may change. If a task appears to require touching CPU, sprite, timing or sound emulation code, stop and write the problem up instead. The one bounded  exception is a PROFILE: every change in it is bounded and declarative; **profile-gated** by a flag set from a new driver entry, so stock sets and every other game are untouched by construction; subject to the **emulator superset invariant** (the patched binary running the stock unmodified set reproduces the frozen vanilla expectations bit-for-bit, enforced as a battery gate); mirrored in a second emulator where practical; and ratified by the maintainer per profile version. The profile's spec has ONE copy, in `docs/`, never restated here. Anything outside a ratified profile is stop-and-escalate.
+1. **[VSR-2] Emulator cores are never modified, except inside a ratified profile.** Only cartridge/driver *descriptors* (ROM region sizes, load maps, gfx decode lengths) may change. If a task appears to require touching CPU, sprite, timing or sound emulation code, stop and write the problem up instead. The one bounded exception is a PROFILE: every change in it is bounded and declarative; **profile-gated** by a flag set from a new driver entry, so stock sets and every other game are untouched by construction; subject to the **emulator superset invariant** (the patched binary running the stock unmodified set reproduces the frozen vanilla expectations bit-for-bit, enforced as a battery gate); mirrored in a second emulator where practical; and ratified by the maintainer per profile version. The profile's spec has ONE copy, in `docs/`, never restated here. Anything outside a ratified profile is stop-and-escalate.
 2. **[VSR-3] No untested change survives a session.** Every change, however trivial, is validated through the harness before it is committed. "It should be equivalent" is not a test result.
 3. **[VSR-4] No hand-edited binaries.** All ROM modifications are produced by the build pipeline from
    source data and sources in the repository; the repository reproduces the output set from pristine inputs at any
@@ -23,13 +23,13 @@ Produce a modified `vsav` romset in which all 18 series characters (the 15+1 of 
 4. **[VSR-5] Provenance is tracked per region.** Every byte range of the output is tagged with its origin: `VSAV` (untouched), `VS2`, `GEN` (generated) or `NEW` (authored). The provenance atlas is updated in the same commit as the change that affects it.
 5. **[VSR-6] Behavioral values live in documented tables, not in code.** Any tunable that defines how the ported characters play (damage, timings, meter rules, variant selection) is in the documented table format so the community can review and adjust it without re-engineering.
 6. **[VSR-7] A failing regression halts forward work.** If the regression suite diverges, fixing that divergence is the only task until green.
-7. **[VSR-8] No copyrighted ROM content in the repository or in any distributed artifact.** The repository holds tools, patches against named reference dumps, documentation and authored assets only. Reference romsets live outside the tree (`ROMDIR`) and are never committed, quoted at length or uploaded. Rendered frames are outside this rule : golden pictures are derived work produced by our own pipeline. ROM BYTES remain forbidden in every form.
+7. **[VSR-8] No copyrighted ROM content in the repository or in any distributed artifact.** The repository holds tools, patches against named reference dumps, documentation and authored assets only. Reference romsets live outside the tree (`ROMDIR`, `../ROMS`) and are never committed, quoted at length or uploaded; like everything above the working directory, they are accessed read-only. Rendered frames are outside this rule: golden pictures are derived work produced by our own pipeline. ROM BYTES remain forbidden in every form.
 
 ## 3. Environment
 
 - **[VSR-9]** MAME and FBNeo are the instruments; they are built from pinned, recorded sources, the reference binary first, and an instrument is never moved without re-proving what it measures (the `mame-fbneo-instruments` skill).
 - **[VSR-10]** Every analysis tool is rerunnable, takes the ROM path as an argument and prints the SHA-1 of what it read.
-- **[VSR-11]**  The harness is written in**Python or Rust, whichever is the more appropriate for each component**, the reason recorded with the choice. (`SPEC.md` §4 proposes shell only where a process must be launched; that part is a proposal, not a ruling.)
+- **[VSR-11]** The harness is written in **Python or Rust, whichever is the more appropriate for each component**, the reason recorded with the choice. (`SPEC.md` §4 proposes shell only where a process must be launched; that part is a proposal, not a ruling.)
 
 ## 4. Verification protocol (the harness is the project's spine)
 
@@ -52,7 +52,7 @@ Produce a modified `vsav` romset in which all 18 series characters (the 15+1 of 
 
 ## 5. Working style
 
-- **[VSR-28] Sessions begin by reading `STATE.md` and end by updating it.** `STATE.md` is the single source of truth for progress; never rely on chat memory. It holds the latest session group and the standing sections; older session records move VERBATIM to `STATE_HISTORY.md`and `STATE_HISTORY.md` begins with an index to allow for immediate lookup of a given session. **An open list holds only what is open:** "Decisions pending" and the next session's start list never carry a closed item. **The close ends with a push:** when every check of the close is green and nothing is pending, push `main`; a red, a skip or an unresolved item leaves the commits local and the close says so.
+- **[VSR-28] Sessions begin by reading `STATE.md` and end by updating it.** `STATE.md` is the single source of truth for progress; never rely on chat memory. It holds the latest session group and the standing sections; older session records move VERBATIM to `STATE_HISTORY.md` and `STATE_HISTORY.md` begins with an index to allow for immediate lookup of a given session. **An open list holds only what is open:** "Decisions pending" and the next session's start list never carry a closed item. **The close ends with a push:** when every check of the close is green and nothing is pending, push `main`; a red, a skip or an unresolved item leaves the commits local and the close says so.
 - **[VSR-29] Tickets have strict sources of truth.** Every bug, cosmetic item and evolution is a ticket; the list is one file in the tree, the story its GitHub issue, the facts the subject documents. Live documents name a ticket by number and never restate its status. Without GitHub, the tree answers four questions about every ticket: what it was and how to reproduce it, what was decided, what was learned, what went wrong. Closed means nothing is left to do.
 - **[VSR-30] A session key names one sitting and is never renamed, renumbered or tidied:** it is the archive's lookup key. Sessions, milestones and freeze marks are three namespaces, never conflated.
 - **[VSR-31] Address notation:** 68k addresses as `PRG:0x0F1234` (program ROM offset) or `CPU:$0F1234` (address space); tiles as `GFX:tile 0x1A2B3`; RAM as `RAM:$FF8000`. Never bare hex without a namespace.
@@ -62,8 +62,8 @@ Produce a modified `vsav` romset in which all 18 series characters (the 15+1 of 
 - **[VSR-35] Anti-hyperfocus checkpoint:** at natural boundaries — a finding confirmed, a suite green, ~20 tool iterations on one problem — stop unprompted: update the documents, capture the scratch tests into the suite if applicable, then reassess the approach, check `STATE.md` for drift. The human should never have to be the one to say "step back and document."
 - **[VSR-36] Build conventions:** a builder takes `(src, out)` so it chains onto any input; every tunable is a builder option, never a hex edit; a bundle chains builders and is diffed ONCE against clean, never built by chaining standalone binary patches; every shipped build carries a visible in-game version string, and every build's SHA-1 goes in the registry.
 - **[VSR-37] A decision with gameplay consequences (anything a player could feel) is not Claude's:** record it under "Decisions pending" with options and a recommendation, and continue on unblocked work. A ruling leaves the pending list in the commit that records it.
-- **[VSR-38] Diff-driven reverse engineering:** the three romsets are three official builds of one engine; before free-form disassembly of any subsystem, check what the three-way diff says about it.
-- **[VSR-39] Don't assume; measure first; ask if  necessary.** The failure is ASSUMING; asking stays right when a measurement cannot settle the question.
+- **[VSR-38] Diff-driven reverse engineering:** `vsavj` and `vsav2` are two official builds of one engine; before free-form disassembly of any subsystem, check what their diff says about it.
+- **[VSR-39] Don't assume; measure first; ask if necessary.** The failure is ASSUMING; asking stays right when a measurement cannot settle the question.
 - **[VSR-40] Vanilla wins ties:** when another game or version and arcade vsav differ and both would work, take vanilla. The test is: does keeping vanilla still let the feature work?
 - **[VSR-41] Cosmetic is optional:** competitive 2P versus is the focus; cosmetic and single-player-only surfaces are nice-to-have.
 - **[VSR-42] Community/external data: measurement is king.** A perfect match or a constant offset validates ours; an inconsistent pattern means re-check OUR measurement first.
@@ -76,10 +76,10 @@ Produce a modified `vsav` romset in which all 18 series characters (the 15+1 of 
 - **[VSR-46] The orchestrator is Opus at effort High;** a sitting on another model says so at its opener. **No swarm model runs at max effort, ever**.
 - **[VSR-47] A figure that will be quoted is produced by a worker spec:** a `measurer` runs numbered commands exactly as written and returns every figure with the command that produced it; a `reader` returns each fact as a verbatim quote with its path and line.
 - **[VSR-48] An independent rule-checker runs before an action** (a freeze, a build, an expectation, a recommendation, a ticket closure), when the action's work is done, never held for the close. It is context-free and pinned, reads only the packet's artifacts, and runs beside a planted known violation that must be caught. A VIOLATED is resolved question by question, in writing, before the action proceeds.
-- **[VSR-49] Deterministic hooks hard-block:** no invisible background jobs, the  green guard on commits, edit locks on the hooks themselves and their settings. A block binds the task at fault, never the session.
+- **[VSR-49] Deterministic hooks hard-block:** no invisible background jobs, the green guard on commits, edit locks on the hooks themselves and their settings. A block binds the task at fault, never the session.
 - **[VSR-50]** (`SPEC.md` §7) **A change to the swarm needs a measured inadequacy**, recorded as a ticket with the evidence.
 
 ## 7. What the human provides
 
-Vision and final say on all gameplay-feel decisions; playtesting (structured reports welcome as replay scripts when possible); base resources (reference dumps, community docs); community liaison for the VS2-vs-VH2 variant policy.
+Vision and final say on all gameplay-feel decisions; playtesting (structured reports welcome as replay scripts when possible); base resources (reference dumps, community docs); community liaison.
 Claude does the code archaeology, tooling, patch engineering, and testing. Neither side skips the harness.

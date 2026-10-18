@@ -7,7 +7,7 @@ VSP-5	adapt	carried as [VSR-5]
 VSP-6	adapt	carried as [VSR-6]
 VSP-7	adapt	carried as [VSR-7]
 VSP-8	adapt	carried as [VSR-8]
-VSP-9	adapt	carried as [VSR-9], [VSR-10]
+VSP-9	adapt	carried as [VSR-10]; its reference-set clause (draft v0.1's [VSR-9]) removed by the maintainer in CLAUDE.md v1.0, 2026-10-18 (ledger_claude_md.tsv)
 VSP-10	adapt	carried as [VSR-37]
 VSP-11	adapt	carried as [VSR-31]
 VSP-12	adapt	carried as [VSR-32]

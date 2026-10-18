@@ -1,6 +1,6 @@
 # SPEC — Vampire Saved Rebuilt
 
-**Status: ACCEPTED v0.2 (2026-10-18): v0.1 with the maintainer's answers to its open questions (§0), accepted by the maintainer the same day. Nothing here is built.** The ticket is
+**Status: ACCEPTED v0.2 (2026-10-18): v0.1 with the maintainer's answers to its open questions (§0), accepted by the maintainer the same day, with the rulings of its acceptance (§0). Nothing here is built.** The ticket is
 [#120](https://github.com/DefinitelyFrenchName/VampireSaved/issues/120) in the original repository ("The rebuild-from-docs
 option after MiSTer"). The source project is called *the original* below: `DefinitelyFrenchName/VampireSaved`, read at
 its working tree of 2026-10-18: HEAD `6dee2be7` plus that session's uncommitted changes under `tests/` (the test
@@ -45,6 +45,14 @@ applies it):
 - the original during the rebuild: **"The original will keep receiving fixes however the only elements that might be of
   interest to the rebuild are additional tests. The rest can be fully ignored"**: no freeze is imposed on the original;
   the rebuild follows it only for tests (§5.2).
+
+The maintainer's rulings on validating `CLAUDE.md` v1.0 (2026-10-18, verbatim in bold; the text after each is how this
+spec applies it):
+- vhunt2: **"vhunt2 is dropped entirely because our work on Vampire Saved proved it held no assets or code we needed:
+  everything that we need to backport is in vs2."**: the rebuild's inputs are `vsavj` and `vsav2` only; no provenance
+  tag, diff or gate of the rebuild has vhunt2 as its subject (§5);
+- the reference romsets: **"vsavj being the reference implies the region"**, and they are in `../ROMS`, which, **"like
+  anything above the working directory, must only be accessed read-only"** (`CLAUDE.md` [VSR-8]).
 
 ## 1. What the rebuild is, and what it is not
 
@@ -134,7 +142,7 @@ that the classes are right; **each class is to be confirmed gate by gate when th
 |---|---|---|---|
 | E1 | 119 | a gate whose subject is a built artifact's behaviour or bytes, reading the build only through its rompath (most are emulator gates; a few static gates read a built romset's bytes) | runs unchanged against the rebuild's romset (§5.2) |
 | E2 | 76 | an emulator gate that also reads the original pipeline's internals (patch.json, placements, prg/, verify images, the manifests) | its verdict applies; an adapter supplies what it reads, or the gate is ported first |
-| F | 65 | a gate whose subject is pristine vsavj/vsav2/vhunt2 or the emulators as instruments (no build, no manifest) | runs unchanged: it locks facts the rebuild's documentation inherits |
+| F | 65 | a gate whose subject is pristine vsavj/vsav2/vhunt2 or the emulators as instruments (no build, no manifest) | runs unchanged: it locks facts the rebuild's documentation inherits; a gate whose subject is vhunt2 is not used (§0) |
 | P | 55 | a static gate on the original's manifests, generators or ops | not reused as a script: the facts it locks are phase 0's tables, and the rebuild writes its own pipeline tests |
 | T | 123 | the original's tooling and process: runners, documentation locks, the rule-checker, close and agent tooling, ROM-free tool tests | a specification for the rebuild's own tooling: port the idea and its controls, not the script |
 | M | 9 | the Verilator/MiSTer lane | phase 2 |
