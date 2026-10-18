@@ -1,6 +1,6 @@
 # SPEC — Vampire Saved Rebuilt
 
-**Status: DRAFT v0.1 (2026-10-18), for the maintainer's review. Nothing here is built.** The ticket is
+**Status: DRAFT v0.2 (2026-10-18): v0.1 with the maintainer's answers to its open questions (§0). Nothing here is built.** The ticket is
 [#120](https://github.com/DefinitelyFrenchName/VampireSaved/issues/120) in the original repository ("The rebuild-from-docs
 option after MiSTer"). The source project is called *the original* below: `DefinitelyFrenchName/VampireSaved`, read at
 its working tree of 2026-10-18: HEAD `6dee2be7` plus that session's uncommitted changes under `tests/` (the test
@@ -33,6 +33,18 @@ that option, not the maintainer's words:
 - location: **"The new repo"**: this spec is the rebuild repository's first commit;
 - the repository: **"I create it and you push, repo will be https://github.com/DefinitelyFrenchName/VampireSaved-Rebuilt"**,
   and its visibility: **"Public"**.
+
+The maintainer's answers to v0.1's open questions (2026-10-18, verbatim in bold; the text after each is how this draft
+applies it):
+- phase 0 before phase 1, gameplay values first: **"yes"** (§3);
+- the harness language: **"python or rust, as is most appropriate"**: chosen per component on its merits, the reason
+  recorded with the choice (§6);
+- tickets: **"first of all, only ticket related to the game make sense since we're rebuilding everything, second: no open
+  tickets need be moved to the rebuild."**: the rebuild opens with no tickets carried over; the original's game facts
+  reach it through the documentation, not the ticket list (§9);
+- the original during the rebuild: **"The original will keep receiving fixes however the only elements that might be of
+  interest to the rebuild are additional tests. The rest can be fully ignored"**: no freeze is imposed on the original;
+  the rebuild follows it only for tests (§5.2).
 
 ## 1. What the rebuild is, and what it is not
 
@@ -73,7 +85,7 @@ anchor):
 
 | phase | deliverable | acceptance |
 |---|---|---|
-| 0 (in the original) | the measured facts extracted from `build/manifest/*.toml` and the generators into documented tables with provenance, until the rule-5 census reads them as in-table | the census; the original's builds reproduce byte-for-byte from the tables (`tests/test_m3a_reproducible.sh`) |
+| 0 (in the original, before phase 1; gameplay values first) | the measured facts extracted from `build/manifest/*.toml` and the generators into documented tables with provenance, until the rule-5 census reads them as in-table | the census; the original's builds reproduce byte-for-byte from the tables (`tests/test_m3a_reproducible.sh`) |
 | 1 | the romset pipeline (extract, reconcile, generate, pack) and the FBNeo and MAME WIDE profiles, in the rebuild's repository | the external acceptance suite (§5, classes E1 and the F gates): the legacy oracle bit-identical to vanilla on every replay of the corpus under its frozen class; tenant content equal to the original's frozen expectations and to native vs2 on the parity gates |
 | 2 | the MiSTer core (jtcps2w) and its simulation lane | class M of §5 |
 | 3 | the releases: packaging, the applier, the launchers, the per-platform binaries | class R of §5 |
@@ -137,7 +149,9 @@ phase 1, and 26 more (M, R) in phases 2 and 3.
   `docs/checksums.txt`; the pinned MAME and FBNeo binaries built by the original's `tools/setup_mame.sh` and
   `tools/setup_fbneo.sh` from their recorded sources ([CPE-24]: the reference binary first); for E1/E2, the rebuild's
   romset as a rompath.
-- **The external suite (phase 1).** A checkout of the original at a pinned commit; its emulator gates driven by the
+- **The external suite (phase 1).** A checkout of the original at a pinned commit. The original keeps receiving
+  fixes; the rebuild ignores them except for added tests: the pin is advanced only to take in new or strengthened gates,
+  and `docs/tests_inventory.tsv` is regenerated at each advance (§0); its emulator gates driven by the
   original's `tests/run_all_emulator.sh` (rows and timeouts in `tests/ci_emulator.tsv`) and its static gates by
   `tests/run_all_static.sh`, with every build path pointed at the rebuild's artifact. The gates take their build through
   `BUILD=`, a positional argument or the runner's `%MERGED%` placeholders ([VSP-107]: half read `${BUILD:-}`, half `${1:-}`);
@@ -155,7 +169,8 @@ when every gate the rebuild keeps is ported this way.
 
 ## 6. The harness (its own, ruled)
 
-Requirements carried from the original's discipline, whatever the language:
+The language is Python or Rust, whichever is the more appropriate for each component, the reason recorded with the
+choice (§0). Requirements carried from the original's discipline, whatever the language:
 - every run fresh by construction (§4); canonical input staging, one implementation; deterministic, with run-to-run
   determinism tested;
 - the oracle classes of `docs/project/oracle_classes.md`, each class's comparator with its ground truth ([VSP-19],
@@ -187,13 +202,10 @@ about the game and the board, true whatever is built) are carried over with thei
 
 [`DefinitelyFrenchName/VampireSaved-Rebuilt`](https://github.com/DefinitelyFrenchName/VampireSaved-Rebuilt), public (the maintainer's answers, §0). It holds
 tools, patches against named reference dumps, documentation and authored assets only ([VSP-8]). Its first commit is this
-spec, `docs/tests_inventory.tsv` and `tools/classify_tests.py`.
+spec, `docs/tests_inventory.tsv` and `tools/classify_tests.py`. No open ticket of the original moves here (§0): the
+rebuild's tickets are its own, and the only ones of the original that bear on it are about the game, whose facts come
+through the documentation.
 
 ## 10. Open questions
 
-- **Q2.** Phase 0 in the original: confirm it is scheduled before phase 1, and in which order its tables are extracted
-  (gameplay values first: 221 of 236 are baked).
-- **Q3.** The harness language: Python (the original's tool language) unless the maintainer prefers another.
-- **Q4.** Which of the original's open tickets move to the rebuild, and which stay with the original until it is retired.
-- **Q5.** Whether the original keeps receiving fixes during the rebuild (two moving targets), or freezes at a named
-  freeze that the rebuild's acceptance pins.
+None open: v0.1's four were answered by the maintainer on 2026-10-18 (§0).
