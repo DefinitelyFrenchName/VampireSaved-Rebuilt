@@ -1,6 +1,6 @@
 # SPEC — Vampire Saved Rebuilt
 
-**Status: DRAFT v0.2 (2026-10-18): v0.1 with the maintainer's answers to its open questions (§0). Nothing here is built.** The ticket is
+**Status: ACCEPTED v0.2 (2026-10-18): v0.1 with the maintainer's answers to its open questions (§0), accepted by the maintainer the same day. Nothing here is built.** The ticket is
 [#120](https://github.com/DefinitelyFrenchName/VampireSaved/issues/120) in the original repository ("The rebuild-from-docs
 option after MiSTer"). The source project is called *the original* below: `DefinitelyFrenchName/VampireSaved`, read at
 its working tree of 2026-10-18: HEAD `6dee2be7` plus that session's uncommitted changes under `tests/` (the test
