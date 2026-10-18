@@ -81,5 +81,5 @@ Produce a modified `vsav` romset in which all 18 series characters (the 15+1 of 
 
 ## 7. What the human provides
 
-Vision and final say on all gameplay-feel decisions; playtesting (structured reports welcome as replay scripts when possible); base resources (reference dumps, community docs); community liaison.
+Vision and final say on all gameplay-feel decisions; playtesting (structured reports welcome as replay scripts when possible); base resources (reference dumps, community docs), in `../ROMS`, `../Images`, `../Videos` and `../community`: the read-only sources of truth the original used, still relevant here; community liaison.
 Claude does the code archaeology, tooling, patch engineering, and testing. Neither side skips the harness.

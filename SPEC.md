@@ -52,7 +52,9 @@ spec applies it):
   everything that we need to backport is in vs2."**: the rebuild's inputs are `vsavj` and `vsav2` only; no provenance
   tag, diff or gate of the rebuild has vhunt2 as its subject (§5);
 - the reference romsets: **"vsavj being the reference implies the region"**, and they are in `../ROMS`, which, **"like
-  anything above the working directory, must only be accessed read-only"** (`CLAUDE.md` [VSR-8]).
+  anything above the working directory, must only be accessed read-only"** (`CLAUDE.md` [VSR-8]);
+- the other inputs: **"in ../ROMS , ../Images , ../Videos and ../community are read-only sources of truth that were used
+  in Vampire Saved and are still relevant."**: the rebuild reads all four, and only reads them (`CLAUDE.md` §7).
 
 ## 1. What the rebuild is, and what it is not
 
