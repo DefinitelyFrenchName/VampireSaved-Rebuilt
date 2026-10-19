@@ -90,7 +90,9 @@ audit shimmed, the original's build still stops: `tools/extract_char.py` takes `
 which decides each ported region's bounds (no vhunt2 byte reaches the output). So phase 0 closes on parse-equality
 (the tables render all 30 manifests parse-equal to the original's, the five held values derived from the reference
 sets), and the byte-for-byte build proof moves to phase 1, against the rebuild's own pipeline. `tools/build_proof.py`
-stays committed, unrun; the shim ruling above stands for whenever it runs.
+stays committed, unrun; the shim ruling above stands for whenever it runs. (R-005: the maintainer provided `vhunt2.zip`; the proof
+ran with the shim narrowed to the vhunt2 sets ROMDIR lacks, and PASSED: `docs/project/tables/README.md` "The build
+proof". The phase-1 proof against the rebuild's own pipeline is still phase 1's.)
 
 The maintainer's direction for the extraction (2026-10-18, R-003, after Claude explained what vhunt2 does for the
 original's extractor: the sibling copy that bounds each region and yields its relocation map; verbatim): **"I would

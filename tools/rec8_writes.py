@@ -10,9 +10,12 @@ tenant's record at `bank_map.toml`'s vsavj address + id * stride/32, the id bein
   row at the id, whether it equals the base-half row at id & 0x0F, and vs2's row for the tenant's source char;
 - each game's reader of that table: every `movea.l #table,a0`, and whether the word ten bytes before it loads the
   index from +0x382 (`move.b $382(a6),d0`), the character id.
+With `--built DIR` (a merged build's output, `build/proof_merged` of a tools/build_proof.py leg), it also reads that
+build's own data view (`verify_data.bin`, beside its `vanilla_data.bin`) and its ops (`patch/patch.json`): the build's
+bytes at each write address, how many bytes of the sliced table differ from vanilla, and which ops touch it.
 Values are discrete per-character values (CLAUDE.md [VSR-8]). Prints the SHA-1 of every file it read ([VSR-10]).
 
-Usage: python3 tools/rec8_writes.py <export root> <rom dir>
+Usage: python3 tools/rec8_writes.py <export root> <rom dir> [--built DIR]
 """
 import hashlib
 import json
@@ -80,7 +83,7 @@ def load(export_root, romdir):
 
 
 def measure(inp, perturb=None):
-    """(printed lines, results). results: writes [(tenant, row, same)], rows [(tenant, aliased, vs2 differs)],
+    """(printed lines, results). results: writes [(tenant, row, same, address, value)], rows [(tenant, aliased, vs2 differs)],
     readers [(set, sites, sites indexed from +0x382)]. `perturb` names a control of tests/test_rec8_writes.py."""
     table, origins, roster = inp["table"], inp["origins"], inp["roster"]
     base = {n: int(table[("bank_map.toml", "table", n, "vsavj")], 16) for n in ROWS}
@@ -105,7 +108,7 @@ def measure(inp, perturb=None):
                 value = bytes([value[0] ^ 1]) + value[1:]
             at = base[n] + tid * stride[n]
             there = vj[at:at + len(value)]
-            res["writes"].append((tenant, n, there == value))
+            res["writes"].append((tenant, n, there == value, at, value))
             out.append("  %s: record %s, written at PRG:0x%06X, vsavj there %s: %s" % (
                 n, value.hex(), at, there.hex(), "SAME" if there == value else "DIFFERS"))
         own = base[SLICED] + tid * SLICED_ROW
@@ -131,11 +134,47 @@ def measure(inp, perturb=None):
     return out, res
 
 
+def built(inp, out_dir):
+    """Lines on a merged build's own output: its data view at each write and over the sliced table, and its ops."""
+    table = inp["table"]
+    paths = {n: os.path.join(out_dir, n) for n in ("vanilla_data.bin", "verify_data.bin", "patch/patch.json")}
+    blobs = {n: open(p, "rb").read() for n, p in paths.items()}
+    inp["read"] += [(p, sha1(blobs[n])) for n, p in paths.items()]
+    van, ver = blobs["vanilla_data.bin"], blobs["verify_data.bin"]
+    lines = ["built: vanilla_data.bin equals vsavj's data view: %s" % (
+        "yes" if van == inp["views"]["vsavj"][1][:len(van)] else "no")]
+    for tenant, n, _, at, value in measure(inp)[1]["writes"]:
+        lines.append("built: %s %s at PRG:0x%06X: build %s: %s" % (
+            tenant, n, at, ver[at:at + len(value)].hex(), "the record's value" if ver[at:at + len(value)] == value
+            else "NOT the record's value"))
+    lo = int(table[("bank_map.toml", "table", SLICED, "vsavj")], 16)
+    hi = lo + 32 * SLICED_ROW
+    ops = json.loads(blobs["patch/patch.json"])["ops"]
+    sizes = {"poke32": 4, "poke16": 2, "poke8": 1}
+
+    def span(o):
+        a = int(o["addr"], 16)
+        return a, a + sizes.get(o["op"], len(bytes.fromhex(o.get("hex", ""))))
+    touch = [o for o in ops if "addr" in o and span(o)[0] < hi and span(o)[1] > lo]
+    for o in touch:
+        a, b = span(o)
+        lines.append("built: op %s at PRG:0x%06X +%d: build %s, vanilla %s: %s" % (
+            o["op"], a, b - a, ver[a:b].hex(), van[a:b].hex(), "SAME" if ver[a:b] == van[a:b] else "DIFFERS"))
+    lines.append("built: ops %d, touching PRG:0x%06X-0x%06X %d; bytes of it differing from vanilla %d" % (
+        len(ops), lo, hi, len(touch), sum(ver[a] != van[a] for a in range(lo, hi))))
+    return lines
+
+
 def main():
-    if len(sys.argv) != 3:
+    args = sys.argv[1:]
+    out_dir = None
+    if "--built" in args:
+        i = args.index("--built")
+        out_dir, args = args[i + 1], args[:i] + args[i + 2:]
+    if len(args) != 2:
         raise SystemExit(__doc__.strip().splitlines()[-1])
-    inp = load(*sys.argv[1:])
-    for line in measure(inp)[0]:
+    inp = load(*args)
+    for line in measure(inp)[0] + (built(inp, out_dir) if out_dir else []):
         print(line)
     for p, h in inp["read"]:
         print("read %s sha1 %s" % (p, h))

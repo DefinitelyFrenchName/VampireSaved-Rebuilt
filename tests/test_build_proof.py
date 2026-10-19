@@ -5,9 +5,11 @@ ROM-free. Each check is on synthetic inputs, or on a copy of a file of the expor
   P1 SAME     compare() finds nothing between two identical build outputs (a zip, a binary, a log)
   P2 DIFFER   compare() reports a zip member that differs, a file that differs and a file only one side has, and
               puts a differing log apart from the verdict
-  P3 SHIM     shim_audit() applies to the export's tools/audit_roms.py; the shimmed module, loaded, requires no
-              vhunt2 set, key or manifest row and still requires vsav; and the shim refuses a file it does not apply to
-  P4 CONTROL  perturb() changes exactly one value of a rendered donovan.toml: the first [[aux_poke]] `val`, +1
+  P3 SHIM     shim_audit() applies to the export's tools/audit_roms.py, for a ROMDIR holding neither vhunt2 set and
+              for one holding vhunt2.zip alone: the shimmed module, loaded, requires exactly the vhunt2 sets present
+              (set, key and manifest rows) and still requires vsav; and the shim refuses a file it does not apply to
+  P4 CONTROL  perturb() changes exactly one value of a rendered donovan.toml: the `val` of the first [[aux_poke]] not
+              `only_base_slot` (one the merged build applies), +1
 
 CONTROLS ([VSR-22]):
   blind-compare   compare() replaced by one that finds nothing: P2 must fail
@@ -59,28 +61,37 @@ def checks(tmp, export, compare):
     figures.append("P2 differing %d %s, logs differing %d" % (len(diff), sorted(diff), len(logs)))
     if set(diff) != want or logs != ["gen.log"]:
         failed.add("P2")
-    leg = os.path.join(tmp, "leg")
-    os.makedirs(os.path.join(leg, "tools"))
-    shutil.copy(os.path.join(export, "tools", "audit_roms.py"), os.path.join(leg, "tools", "audit_roms.py"))
-    build_proof.shim_audit(leg)
-    spec = importlib.util.spec_from_file_location("shimmed_audit", os.path.join(leg, "tools", "audit_roms.py"))
-    audit = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(audit)
-    kept = audit.parse_manifest("vhunt2.zip/vh2j.03a  1  00000000  %s\nvsav.zip/vm3.13m  1  00000000  %s\n"
-                                % ("0" * 40, "0" * 40))
-    left = ([z for z in audit.REQUIRED_ZIPS if "vhunt2" in z] + [e[0] for e in audit.HARD_EXPECTATIONS
-                                                                 if "vhunt2" in e[0]]
-            + [k for k in kept if k.startswith("vhunt2")])
-    if "vsav.zip/vm3.13m" not in kept or "vsav.zip" not in audit.REQUIRED_ZIPS:
-        left.append("a vsav requirement went with the shim")
-    try:
-        build_proof.shim_audit(leg)
-        refused = False
-    except SystemExit:
-        refused = True
-    figures.append("P3 vhunt2 requirements left %d%s, vsav kept, re-applying refused %s" % (
-        len(left), (": " + left[0][:60]) if left else "", refused))
-    if left or not refused:
+    lost, refused = [], True
+    for case, present in (("neither", ()), ("vhunt2", ("vhunt2.zip",))):
+        roms = os.path.join(tmp, "roms_" + case)
+        os.makedirs(roms)
+        for z in present:
+            open(os.path.join(roms, z), "w").close()
+        leg = os.path.join(tmp, "leg_" + case)
+        os.makedirs(os.path.join(leg, "tools"))
+        shutil.copy(os.path.join(export, "tools", "audit_roms.py"), os.path.join(leg, "tools", "audit_roms.py"))
+        _, dropped = build_proof.shim_audit(leg, roms)
+        spec = importlib.util.spec_from_file_location("shimmed_" + case, os.path.join(leg, "tools", "audit_roms.py"))
+        audit = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(audit)
+        kept = audit.parse_manifest("".join("%s/m  1  00000000  %s\n" % (z, "0" * 40)
+                                            for z in build_proof.VHUNT2_SETS + ("vsav.zip",)))
+        want = set(present)
+        got = {z for z in audit.REQUIRED_ZIPS if "vhunt2" in z}
+        keys = {e[0] for e in audit.HARD_EXPECTATIONS if "vhunt2" in e[0]}
+        rows = {k.split("/")[0] for k in kept if k.startswith("vhunt2")}
+        if got != want or keys != want or rows != want or set(dropped) != set(build_proof.VHUNT2_SETS) - want:
+            lost.append("%s: required %s, keys %s, rows %s" % (case, sorted(got), sorted(keys), sorted(rows)))
+        if "vsav.zip/m" not in kept or "vsav.zip" not in audit.REQUIRED_ZIPS:
+            lost.append("%s: a vsav requirement went with the shim" % case)
+        try:
+            build_proof.shim_audit(leg, roms)
+            refused = False
+        except SystemExit:
+            pass
+    figures.append("P3 cases 2, vhunt2 requirements not as present %d%s, vsav kept, re-applying refused %s" % (
+        len(lost), (": " + lost[0][:80]) if lost else "", refused))
+    if lost or not refused:
         failed.add("P3")
     man = os.path.join(leg, "build", "manifest")
     os.makedirs(man)
@@ -90,8 +101,9 @@ def checks(tmp, export, compare):
     after = tomli.loads(open(os.path.join(man, "donovan.toml")).read())
     changed = [(k, i, key) for k in before for i, (x, y) in enumerate(zip(before[k], after[k]))
                if isinstance(before[k], list) for key in x if x[key] != y.get(key)]
-    first = before["aux_poke"][0]["val"]
-    ok = changed == [("aux_poke", 0, "val")] and after["aux_poke"][0]["val"] == first + 1
+    k = next(i for i, r in enumerate(before["aux_poke"]) if not r.get("only_base_slot"))
+    first = before["aux_poke"][k]["val"]
+    ok = changed == [("aux_poke", k, "val")] and after["aux_poke"][k]["val"] == first + 1
     figures.append("P4 %s; values changed %d %s" % (said, len(changed), changed[:2]))
     if not ok:
         failed.add("P4")

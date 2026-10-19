@@ -6,6 +6,58 @@ head). A session key is `R-NNN`, one per sitting, never renamed or renumbered ([
 their own namespaces. A group's form, kept from the original: `## Session KEY — banner`, then `### opened with` and one
 `### (N) TITLE` section per piece of work. An open list holds only what is open.
 
+## Session R-005 — **vhunt2 provided; the build proof PASSES: the tables rebuild the original's frozen merged build byte for byte (#4).** Opened 2026-10-19 on Opus 5.5 (the ruled orchestrator), in R-004's transcript `dc3ff4f7` after its close.
+
+### opened with
+
+After R-004's close, asked *"should we close now ? prep the emulator with access to vhunt2?"*. Claude proposed R-005:
+first the build proof, then the emulator. The maintainer: *"vhunt2 is in the ROMS folder"*.
+
+### (1) VHUNT2 VERIFIED
+
+`../ROMS/vhunt2.zip` (SHA-1 `daf0caa87cae62f29d9061a0a9878537317d294e`): its 21 members match the 21 the original's
+`docs/checksums.txt` records, by size and SHA-1, with none missing and none extra. `vhunt2r1.zip`, which the
+original's audit also requires, is still absent, so the audit shim ruled in R-003 (`SPEC.md` §0) still applies.
+Asked *"do you need vhunt2r1 ?"*: no. Nothing in the original's build reads it but the ROM audit; it is also named in
+the release preflight and a character-page script.
+
+### (2) THE BUILD PROOF PASSES
+
+`tools/build_proof.py` on the original at `bf92acd2`, `../ROMS`, `docs/project/tables`. A measurer read the logs:
+- both legs build (151 s pristine, 149 s rendered);
+- *"compare 175 files (25 zip members); differing non-log files 0, differing logs 0"*, `VERDICT: PASS`;
+- both legs' program fingerprint is `6148d0b1…`, the merged fingerprint the original recorded at its last freeze
+  (its `HANDOFF.md` line 161, *"merged `110467a7` -> `6148d0b1`"*).
+
+So the tables reproduce the original's frozen merged build through its own pipeline. That is phase 0's first
+acceptance, which R-003 had to stop short of. The phase-1 proof against the rebuild's own pipeline stays phase 1's.
+
+Paid for on the way (written into the README as gotchas):
+- **The shim** dropped every vhunt2 row, so the provided `vhunt2.zip` failed the audit as an unknown file. It now
+  drops only the sets ROMDIR lacks, today `vhunt2r1.zip`. This applies the "Shim both legs" ruling; it does not widen
+  it, and the audit is stricter.
+- **A relative ROMDIR** (`../ROMS`) resolved inside each leg found nothing. The tool now resolves it.
+- **The control `perturbed-render` was DEAD.** Its run gave `VERDICT: PASS` (the runlog's `control:perturbed-render
+  PASS`). It perturbed the first `[[aux_poke]]`, which is `only_base_slot`, and the merged build (Donovan at 0x13)
+  never applies it. It now takes the first row the build applies (`hud_mug_entry_13`). Its re-run FAILs: the original's
+  own HUD check rejects the rendered build before the compare. So this control does not exercise the compare end to
+  end. That remains open; `compare()` is P2's.
+- `tests/test_build_proof.py` P3 now covers both ROMDIR cases, and P4 the applied row.
+
+Runs, from the runlog:
+- normal: FAIL ×2 (the shim, then ROMDIR), then PASS;
+- control: PASS (dead), then FAIL.
+
+### (3) THE REC8 READING CONFIRMED ON THE BUILT IMAGE
+
+`tools/rec8_writes.py --built` reads the proof's pristine build:
+- the six writes hold the records' values;
+- of 848 ops, 3 touch the table at `PRG:0x0BE3FA`, each equal to vanilla;
+- 0 bytes of that table differ from vanilla.
+
+R-004 (5)'s static reading holds on the build. The pending capture is unchanged (it is about play, not bytes).
+
+
 ## Session R-004 — **#5 ruled: (a) the measurer runs one command per tool call; #4: the extraction tabled, its jump, cancel and short bank rows decoded; every manifest row mapped to a correction, 16 parts added; the rec8 writes read statically, the newcomers' own rows found to be veterans' copies, ruled (c) then (a); R-003 archived.** Opened 2026-10-19 on Opus 5.5 (the ruled orchestrator); transcript `dc3ff4f7`.
 
 ### opened with
@@ -169,6 +221,9 @@ none.
 
 ## The next session starts with
 
-1. #4, ruled (c) then (a) (`SPEC.md` §0, R-004): when an instrument can run the original's build (it needs vhunt2),
+1. #4, ruled (c) then (a) (`SPEC.md` §0, R-004): when an instrument can run the original's build (R-005 builds it; the
+   instrument is a WIDE-profile emulator, which needs the maintainer's ratification, [VSR-2]),
    capture which move enters state `0x02100600` (vsavj `PRG:0x026670`) for each newcomer, native vs2 against the
    build. Then phase 1 ports vs2's three rows of the table at `PRG:0x0BE3FA` if the difference is the newcomers' own.
+2. #4: give `tools/build_proof.py` a second control that the original's own checks accept, so the byte compare is
+   exercised end to end (R-005 (2): `perturbed-render` is stopped by the original's HUD check first).

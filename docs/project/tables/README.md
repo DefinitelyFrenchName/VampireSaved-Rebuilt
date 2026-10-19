@@ -153,16 +153,40 @@ The gate on the derivation is `python3 tests/test_gen_held.py` (it needs `../ROM
 
 Its controls are `wrong-held-sha` (the tool must refuse) and `placeholder-left`.
 
-**The build proof is phase 1's** (the maintainer's ruling of 2026-10-18, SPEC.md §0). `tools/build_proof.py` runs
-the original's `build_merged.sh` on a pristine export and on one whose canonical manifests are rendered from the
-tables, then compares every output file byte for byte. It needs vhunt2: the original's extractor takes `vhunt2.zip`
-as its sibling oracle (#4). It is committed, unrun; its control is `perturbed-render`. Its logic is gated without a
-build by `python3 tests/test_build_proof.py`:
+**The build proof** (ruled phase 1's on 2026-10-18, SPEC.md §0, while vhunt2 was absent; run in R-005).
+`tools/build_proof.py` runs the original's `build_merged.sh` on a pristine export and on one whose canonical manifests
+are rendered from the tables, then compares every output file byte for byte. It needs vhunt2: the original's
+extractor takes `vhunt2.zip` as its sibling oracle (#4). The maintainer provided `vhunt2.zip` in R-005 (its 21 members
+match the original's `docs/checksums.txt`).
+- **The audit shim** (ruled "Shim both legs") now drops only the vhunt2 sets ROMDIR lacks, `vhunt2r1.zip` today, so the
+  original's audit checks the vhunt2 it has. Nothing in the original's build reads `vhunt2r1.zip` but that audit (it
+  is named only there, in the release preflight and in a character-page script).
+- **Paid for in R-005** (gotcha, [VSR-32]):
+  - a relative ROMDIR resolved inside each leg found no ROMs; the tool now resolves it first;
+  - the control's perturbation took the first `[[aux_poke]]`, `only_base_slot`. The merged build (Donovan at 0x13)
+    never applies that row, so the control ran DEAD on the first real build. It now takes the first row the build
+    applies. A control written before its instrument could run was never exercised: run it once the instrument
+    exists.
+
+Its logic is gated without a build by `python3 tests/test_build_proof.py`:
 - P1 and P2: `compare()` in both directions;
-- P3: the shimmed audit, loaded, requires no vhunt2 set, key or row and still requires vsav;
-- P4: the control's perturbation changes exactly one value.
+- P3: the shimmed audit, loaded for a ROMDIR with no vhunt2 set and for one with `vhunt2.zip` alone, requires exactly the
+  sets present (and still requires vsav);
+- P4: the control's perturbation changes exactly one value, in a row the merged build applies.
 
 Its own control is `blind-compare`.
+
+Measured (R-005, a measurer, from the run logs):
+- **The proof PASSES.** Both legs build: pristine in 151 s, rendered in 149 s. It compared 175 files (25 zip members),
+  with 0 non-log files and 0 logs differing.
+- **The program fingerprint matches the original's last freeze.** Both legs report `6148d0b1…`, the merged program
+  fingerprint the original recorded at that freeze (its `HANDOFF.md` line 161: *"merged `110467a7` -> `6148d0b1`"*).
+  So the tables reproduce the original's frozen merged build, through its own pipeline.
+- **The control** (`perturbed-render`, `hud_mug_entry_13` `val` +1) FAILs. The rendered leg's build is rejected by
+  the original's own HUD check (*"expected one poke16 at 0x898aa val 0x8690"*), so this control does not reach the
+  byte compare.
+  - **Not exercised end to end:** a perturbation the original's own checks accept, which only the compare would
+    catch. `compare()`'s sensitivity is P2's, on synthetic files.
 
 ## The extraction tables, under `extraction/`, and the three gameplay tables decoded from them (#4)
 
@@ -251,9 +275,13 @@ neutral-jump `yv`/`gravity` and char 4's second pursuit variant's `yv`/`yacc`. T
 `extraction/values.tsv`, never in a gameplay table that would call them the tenant's. What the original's build wrote
 for them, and what the tenants' own rows hold, is the next paragraph (R-004; until then both were "not measured").
 
-**What the build wrote for `rec8_a` and `rec8_b`, and the tenants' own rows (R-004, read statically).** The original's
-merged build cannot be rebuilt here (#4: it needs vhunt2), so this is read from its generator and the reference dumps,
-not measured on its built image.
+**What the build wrote for `rec8_a` and `rec8_b`, and the tenants' own rows (R-004, read statically; confirmed on the
+built image in R-005).** In R-004 the original's merged build could not be rebuilt here (#4: it needed vhunt2), so
+this was read from its generator and the reference dumps. R-005 rebuilt it (the build proof, above), and
+`tools/rec8_writes.py --built` reads that build's own data view and ops. It confirms the reading:
+- the six writes hold the records' values;
+- of the build's 848 ops, three touch the table at `PRG:0x0BE3FA` (the `rec8_b` writes), each equal to vanilla;
+- 0 bytes of that table differ from vanilla.
 - **The write rule, quoted by a reader** from the original's `tools/gen_donovan_patch.py`: a value row's address is
   *"`return _int(t["vsavj"]) + slot * es, es`"* (line 1630), with *"`es = ... (t["stride"] // 32)`"* (line 1629). It
   is written by *"`poke_bytes(a, data, f"{v['table']}[{dst_slot:#x}] value")`"* (line 3677), with

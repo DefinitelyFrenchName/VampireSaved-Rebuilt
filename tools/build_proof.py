@@ -3,17 +3,20 @@ from the tables, produces the same output byte for byte (SPEC.md §3).
 
 In RUN_DIR (which must not exist; a run owns its directory, SPEC.md §4):
   1. two exports of the original at PIN (tools/export_original.py), `pristine/` and `rendered/`;
-  2. in BOTH, the same shim of the copy of `tools/audit_roms.py`: vhunt2 dropped from its required sets, its key
-     checks and its manifest rows, every other member still checked (the maintainer's ruling of 2026-10-18,
-     SPEC.md §0; vhunt2 is not in ROMDIR by the ruling that dropped it);
+  2. in BOTH, the same shim of the copy of `tools/audit_roms.py`: each vhunt2 set ROMDIR does not hold (`vhunt2.zip`,
+     `vhunt2r1.zip`) dropped from its required sets, its key checks and its manifest rows, every other member still
+     checked (the maintainer's ruling of 2026-10-18, SPEC.md §0, made while ROMDIR held neither; since R-005 it holds
+     vhunt2.zip, which the audit then checks like any other set);
   3. in `rendered/`, the canonical manifests deleted and rendered from TABLES_DIR (tools/render_manifests.py), the
      five held values derived from ROMDIR (tools/gen_held.py), so nothing of the original's manifests survives;
   4. the original's `tools/build_merged.sh` in each leg (ROMDIR read only; TMPDIR inside the leg);
   5. every file each build wrote compared byte for byte (a zip member by member, since a zip's timestamps are its
      container's): the verdict is on every non-log file; logs are reported apart, as they name their own paths.
 
-THE CONTROL ([VSR-22]): `--control perturbed-render` changes one rendered value (the first `val` of an
-`[[aux_poke]]` in donovan.toml, +1) after rendering, so the builds MUST differ and the proof must FAIL.
+THE CONTROL ([VSR-22]): `--control perturbed-render` changes one rendered value (the `val` of the first
+`[[aux_poke]]` in donovan.toml the merged build applies, i.e. not `only_base_slot`, +1) after rendering, so the builds
+MUST differ and the proof must FAIL. (Until R-005 it took the first row, `only_base_slot`, which the merged build,
+Donovan at variant id 0x13, never applies: the control ran DEAD on the first build.)
 
 Usage: python3 tools/build_proof.py <original checkout> <pin> <romdir> <tables dir> <run dir> [--control NAME]
 """
@@ -28,6 +31,8 @@ import time
 import zipfile
 from pathlib import Path
 
+import tomli
+
 ROOT = os.path.realpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 sys.path.insert(0, os.path.join(ROOT, "tools"))
 import phase0lib  # noqa: E402
@@ -35,35 +40,45 @@ import render_manifests  # noqa: E402
 import runlog  # noqa: E402
 
 CONTROLS = ("perturbed-render",)
+VHUNT2_SETS = ("vhunt2.zip", "vhunt2r1.zip")
 OUT = "build/proof_merged"            # the build's output, relative to each leg
 
 
-def shim_audit(leg):
-    """The ruled vhunt2 shim, applied to one leg's copy of tools/audit_roms.py; returns the SHA-1 after it."""
+def shim_audit(leg, romdir):
+    """The ruled vhunt2 shim, applied to one leg's copy of tools/audit_roms.py for the vhunt2 sets romdir does not
+    hold; returns the SHA-1 after it and the sets dropped."""
     p = os.path.join(leg, "tools", "audit_roms.py")
     text = open(p).read()
-    edits = [
-        ('    ("vhunt2.zip", "vhunt2.key", 0x61306B20),\n    ("vhunt2r1.zip", "vhunt2.key", 0x61306B20),\n', ""),
-        ('REQUIRED_ZIPS = ["qsound_hle.zip", "vhunt2.zip", "vhunt2r1.zip", "vsav.zip",',
-         'REQUIRED_ZIPS = ["qsound_hle.zip", "vsav.zip",'),
-        ("        inv[path] = (int(size), int(crc, 16), sha)",
-         '        if not path.startswith("vhunt2"):\n            inv[path] = (int(size), int(crc, 16), sha)'),
-    ]
+    absent = tuple(z for z in VHUNT2_SETS if not os.path.exists(os.path.join(romdir, z)))
+    required = '"qsound_hle.zip", "vhunt2.zip", "vhunt2r1.zip", "vsav.zip",'
+    edits = [('    ("%s", "vhunt2.key", 0x61306B20),\n' % z, "") for z in absent]
+    edits += [("REQUIRED_ZIPS = [" + required, "REQUIRED_ZIPS = [" + "".join(
+                  '"%s", ' % z for z in ("qsound_hle.zip", "vhunt2.zip", "vhunt2r1.zip") if z not in absent)
+               + '"vsav.zip",'),
+              ("        inv[path] = (int(size), int(crc, 16), sha)",
+               '        if path.split("/")[0] not in %r:\n            inv[path] = (int(size), int(crc, 16), sha)'
+               % (absent,))]
+    if not absent:
+        edits = []
     for old, new in edits:
         if text.count(old) != 1:
             raise SystemExit("REFUSED: the audit shim does not apply to %s (%r)" % (p, old[:40]))
         text = text.replace(old, new)
     open(p, "w").write(text)
-    return hashlib.sha1(text.encode()).hexdigest()
+    return hashlib.sha1(text.encode()).hexdigest(), absent
 
 
 def perturb(leg):
     p = os.path.join(leg, "build", "manifest", "donovan.toml")
     text = open(p).read()
-    m = re.search(r"(?ms)^\[\[aux_poke\]\].*?^val = (0x[0-9A-Fa-f]+|\d+)$", text)
+    rows = tomli.loads(text)["aux_poke"]
+    k = next(i for i, r in enumerate(rows) if not r.get("only_base_slot"))
+    heads = [h.start() for h in re.finditer(r"(?m)^\[\[aux_poke\]\]$", text)]
+    block_end = re.compile(r"(?m)^\[").search(text, heads[k] + 1)
+    m = re.compile(r"(?m)^val = (0x[0-9A-Fa-f]+|\d+)(?=[ \t]*(?:#|$))").search(text, heads[k], block_end.start() if block_end else len(text))
     new = text[:m.start(1)] + "%#06x" % (int(m.group(1), 0) + 1) + text[m.end(1):]
     open(p, "w").write(new)
-    return "donovan.toml [[aux_poke]] val %s -> %#06x" % (m.group(1), int(m.group(1), 0) + 1)
+    return "donovan.toml [[aux_poke]] %s val %s -> %#06x" % (rows[k]["name"], m.group(1), int(m.group(1), 0) + 1)
 
 
 def build(leg, romdir):
@@ -125,6 +140,7 @@ def main():
         raise SystemExit(__doc__.strip().splitlines()[-1])
     original, pin, romdir, tables, run = args
     run = os.path.realpath(run)
+    romdir = os.path.realpath(romdir)     # each leg's build runs in its own directory
     if os.path.exists(run):
         raise SystemExit("REFUSED: %s exists (a run owns a fresh directory)" % run)
     rec = runlog.Run("build_proof", "control:" + control if control else "normal")
@@ -134,7 +150,9 @@ def main():
         p = subprocess.run([sys.executable, os.path.join(ROOT, "tools", "export_original.py"), original, pin, leg],
                            capture_output=True, text=True, check=True)
         print("export %-8s %s" % (name, " ".join(l.strip() for l in p.stdout.splitlines()[:2])))
-        print("shim   %-8s tools/audit_roms.py sha1 %s" % (name, shim_audit(leg)))
+        sha, absent = shim_audit(leg, romdir)
+        print("shim   %-8s tools/audit_roms.py sha1 %s; vhunt2 sets dropped (not in ROMDIR): %s" % (
+            name, sha, ", ".join(absent) or "none"))
     leg = legs["rendered"]
     a = phase0lib.load_census(leg)
     canon = [rel[len("build/manifest/"):] for rel in a.canon(Path(leg))]
