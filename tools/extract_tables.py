@@ -8,7 +8,9 @@ every record with its manifest row (tools/phase0lib.py), and writes one TSV per 
 - the code column, under code/: the generators' constants the census counts (`code/constants.tsv`) and the public
   module-level constants it does not (`code/uncounted.tsv`);
 - under uncounted/: every manifest value the census does not count, one table per TOML key of its IGNORE_KEYS
-  (`uncounted/<key>.tsv`) and one for the JSON manifests' `_` keys (`uncounted/json_underscore.tsv`).
+  (`uncounted/<key>.tsv`) and one for the JSON manifests' `_` keys (`uncounted/json_underscore.tsv`);
+- layout/forms.tsv: each canonical manifest's format, each TOML kind's form, each JSON container's form and order
+  (what tools/render_manifests.py needs beyond the values).
 Each file's header names the pin and the SHA-1 of every manifest or generator it was read from; the tool prints the same. The
 format is docs/project/tables/README.md. facts/held.tsv is hand-written and never touched here.
 
@@ -28,6 +30,7 @@ TITLES = {
     "hit_class_mask": "THE POKES INTO THE HIT-CLASS / GUARD-MASH RNG MASK TABLE (classed by the address they write)",
     "code/constants": "CODE: the generators' module-level constants the census counts",
     "code/uncounted": "CODE: the generators' public module-level constants the census does not count (`A, B = a, b`)",
+    "layout/forms": "LAYOUT: each manifest's format, each TOML kind's form, each JSON container's form and order",
     "uncounted/json_underscore": "UNCOUNTED: the JSON manifests' `_` keys, which the census skips, each value whole",
 }
 
@@ -85,6 +88,10 @@ def main():
     total += sum(len(v) for v in tables.values())
     print("%-9s not counted by the census, tabled %5d in %d tables" % (
         "uncounted", sum(len(v) for v in tables.values()), len(tables)))
+    tables, r = phase0lib.layout_rows(export_root)
+    read.update(r)
+    write(out, pin, tables, read)
+    print("%-9s the manifests' shape, %d rows" % ("layout", sum(len(v) for v in tables.values())))
     print("pin %s; census records %d; tabled %d" % (pin, recs_n, total))
     for f, h in sorted(read.items()):
         print("read %s sha1 %s" % (f, h))

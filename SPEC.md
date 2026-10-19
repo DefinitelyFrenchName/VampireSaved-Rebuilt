@@ -77,6 +77,21 @@ are not fine, whole algorithms are not fine either."*), which `CLAUDE.md` [VSR-8
 longer than 64 bytes is checked and reported to the maintainer as not a whole algorithm, or held out, before it is
 tabled.
 
+The maintainer's answer on phase 0's build proof and the original's ROM audit (2026-10-18, R-003, AskUserQuestion;
+the option chosen, verbatim in bold): **"Shim both legs (Recommended)"**. The original's build runs
+`tools/audit_roms.py` first, and it requires `vhunt2.zip` and `vhunt2r1.zip`, which vhunt2's ruling above leaves out of
+`../ROMS`. So the proof tool drops vhunt2 from the copy of that audit in both exports (its required sets, its key
+checks and its manifest rows), identically on each leg, and records it. Every member present is still checked, and
+the original's checkout is never touched.
+
+The maintainer's answer on phase 0's build proof once it was found that the original's extractor reads vhunt2
+(2026-10-18, R-003, AskUserQuestion; the option chosen, verbatim in bold): **"Stop at parse-equality"**. With the
+audit shimmed, the original's build still stops: `tools/extract_char.py` takes `vhunt2.zip` as its sibling oracle,
+which decides each ported region's bounds (no vhunt2 byte reaches the output). So phase 0 closes on parse-equality
+(the tables render all 30 manifests parse-equal to the original's, the five held values derived from the reference
+sets), and the byte-for-byte build proof moves to phase 1, against the rebuild's own pipeline. `tools/build_proof.py`
+stays committed, unrun; the shim ruling above stands for whenever it runs.
+
 ## 1. What the rebuild is, and what it is not
 
 **The same project, rebuilt.** The goal, the non-goals and the background facts are the original's `SPEC.md` §1-§2 and its
@@ -116,8 +131,8 @@ anchor):
 
 | phase | deliverable | acceptance |
 |---|---|---|
-| 0 (in this repository, the original read-only at `bf92acd2`, before phase 1; gameplay values first — §0) | the measured facts of the original's canonical manifests (`build/manifest/`, 30 files) and generators, extracted into documented tables with provenance in this repository: the tables are the rebuild's source data (the original's option B, value in the manifest and a table row beside it, has no manifest to sit beside here) | a census in this repository: every scalar the original's census counts maps to one table cell; manifests rendered from the tables equal the original's when parsed; and the original's build, run on an export of `bf92acd2` with the rendered manifests, reproduces its own output byte-for-byte |
-| 1 | the romset pipeline (extract, reconcile, generate, pack) and the FBNeo and MAME WIDE profiles, in the rebuild's repository | the external acceptance suite (§5, classes E1 and the F gates): the legacy oracle bit-identical to vanilla on every replay of the corpus under its frozen class; tenant content equal to the original's frozen expectations and to native vs2 on the parity gates |
+| 0 (in this repository, the original read-only at `bf92acd2`, before phase 1; gameplay values first — §0) | the measured facts of the original's canonical manifests (`build/manifest/`, 30 files) and generators, extracted into documented tables with provenance in this repository: the tables are the rebuild's source data (the original's option B, value in the manifest and a table row beside it, has no manifest to sit beside here) | a census in this repository: every scalar the original's census counts maps to one table cell; manifests rendered from the tables equal the original's when parsed, the five held values derived from the reference sets (the byte-for-byte build proof moved to phase 1, §0) |
+| 1 | the romset pipeline (extract, reconcile, generate, pack) and the FBNeo and MAME WIDE profiles, in the rebuild's repository | the byte-for-byte build proof moved from phase 0 (§0); the external acceptance suite (§5, classes E1 and the F gates): the legacy oracle bit-identical to vanilla on every replay of the corpus under its frozen class; tenant content equal to the original's frozen expectations and to native vs2 on the parity gates |
 | 2 | the MiSTer core (jtcps2w) and its simulation lane | class M of §5 |
 | 3 | the releases: packaging, the applier, the launchers, the per-platform binaries | class R of §5 |
 | 4 | the external suite retired | every gate the rebuild needs is ported and proven equivalent (§5.3) |

@@ -49,7 +49,37 @@ controls, among them `note-cut-at-hash`, which plants the cut. Format and figure
 
 Paid for this sitting: `dropped-row`'s declaration predicted too few failing checks once G7 existed (a dropped
 gameplay row is also a missing manifest value). The declaration was corrected from the printed values, and the gate
-was not loosened.
+was not loosened. The measurer corrected two of the README's figures, both mine from the survey (`name` 526, not
+525; 2,519 strings, not 2,521). One of its commands failed on my spec (`python3 -I` hides the user site-packages
+that hold `tomli`). Both times this sitting, the measurer ran two commands side by side against a spec that ran
+them in order. Harmless here (the second was a read-only count), but noted against [VSR-50]. Committed `d9429be`,
+the three gates green on the staged tree.
+
+### (3) PHASE 0: THE RENDERER, THE HELD VALUES FROM THE DUMPS, AND THE BUILD PROOF MOVED TO PHASE 1
+
+The maintainer: *"start it, we have ample context"*.
+- **The renderer.** `tools/render_manifests.py` writes the 30 canonical manifests from the tables. What the value
+  tables do not say about shape (each manifest's format, each TOML kind's `[x]`/`[[x]]`, each JSON container's form
+  and member order) is the generated `layout/forms.tsv` (373 rows). Its header also pins the four comment-only
+  manifests.
+- **The gate.** The new G8 renders all 30 and requires them parse-equal to the originals (`tomli`/`json`, key order
+  included). It also requires the original's own parser to agree: the host's Python is 3.9, so `_minitoml` is its
+  subset parser, which accepts the same 21 manifests and refuses the same three with arrays. G8 is green, with two
+  new controls. Seven older controls now also fail G8, as they should, and were re-declared from the printed values.
+- **The held values.** `tools/gen_held.py` derives all five from the decrypted dumps, each refused unless it has its
+  `held.tsv` SHA-1. Three come from the original's generators. The other two are rebuilt from their source spans
+  with each edit named: `throw_arc_tables` is vs2's installer with two operands made placeholders; `beam_list_type6`
+  is five parts. The first `throw_arc_tables` derivation was refused (I resumed the copy at the operand's
+  displacement); fixed from the decomposition. Gate `tests/test_gen_held.py`: H1–H3 green, two controls; with the
+  derived values the 30 manifests parse equal and no placeholder is left.
+- **The build proof.** The maintainer ruled the vhunt2 audit shim on both legs (`SPEC.md` §0). The original's build
+  then still stopped: its extractor reads `vhunt2.zip` as its sibling oracle (#4). Asked, the maintainer ruled
+  *"Stop at parse-equality"*: the byte-for-byte proof moves to phase 1 (`SPEC.md` §0, §3). `tools/build_proof.py` is
+  committed, unrun. Its logic is gated without a build by `tests/test_build_proof.py` (P1–P4, control
+  `blind-compare`), whose first red was its own check (it read a docstring as a requirement), now made to load the
+  shimmed module.
+- **Not measured, for phase 1.** `beam_list_type6`'s copied drawer opens with a `bcs.w` copied unchanged, so its
+  PC-relative target moves with the copy ([VSR-83]); whether it is reachable was not checked.
 
 ## Session R-002 — **#3 built and closed: the figures, their gate, the run log, the dashboard; R-001 archived.** Opened 2026-10-18 on Opus 5.5 (the ruled orchestrator); transcript `c6b8c007`.
 

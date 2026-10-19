@@ -106,6 +106,61 @@ names it dedups on, the functions it dispatches to, and the byte layout of its i
 **No ROM bytes** ([VSR-8]): every value is an address, a tile code, a count, a bank, an id range or a file name.
 None is a run of bytes.
 
+## The layout table, `layout/forms.tsv` (373 rows)
+
+The value tables say what each value is, not how a manifest is shaped. To rebuild the manifests, the renderer also
+needs:
+- **each canonical manifest's format** (`toml` or `json`), one row each, kind and row `(file)`. This also names the
+  four manifests that hold no value, and pins their SHA-1 in the header;
+- **each TOML kind's form**, row `(kind)`: `table` for `[x]`, `array` for `[[x]]`, and `line` its first header;
+- **each JSON container's form**, row its pointer: `{"dict": [its keys in order]}` or `{"list": its length}`. The
+  order is carried because the build's consumers iterate dicts in order.
+
+Every row's key is `(form)`. The table is generated with the others and gated by G8: a wrong form renders a manifest
+that does not parse equal.
+
+## The renderer, the held values and the build proof
+
+`tools/render_manifests.py <tables> <out> [--held FILE]` writes the 30 canonical manifests from the tables:
+- TOML: the top-level keys, then each kind in the order of its first header, and each row's keys in the order of
+  their lines;
+- JSON: as layout/forms.tsv gives it.
+
+Comments are not carried, so a rendered manifest is parse-equal to the original's, not byte-equal. Without `--held`,
+a held value is written as the string `"HELD:sha1=<sha1>"`, which no build accepts.
+
+`tools/gen_held.py <export> <romdir> <scratch> <out>` derives the five held values from the decrypted reference
+dumps. It refuses unless each has the SHA-1 `facts/held.tsv` names.
+- `index_window_018468` and both `hitclass_map_extend` rows come from the original's own generators, run from the
+  export.
+- `throw_arc_tables` is vs2's installer `PRG:0x0275E4`–`0x027622`, its two `(d16,PC)` table operands made
+  absolute-long placeholders.
+- `beam_list_type6` has five parts: an authored range check; vs2's handler `PRG:0x01A1FC` with its three A5 scratch
+  slots moved and its child call retargeted; vanilla's type-6 head; an authored two-way dispatcher; and vanilla's
+  drawer `PRG:0x01B61A`–`0x01B6AA` with its bank word `$2000`→`$1000` and its code bias `$3800`→`$7A00`.
+
+Only addresses, lengths and the authored instructions are in the tool; every copied byte is read from the dumps
+([VSR-8]). Not measured: the copied drawer opens with a `bcs.w` copied unchanged, so its PC-relative target moves
+with the copy ([VSR-83]). Whether that branch is reachable was not checked; it is for phase 1's own generator.
+
+The gate on the derivation is `python3 tests/test_gen_held.py` (it needs `../ROMS`):
+- H1: the tool writes one literal per distinct held SHA-1.
+- H2: every held row is covered, checked by a SHA-1 computed apart from the tool's.
+- H3: the 30 manifests rendered with those literals parse equal to the originals, with no placeholder left.
+
+Its controls are `wrong-held-sha` (the tool must refuse) and `placeholder-left`.
+
+**The build proof is phase 1's** (the maintainer's ruling of 2026-10-18, SPEC.md §0). `tools/build_proof.py` runs
+the original's `build_merged.sh` on a pristine export and on one whose canonical manifests are rendered from the
+tables, then compares every output file byte for byte. It needs vhunt2: the original's extractor takes `vhunt2.zip`
+as its sibling oracle (#4). It is committed, unrun; its control is `perturbed-render`. Its logic is gated without a
+build by `python3 tests/test_build_proof.py`:
+- P1 and P2: `compare()` in both directions;
+- P3: the shimmed audit, loaded, requires no vhunt2 set, key or row and still requires vsav;
+- P4: the control's perturbation changes exactly one value.
+
+Its own control is `blind-compare`.
+
 ## The format, and why
 
 **One TSV per subject, one schema for all**: `manifest, kind, row, key, value, line, prov_kind, prov_refs`. Each line
@@ -158,11 +213,15 @@ The gate is `python3 tests/test_phase0_tables.py`. It has six checks:
   written apart from the extractor's, and `code/uncounted` holds exactly those the census has no record of.
 - G7: the gameplay, fact and uncounted tables hold every value of every canonical manifest exactly once, found by a
   walk of each manifest's parse written apart from the extractor's.
+- G8: the renderer's 30 manifests parse equal to the originals (`tomli` / `json`, key order included), a held value
+  only as the placeholder of its SHA-1. The original's own parser (`_minitoml`, its subset parser on this host's
+  Python 3.9) accepts the same 21 manifests and parses each equal; it refuses `dispatch_census.toml`,
+  `pcrel_escapes.toml` and `shared_writes.toml` (arrays) in both forms.
 
-Its twelve declared controls are perturbed copies: `perturbed-value`, `dropped-row`, `perturbed-manifest`,
+Its fourteen declared controls are perturbed copies: `perturbed-value`, `dropped-row`, `perturbed-manifest`,
 `held-leak`, `perturbed-pointer-fact`, `perturbed-code`, `code-hex-as-decimal`, `uncounted-dropped`,
-`perturbed-generator`, `note-dropped`, `perturbed-note` and `note-cut-at-hash` (a note cut at its `#`, as a line
-grammar cutting at the first `#` would read it).
+`perturbed-generator`, `note-dropped`, `perturbed-note`, `note-cut-at-hash` (a note cut at its `#`, as a line
+grammar cutting at the first `#` would read it), `layout-form-flipped` and `json-order-swapped`.
 Each must fail exactly its declared checks, and `--control <name>` runs the gate on the copy, where it must FAIL.
 Every run works in its own new scratch directory under `build/tmp/`, removed when it ends, so runs can go side by
 side ([VSR-143]).
@@ -181,3 +240,9 @@ Measured at the uncounted values' extraction (R-003): 11,330 rows in 76 tables (
 uncounted in 18). G1–G7 pass: 11,325 cells checked and 0 wrong; 30 canonical manifests (4 with no value) hold
 11,284 values, all 11,284 in the tables, 0 missing and 0 unknown. All twelve controls FIRED, and the three new
 control modes each give `VERDICT: FAIL`.
+
+Measured at the renderer (R-003): 11,703 rows in 77 tables (the 11,330 above and the 373 of `layout/forms.tsv`);
+36 sources pinned (the 30 canonical manifests and the 6 generators). G1–G8 pass: the 30 manifests render and parse
+equal, and `_minitoml` accepts 21 and differs on 0. All fourteen controls FIRED, and the two new control modes each
+give `VERDICT: FAIL`. `tests/test_gen_held.py`: H1–H3 pass (4 literals, 5 held rows covered, 30 manifests parse
+equal with 0 placeholders left), and both controls FIRED.

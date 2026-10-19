@@ -1,8 +1,8 @@
 """test_phase0_tables.py — the gate on phase 0's tables (SPEC.md §3; docs/project/tables/README.md).
 
 Checks every generated table under docs/project/tables/ (the gameplay column's four, the fact column's facts/*.tsv,
-the code column's code/*.tsv, the values the census does not count under uncounted/) against an export of the
-original at their pin:
+the code column's code/*.tsv, the values the census does not count under uncounted/, the manifests' shape in
+layout/forms.tsv) against an export of the original at their pin:
   G1 CURRENT  the tables regenerate byte-for-byte from the export (tools/extract_tables.py), and no other generated
               table exists
   G2 PINNED   the export's manifests and generators have the SHA-1s the tables' headers name
@@ -25,23 +25,30 @@ original at their pin:
   G7 WHOLE    the gameplay, fact and uncounted tables hold every value of every canonical manifest exactly once,
               by an independent walk of each manifest's parse (TOML: every key of every row; JSON: every scalar,
               and every `_` key whole)
+  G8 RENDERED tools/render_manifests.py renders every canonical manifest from the tables, and each parses equal to
+              the original's (tomli / json, key order included), a held value only as the placeholder of its
+              SHA-1; the original's own parser (`_minitoml`, the subset parser on this host) accepts exactly the
+              same manifests, and parses each it accepts equal
 
 CONTROLS ([VSR-22], docs/project/must_fire_contract.md), each a perturbed copy built under build/tmp/:
-  perturbed-value     the first `true` of variant_selection made `false`: G1, G3, G4 must fail
-  dropped-row         the last row of roster removed: G1, G3, G7 must fail (a manifest value is gone too)
-  perturbed-manifest  one `only_variant_slot` flipped in a copy of the export's donovan.toml: G1, G2, G3, G4 must fail
+  perturbed-value     the first `true` of variant_selection made `false`: G1, G3, G4, G8 must fail
+  dropped-row         the last row of roster removed: G1, G3, G7, G8 must fail (a manifest value is gone too)
+  perturbed-manifest  one `only_variant_slot` flipped in a copy of the export's donovan.toml: G1, G2, G3, G4, G8 must fail
   held-leak           the first HELD cell of facts/site_thunk replaced by the manifest's value in the clear: G1, G3,
-                      G5 must fail
+                      G5 must fail (it renders the same manifest, so G8 passes)
   perturbed-pointer-fact  the first row of facts/json_version_font under the `.` glyph (`/glyphs/./n`, the one key
-                      a dotted path could not address) given another glyph row's value: G1, G3, G4 must fail
+                      a dotted path could not address) given another glyph row's value: G1, G3, G4, G8 must fail
   perturbed-code      DELTA of code/constants made 0x2751: G1, G3, G4 must fail
   code-hex-as-decimal DELTA of code/constants written 10064, the same number in decimal: G1, G3, G4 must fail
   uncounted-dropped   the last row of code/uncounted removed: G1, G6 must fail
   perturbed-generator DELTA made 0x2751 in a copy of the export's build_gfx_donovan.py: G1, G2, G3, G4 must fail
-  note-dropped        the last row of uncounted/note removed: G1, G7 must fail
-  perturbed-note      the first `note` of uncounted/note given one more character: G1, G4 must fail
+  note-dropped        the last row of uncounted/note removed: G1, G7, G8 must fail
+  perturbed-note      the first `note` of uncounted/note given one more character: G1, G4, G8 must fail
   note-cut-at-hash    the first `notes` value holding a `#` cut there and closed, as a line grammar cutting at the
-                      first `#` would read it: G1, G4 must fail
+                      first `#` would read it: G1, G4, G8 must fail
+  layout-form-flipped the first `table` form of layout/forms made `array`: G1, G8 must fail
+  json-order-swapped  the first JSON dict form with two keys or more given its first two keys swapped: G1, G8
+                      must fail
 A normal run runs each control and reports it FIRED or DEAD; `--control <name>` makes the perturbed copy the gate's
 input and the gate must reach its own FAIL.
 
@@ -68,6 +75,7 @@ from pathlib import Path
 ROOT = os.path.realpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 sys.path.insert(0, os.path.join(ROOT, "tools"))
 import phase0lib  # noqa: E402
+import render_manifests  # noqa: E402
 import runlog  # noqa: E402
 import tomli  # noqa: E402
 
@@ -75,18 +83,20 @@ TABLES = os.path.join(ROOT, "docs", "project", "tables")
 # this run's own scratch, new for every run so concurrent runs never share it ([VSR-143]); made in main()
 TMP = None
 CONTROLS = {
-    "perturbed-value": {"G1", "G3", "G4"},
-    "dropped-row": {"G1", "G3", "G7"},
-    "perturbed-manifest": {"G1", "G2", "G3", "G4"},
+    "perturbed-value": {"G1", "G3", "G4", "G8"},
+    "dropped-row": {"G1", "G3", "G7", "G8"},
+    "perturbed-manifest": {"G1", "G2", "G3", "G4", "G8"},
     "held-leak": {"G1", "G3", "G5"},
-    "perturbed-pointer-fact": {"G1", "G3", "G4"},
+    "perturbed-pointer-fact": {"G1", "G3", "G4", "G8"},
     "perturbed-code": {"G1", "G3", "G4"},
     "code-hex-as-decimal": {"G1", "G3", "G4"},
     "uncounted-dropped": {"G1", "G6"},
     "perturbed-generator": {"G1", "G2", "G3", "G4"},
-    "note-dropped": {"G1", "G7"},
-    "perturbed-note": {"G1", "G4"},
-    "note-cut-at-hash": {"G1", "G4"},
+    "note-dropped": {"G1", "G7", "G8"},
+    "perturbed-note": {"G1", "G4", "G8"},
+    "note-cut-at-hash": {"G1", "G4", "G8"},
+    "layout-form-flipped": {"G1", "G8"},
+    "json-order-swapped": {"G1", "G8"},
 }
 
 
@@ -95,7 +105,8 @@ def generated(tables_dir):
     out = []
     for p in sorted(glob.glob(os.path.join(tables_dir, "*.tsv")) + glob.glob(os.path.join(tables_dir, "facts", "*.tsv"))
                     + glob.glob(os.path.join(tables_dir, "code", "*.tsv"))
-                    + glob.glob(os.path.join(tables_dir, "uncounted", "*.tsv"))):
+                    + glob.glob(os.path.join(tables_dir, "uncounted", "*.tsv"))
+                    + glob.glob(os.path.join(tables_dir, "layout", "*.tsv"))):
         if os.path.basename(p) != "held.tsv":
             out.append(os.path.relpath(p, tables_dir))
     return out
@@ -124,7 +135,7 @@ def literal(v, manifest):
 
 
 def column_of(name):
-    for prefix, column in (("facts/", "fact"), ("code/", "code"), ("uncounted/", "uncounted")):
+    for prefix, column in (("facts/", "fact"), ("code/", "code"), ("uncounted/", "uncounted"), ("layout/", "layout")):
         if name.startswith(prefix):
             return column
     return "gameplay"
@@ -293,7 +304,7 @@ def checks(tables_dir, export):
                 out[name] = None
         return out
     for c, _t, m, k, row, key, v, line, *_ in rows:
-        if v.startswith("HELD:sha1="):
+        if v.startswith("HELD:sha1=") or c == "layout":
             continue
         checked += 1
         if c == "code":
@@ -366,7 +377,7 @@ def checks(tables_dir, export):
     # G7: the manifest tables are the manifests whole
     walked = Counter((rel[len("build/manifest/"):],) + ident for rel in a.canon(Path(export))
                      for ident in manifest_values(str(Path(export) / rel)))
-    held_ids = Counter(r[2:6] for r in rows if r[0] != "code")
+    held_ids = Counter(r[2:6] for r in rows if r[0] not in ("code", "layout"))
     absent, unknown = walked - held_ids, held_ids - walked
     empty = [rel for rel in a.canon(Path(export)) if not manifest_values(str(Path(export) / rel))]
     figures.append("G7 manifests %d (%d with no value), values %d, in the tables %d, missing %d, unknown %d%s" % (
@@ -375,7 +386,79 @@ def checks(tables_dir, export):
         (": " + str(sorted(absent | unknown)[0])) if absent or unknown else ""))
     if absent or unknown:
         failed.add("G7")
+    # G8: the manifests rendered from the tables are the originals, as parsed
+    out = os.path.join(TMP, "rendered")
+    shutil.rmtree(out, ignore_errors=True)
+    canon = [rel[len("build/manifest/"):] for rel in a.canon(Path(export))]
+    try:
+        written = render_manifests.render(tables_dir, out)
+        error = None
+    except (SystemExit, KeyError, ValueError, IndexError) as exc:
+        written, error = [], "renderer failed: %r" % (exc,)
+    sub = load_minitoml(export)
+    differ, sub_differ = [], []
+    for m in canon if not error else []:
+        o, r = Path(export, "build", "manifest", m).read_text(), Path(out, m).read_text() if m in written else None
+        load = json.loads if m.endswith(".json") else tomli.loads
+        why = "not rendered" if r is None else parse_diff(load(o), load(r))
+        if why:
+            differ.append("%s: %s" % (m, why))
+            continue
+        if m.endswith(".toml"):
+            got = []
+            for text in (o, r):
+                try:
+                    got.append(sub(text))
+                except ValueError:
+                    got.append(None)
+            if (got[0] is None) != (got[1] is None) or (got[0] is not None and parse_diff(got[0], got[1])):
+                sub_differ.append(m)
+    accepted = sum(1 for m in canon if m.endswith(".toml")) - sum(1 for m in canon if m.endswith(".toml")
+                                                                   and refused(sub, export, m))
+    figures.append("G8 manifests %d, rendered %d, parse differs %d, _minitoml accepts %d and differs %d%s" % (
+        len(canon), len(written), len(differ), accepted, len(sub_differ),
+        (": " + (error or (differ + sub_differ)[0])) if error or differ or sub_differ else ""))
+    if error or differ or sub_differ or sorted(written) != sorted(canon):
+        failed.add("G8")
     return failed, figures
+
+
+def load_minitoml(export):
+    """The original's own `_minitoml` from the export (its subset parser on a host without tomllib)."""
+    sys.path.insert(0, os.path.join(export, "tools"))
+    try:
+        import _minitoml
+    finally:
+        sys.path.pop(0)
+    return _minitoml.loads
+
+
+def refused(sub, export, m):
+    try:
+        sub(Path(export, "build", "manifest", m).read_text())
+        return False
+    except ValueError:
+        return True
+
+
+def parse_diff(o, r, path=""):
+    """Where a rendered parse differs from the original's (key order included), or None; a rendered held value
+    matches when it is the placeholder of the SHA-1 of the original's literal."""
+    if isinstance(r, str) and r.startswith("HELD:sha1="):
+        return None if isinstance(o, str) and phase0lib.sha1(json.dumps(o)) == r[len("HELD:sha1="):] else \
+            path + " held placeholder of another value"
+    if type(o) is not type(r):
+        return path + " type"
+    if isinstance(o, dict):
+        if list(o) != list(r):
+            return path + " keys or their order"
+        return next((d for d in (parse_diff(o[k], r[k], path + "/" + k) for k in o) if d), None)
+    if isinstance(o, list):
+        if len(o) != len(r):
+            return path + " length"
+        return next((d for d in (parse_diff(a, b, "%s/%d" % (path, i)) for i, (a, b) in enumerate(zip(o, r)))
+                     if d), None)
+    return None if o == r else path + " value"
 
 
 def perturbed(name, export):
@@ -415,6 +498,24 @@ def perturbed(name, export):
         return tables, export
     if name == "uncounted-dropped":
         edit("code/uncounted.tsv", lambda lines: lines[:-1])
+        return tables, export
+    if name == "layout-form-flipped":
+        edit("layout/forms.tsv", lambda lines: [l.replace("\t(form)\ttable\t", "\t(form)\tarray\t", 1)
+                                                if i == next(j for j, x in enumerate(lines) if "\t(form)\ttable\t" in x)
+                                                else l for i, l in enumerate(lines)])
+        return tables, export
+    if name == "json-order-swapped":
+        def swap(lines):
+            for i, l in enumerate(lines):
+                f = l.split("\t")
+                if len(f) > 4 and f[4].startswith('{"dict": ') and len(json.loads(f[4])["dict"]) > 1:
+                    keys = json.loads(f[4])["dict"]
+                    keys[0], keys[1] = keys[1], keys[0]
+                    f[4] = json.dumps({"dict": keys})
+                    lines[i] = "\t".join(f)
+                    return lines
+            raise AssertionError("no JSON dict form with two keys")
+        edit("layout/forms.tsv", swap)
         return tables, export
     if name == "note-dropped":
         edit("uncounted/note.tsv", lambda lines: lines[:-1])

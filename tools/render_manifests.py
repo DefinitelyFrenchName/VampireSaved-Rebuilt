@@ -1,0 +1,124 @@
+"""render_manifests.py — phase 0's renderer: the original's 30 canonical manifests, rebuilt from the tables (SPEC.md §3).
+
+Reads every value table under TABLES_DIR (the gameplay tables, facts/, uncounted/; not code/, which holds generator
+constants) and layout/forms.tsv, which says each manifest's format, each TOML kind's form (`[x]` or `[[x]]`) and
+each JSON container's form and member order. Writes each manifest under OUT_DIR at its path in build/manifest/.
+- TOML: the top-level keys first, then each kind in the order of its first header, each row's keys in the order of
+  their lines, every value its table literal as written.
+- JSON: the containers as layout/forms.tsv gives them, members in order, values parsed from their cells; written
+  with two-space indentation.
+The acceptance is that each rendered manifest parses equal to the original's (tests/test_phase0_tables.py G8), not
+that it is byte-equal: comments and blank lines are not carried.
+
+A held value (`HELD:sha1=<sha1>`) is written from --held FILE, a JSON object {sha1: literal} made by the fill step,
+when it holds that SHA-1; otherwise it is written as the TOML string "HELD:sha1=<sha1>", which no build accepts.
+
+Usage: python3 tools/render_manifests.py <tables dir> <out dir> [--held FILE]
+"""
+import glob
+import json
+import os
+import sys
+from collections import defaultdict
+
+
+def read_cells(tables_dir):
+    """(values, forms): values {manifest: [(kind, row, key, value, line)]}; forms {manifest: {(kind, row): (value,
+    line)}} from layout/forms.tsv."""
+    values, forms = defaultdict(list), defaultdict(dict)
+    paths = (glob.glob(os.path.join(tables_dir, "*.tsv")) + glob.glob(os.path.join(tables_dir, "facts", "*.tsv"))
+             + glob.glob(os.path.join(tables_dir, "uncounted", "*.tsv"))
+             + glob.glob(os.path.join(tables_dir, "layout", "*.tsv")))
+    for p in sorted(paths):
+        if os.path.basename(p) == "held.tsv":
+            continue
+        layout = os.path.relpath(p, tables_dir).startswith("layout" + os.sep)
+        for line in open(p):
+            if line.startswith("#") or line.startswith("manifest\t"):
+                continue
+            m, kind, row, key, value, at = line.rstrip("\n").split("\t")[:6]
+            if layout:
+                forms[m][(kind, row)] = (value, at)
+            else:
+                values[m].append((kind, row, key, value, at))
+    return values, forms
+
+
+def unheld(value, held):
+    """A cell's literal, with a held value replaced by the fill step's literal for its SHA-1 when there is one."""
+    if not value.startswith("HELD:sha1="):
+        return value
+    return held.get(value[len("HELD:sha1="):], json.dumps(value))
+
+
+def render_toml(cells, forms, held):
+    top = sorted((c for c in cells if c[0] == "(top)"), key=lambda c: int(c[4]))
+    out = ["%s = %s" % (key, unheld(v, held)) for _k, _r, key, v, _l in top]
+    rows = defaultdict(lambda: defaultdict(list))
+    for kind, row, key, v, at in cells:
+        if kind != "(top)":
+            rows[kind][row].append((int(at), key, v))
+    for _first, kind, form in sorted((int(at), kind, form) for (kind, row), (form, at) in forms.items()
+                                     if row == "(kind)"):
+        group = sorted(rows[kind].values(), key=lambda r: min(r)[0])
+        if form == "table" and len(group) > 1:
+            raise SystemExit("[%s] is a table but has %d rows" % (kind, len(group)))
+        for r in group or [[]]:
+            out += ["", ("[[%s]]" if form == "array" else "[%s]") % kind]
+            out += ["%s = %s" % (key, unheld(v, held)) for _at, key, v in sorted(r)]
+    return "\n".join(out).lstrip("\n") + "\n"
+
+
+def render_json(cells, forms, held):
+    scalars = {(row, key): v for _k, row, key, v, _l in cells}
+    containers = {row: json.loads(v) for (_kind, row), (v, _at) in forms.items() if row != "(file)"}
+
+    def child(ptr, part):
+        return ("" if ptr == "(top)" else ptr) + "/" + str(part).replace("~", "~0").replace("/", "~1")
+
+    def build(ptr):
+        form = containers[ptr]
+        if "dict" in form:
+            return {k: build(child(ptr, k)) if child(ptr, k) in containers
+                    else json.loads(unheld(scalars[(ptr, k)], held)) for k in form["dict"]}
+        return [build(child(ptr, i)) if child(ptr, i) in containers
+                else json.loads(unheld(scalars[(child(ptr, i), "[]")], held)) for i in range(form["list"])]
+    return json.dumps(build("(top)"), indent=2, ensure_ascii=False) + "\n"
+
+
+def render(tables_dir, out_dir, held=None):
+    """Write every manifest layout/forms.tsv names; returns the paths written, relative to out_dir."""
+    values, forms = read_cells(tables_dir)
+    held = held or {}
+    written = []
+    for m in sorted(forms):
+        fmt = forms[m].get(("(file)", "(file)"), ("?",))[0]
+        if fmt not in ("toml", "json"):
+            raise SystemExit("%s: no (file) form in layout/forms.tsv" % m)
+        body = (render_json if fmt == "json" else render_toml)(values.get(m, []), forms[m], held)
+        path = os.path.join(out_dir, m)
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, "w") as f:
+            f.write(body)
+        written.append(m)
+    unknown = sorted(set(values) - set(forms))
+    if unknown:
+        raise SystemExit("values for manifests layout/forms.tsv does not name: %s" % unknown[:3])
+    return written
+
+
+def main():
+    args = sys.argv[1:]
+    held = {}
+    if "--held" in args:
+        i = args.index("--held")
+        held = json.load(open(args[i + 1]))
+        args = args[:i] + args[i + 2:]
+    if len(args) != 2:
+        raise SystemExit(__doc__.strip().splitlines()[-1])
+    written = render(args[0], args[1], held)
+    print("rendered %d manifests into %s (held values supplied: %d)" % (len(written), args[1], len(held)))
+
+
+if __name__ == "__main__":
+    main()

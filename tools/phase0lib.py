@@ -384,6 +384,51 @@ def uncounted_rows(export_root, counted):
     return tables, read
 
 
+def layout_rows(export_root):
+    """What the value tables do not say about a manifest's shape, as rows of `layout/forms` (key `(form)`):
+    - one per canonical manifest: kind and row `(file)`, value `toml` or `json` (so a manifest with no value, comments
+      only, is still named and its SHA-1 pinned in the header);
+    - one per TOML kind: row `(kind)`, value `table` (`[x]`) or `array` (`[[x]]`), line its first header;
+    - one per JSON container: row its pointer, value `{"dict": [its keys in order]}` or `{"list": its length}` (JSON
+      consumers iterate in order, so the order is carried)."""
+    root = Path(export_root)
+    a = load_census(root)
+    rows, read = [], {}
+    for rel in a.canon(root):
+        data = (root / rel).read_bytes()
+        read[rel] = hashlib.sha1(data).hexdigest()
+        manifest = rel[len("build/manifest/"):]
+        fmt = "json" if rel.endswith(".json") else "toml"
+        rows.append((manifest, "(file)", "(file)", "(form)", fmt, "-", "none", "-"))
+        text = data.decode("utf-8", errors="replace")
+        if fmt == "json":
+            def walk(node, path, where):
+                if isinstance(node, dict):
+                    form = {"dict": list(node)}
+                elif isinstance(node, list):
+                    form = {"list": len(node)}
+                else:
+                    return
+                rows.append((manifest, ".".join(path) or "(top)", pointer(where), "(form)", json.dumps(form), "-",
+                             "none", "-"))
+                for k, v in (node.items() if isinstance(node, dict) else enumerate(node)):
+                    if not (isinstance(k, str) and k.startswith("_")):
+                        walk(v, path + ([str(k)] if isinstance(node, dict) else ["[]"]), where + [k])
+            walk(json.loads(text), [], [])
+            continue
+        doc, first = parsed(str(root / rel)), {}
+        for n, raw in enumerate(text.splitlines(), 1):
+            m = a.HDR_RE.match(raw.split("#")[0].rstrip())
+            if m and not raw.strip().startswith("#"):
+                first.setdefault(m.group(2), (n, "array" if m.group(1) == "[[" else "table"))
+        for kind, (line, form) in first.items():
+            node = doc.get(kind)
+            if not ((form == "array" and isinstance(node, list)) or (form == "table" and isinstance(node, dict))):
+                raise SystemExit("%s: [%s] header form %s does not match its parse" % (rel, kind, form))
+            rows.append((manifest, kind, "(kind)", "(form)", form, str(line), "none", "-"))
+    return {"layout/forms": rows}, read
+
+
 def semantic(export_root, manifest, kind, row, key):
     """The value at (kind, row, key) by an independent parse (tomli / json), as a Python value."""
     path = str(Path(export_root) / "build" / "manifest" / manifest)
