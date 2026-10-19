@@ -16,6 +16,9 @@ by the maintainer's ruling, then the facts.
 
 The original had 15 of these values in-table (the `edges_in` rows, in its `select_wheel.md`) and 221 baked.
 
+Two more gameplay tables, `jump_physics.tsv` and `cancel_windows.tsv`, are decoded from the original's extraction
+records, not from the census (below, "The extraction tables"; #4).
+
 ## The fact tables (the census's `fact` column, 8,520 values), under `facts/`
 
 There is one table per TOML kind, `facts/<kind>.tsv` (45 kinds, plus the top-level keys in `facts/top.tsv`), and one
@@ -160,6 +163,94 @@ build by `python3 tests/test_build_proof.py`:
 - P4: the control's perturbation changes exactly one value.
 
 Its own control is `blind-compare`.
+
+## The extraction tables, under `extraction/`, and the two gameplay tables decoded from them (#4)
+
+**What they are.** The original's extractor (`tools/extract_char.py`) diffs vsav2 against its sibling vhunt2 and
+writes one record per tenant, `regions.json`. It holds every ported region with its vhunt2 twin and shift, every
+relocation ref, the code scan, the dispatch pairs and the per-character bank values. No vhunt2 byte reaches the
+output, but the measurement needs vhunt2 (#4). The maintainer's direction (`SPEC.md` §0) was to table it. The records
+tabled are the three the original's merged build reads, `tools/build_merged.sh` lines 36–38: `D_EX="build/m5_wide/extract"`,
+`H_EX="build/hui32/extract"`, `P_EX="build/pyron21/extract"`. Together they hold 153,013 scalar values: Donovan
+49,141, Huitzil 54,872, Pyron 49,000.
+
+**They record what was measured, not what the extractor computes today.** The original notes that `m5_wide`'s
+record *"predates two `extract_char.py` changes"* (its `HANDOFF_HISTORY.md` line 2412, on `test_merged_inputs.sh`,
+#27 there: the merged ARTIFACT is reproducible, the input directories are not byte-equal). Re-running the original's
+extractor today would not reproduce these tables. They are what its merged build consumed.
+
+**The format.** These tables keep the record's own columns, not the shared schema. Each section of the record is one
+table, with a leading `tenant` column:
+
+| table | rows | what it holds |
+|---|---|---|
+| `extraction/runs.tsv` | 3 | each record's path, the source and sibling sets (`vsav2`, `vhunt2`) and the character id |
+| `extraction/inputs.tsv` | 27 | the SHA-1 of every vsav2 member each record read |
+| `extraction/shifts.tsv` | 64 | each shift family's vsav2 → vhunt2 shift |
+| `extraction/regions.tsv` | 78 | each region: `src` (vsav2), `orc` (its vhunt2 twin), `len`, `grow`, `kind`, `shift`, the `source_only` / `pre_classified` flags, `raw_from`, `sha1` |
+| `extraction/region_lists.tsv` | 1,823 | each region's lists, in order: `dead` and `ins` spans (`start,end`), `charid_sites`, `table_bytes`; `(empty)` for an empty list |
+| `extraction/refs.tsv` | 23,533 | every relocation ref, in the record's order: `off`, `width`, `target`, `orc_target`, `shift`, `class` |
+| `extraction/variant_sites.tsv` | 35 | the bytes where vsav2 and vhunt2 differ inside a region |
+| `extraction/pcrel_refs.tsv` | 11 | the PC-relative table entries of the source-only regions |
+| `extraction/code_scan.tsv` | 4,524 | the code scanner's operands, in order |
+| `extraction/dispatch.tsv` | 58 | the per-character dispatch targets, vsav2 and vhunt2 |
+| `extraction/engine_dispatch.tsv` | 2 | the engine dispatch targets that differ by a delta |
+| `extraction/values.tsv` | 87 | the per-character bank rows: pointers and short values as written; the three gameplay rows say `TABLE:<name>` |
+| `extraction/auto_tables.tsv` | 57 | the bank gaps the extractor classified, with its entry guess |
+
+Every integer is hex (`0x…`, `-0x…`) except `width`, a bit count. Strings are as written (a `ptr` stays `"0x27f548"`).
+An absent key is `-`. Addresses are PRG offsets of the set the column names ([VSR-31]). The JSON objects' key order
+is not carried, because it is not data; every list's order and the regions' order are, by row order. Each header
+names the pin and the SHA-1 of `build_merged.sh` and the three records. The gameplay tables' headers also name the
+two fact tables they compute addresses from.
+
+**The two gameplay tables** (the maintainer's ruling, `SPEC.md` §0, *"Readable gameplay table (Recommended)"*). Each
+record carries three vs2 bank rows as raw bytes. They are decoded into named fields here, and each row names the vs2
+address it was read from, `origins.vsav2 + (vsavj − origins.vsavj) + char × entry size`. That is the original
+extractor's own `table_addr`, with `bank_map.toml`'s facts (`facts/origins.tsv`, `facts/table.tsv`).
+- `jump_physics.tsv` (9 rows): `jump_params`, three jumps per tenant (`neutral`, `forward`, `back`) of `xv`, `xaccel`,
+  `yv`, `gravity`. Each value is the engine's signed 16.16 long written as its exact decimal (`-0.01953125` is
+  `0xFFFFFB00`). The layout is the original's, *"`PRG:0x0BDB7A` jump_params — id*0x30, THREE 0x10 rows
+  (neutral/fwd/back jump) of (xv,xacc,yv,gravity)"*, whose consumer is *"the installer every seq-0600 starter bsr's
+  (vsavj 0x27A34 / vs2 0x26C86)"* (its `docs/game/atlas/ram.md` lines 337–340). The field names are its
+  `charmap_gen.py`'s. Units are not measured here.
+- `cancel_windows.tsv` (90 rows): `byte2d_a` and `byte2d_b`, 30 bytes per tenant, one row per move index with
+  `special` and `ex`. In the original's measurement (14z-194, #118 there, its `ram.md` lines 266–267), struct `+0x167` is
+  *"loaded 0-1 f later from a per-character, per-move table (PRG:0x027EA2: PRG:0x0BE89A + char*30 + move; 10
+  typical, 3/9 others), -1 per tick (PRG:0x0224DA): a special-cancel window opened with the normal"*, and `+0x168`
+  is *"the same for EX: table PRG:0x0BEC5A (12 typical, 3/11 others)"*. So a value is a window in ticks. Which normal
+  each move index is was not measured, there or here.
+
+The other short bank values (`param32_a`/`_b`, which the original's decoder reads as walk velocities, `rec8_a`/`_b`,
+the `value16`/`value8` rows) are carried as written in `extraction/values.tsv`. The ruling named the three rows
+above.
+
+**No ROM bytes** ([VSR-8]): the tables hold addresses, offsets, lengths, shifts, short discrete values and SHA-1s.
+No cell but a `sha1` holds a run of 17 or more hex bytes, which the gate checks (E4). The three long rows are the
+decoded tables above.
+
+**Generated and gated.** `tools/extract_regions.py <export> <pin> <out>` writes all 15 tables and prints the SHA-1 of
+every file it read. `render()` there is the inverse. The gate is `python3 tests/test_extraction_tables.py` (it needs
+`../ROMS`):
+- E1: the tables regenerate byte for byte.
+- E2: they render back to each record, parse equal, and their headers name each record's SHA-1.
+- E3: every gameplay value, re-encoded, equals the byte at its vs2 row in vsav2's data view. The address is computed
+  in the gate from the fact tables, and each row's own address column must agree. vsav2.zip's members, the key
+  included, have the SHA-1s the records read. The anchor is the reference dump, not the record ([VSR-51]).
+- E4: no hex runs of 17 or more bytes.
+
+Its six controls are `perturbed-ref`, `dropped-scan`, `gravity-sign`, `windows-swapped`, `bytes-in-values` (E2 stays
+green, so E4 is what catches bytes in the clear) and `wrong-row` (E3 alone, with the tables untouched). The phase-0
+gate and the renderer skip the two gameplay tables by their `GENERATED by tools/extract_regions.py` header. That is
+the one way a table leaves `test_phase0_tables.py`'s G1, so a phase-0 table given that header would leave it too.
+
+Measured at the extraction (R-004): 30,401 rows in 15 tables, 1,484 KB under `extraction/`. E1–E4 pass:
+- E1: 15 files, 0 differing.
+- E2: 3 of 3 records render equal.
+- E3: 189 values checked, 0 differing from vsav2's row; 27 inputs, 0 not in vsav2.zip.
+- E4: 225,847 cells, 0 runs.
+
+All six controls FIRED, and each control mode gives `VERDICT: FAIL`.
 
 ## The format, and why
 
