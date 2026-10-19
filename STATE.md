@@ -99,6 +99,28 @@ Paid for:
   changes. The relinked reference (`f17f851c`) was proven again: PASS, the same figures.
 - **W2 counted 14 replays**: the original's corpus list continues its lines with `\`. Fixed; the count is 12.
 
+Committed `84e4bc9`.
+
+### (6) #4, THE CAPTURE (FIRST PASS): THE PURSUIT IS NOT THE STATE; NOTHING CAPTURED REACHES IT
+
+The maintainer: *"start"*. `tools/state_capture.py` runs the original's own rigs on native vs2 and on its merged
+build (`build/tmp/proof_r005_3`), on the WIDE MAME, tracing both fighters' `+0x04` every frame. Kinds: `naming`
+(the six parts holding a pursuit), `victim` (real picks, as the original's victim gate), `roll` (its tech-roll rig,
+both directions) and `corpus` (the original's 97 top-level replays). Detail: `docs/project/tables/README.md`, "The
+capture, R-005".
+- The newcomers' pursuits run in routine `0x00`, sequence `0x0E`, on both games, so the table's handler is not the
+  pursuit. The original's "pursuit" label for the table does not hold for these pursuits.
+- `0x02100600` is a sub-state of fighter routine `0x10` (handler `PRG:0x026258`, a scratch reading, addresses only).
+  Nothing captured enters routine `0x10`, on either game, for any fighter, veterans included. So the rigs do not reach
+  it; that says nothing yet about whether a newcomer can.
+- In the 96 naming events, the newcomer's states match the two legs in 85. The rest are Dark Force and the
+  original's #179 (closed `not-ours`).
+
+Not done: which hit gives the reaction. A fighter enters routine `0x10` only through `PRG:0x026D9A`, from the damage
+routine's reaction classes `0x16` (air) and `0x36` (ground) (the `0x06FD34` store is an effect object's). The shape
+suggests a stun, which no rig builds up; the README has the trail. The tool is not yet a gate ([VSR-20]: its rerunnable form is the tool;
+the gate follows once there is an expectation to freeze).
+
 
 ## Session R-004 — **#5 ruled: (a) the measurer runs one command per tool call; #4: the extraction tabled, its jump, cancel and short bank rows decoded; every manifest row mapped to a correction, 16 parts added; the rec8 writes read statically, the newcomers' own rows found to be veterans' copies, ruled (c) then (a); R-003 archived.** Opened 2026-10-19 on Opus 5.5 (the ruled orchestrator); transcript `dc3ff4f7`.
 

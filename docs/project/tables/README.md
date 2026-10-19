@@ -315,8 +315,47 @@ measured:**
 - whether a newcomer reaches it;
 - how the difference feels.
 
-Those need a capture in play ([VSR-43]). Whether to port vs2's rows is the maintainer's call (STATE.md "Decisions
-pending").
+Those need a capture in play ([VSR-43]). Whether to port vs2's rows is the maintainer's call; ruled (c) then (a)
+(`SPEC.md` §0, R-004): the capture first.
+
+**The capture, R-005 (first pass): the pursuit is not that state, and nothing captured reaches it.** `tools/state_capture.py`
+runs the original's own rigs on native vs2 and on its merged build (the R-005 build proof's pristine leg), on the
+WIDE MAME (`docs/project/instruments.md`), and traces both fighters' `+0x04` every frame:
+- **The newcomers' pursuits run in routine `0x00`, sequence `0x0E`**, on both games: Donovan's Foot Stab at all four
+  strengths `0x02000E02`/`0x02000E04` (ES `0x02001002`/`0x02001004`), Huitzil's and Pyron's Sitting Attack likewise.
+  The table's handler is not the pursuit. The original's label ("the PURSUIT physics record pair", and "the pursuit
+  leap" for `param32_b`, read at `PRG:0x026484` in the same handler) does not hold for the pursuit these rigs perform.
+- **`0x02100600` is a sub-state of fighter routine `0x10`** (scratch reading, addresses only): the fighter dispatch on
+  `+0x05` at `PRG:0x02244E` sends routine `0x10` to `PRG:0x026258`, whose sequence table puts sequence 6 at
+  `PRG:0x026670`. Sequence 0 places the fighter at the per-id height `PRG:0x0BE7FA` above its floor, sets a 30-frame
+  timer and waits for one of three inputs; one of them enters `0x02100600`. Routine `0x10` is stored from outside its
+  handler only at `PRG:0x026D9A` and `PRG:0x06FD34`. vs2 has the same layout (its stores at `PRG:0x025012`-`0x025F1E`).
+- **Nothing captured enters routine `0x10`, on either game, for any fighter**: the six naming parts that hold a pursuit
+  (96 events), seven victim parts (Victor's hits, knockdowns, throw, blocks and air hits on each newcomer, real
+  picks), eight tech-roll legs (the roll runs in routine `0x02`, `0x020202xx`; P2 travels 120-152 px over frames
+  3060-3150 on both games), and the 97 top-level replays of the original's corpus (without their gates' pokes). Over
+  all of them the fighters' routines seen are `0x00`-`0x0E` and `0x12`: every routine but `0x10` (a measurer's
+  histogram of the traces' `+0x04` high words). This is absence, the weakest evidence ([VSR-52]), but on the veterans as much as on
+  the newcomers, so it says the rigs do not reach routine `0x10`, not that the newcomers cannot.
+- In the 96 naming events, the newcomer's state sequence is identical on both legs, state and frame, in 85. The 11
+  that differ are Dark Force (activation and moves in it; the original's ported-Dark-Force rulings) and Huitzil's
+  Sitting Attack landing off a throw, which is the original's #179 (closed `not-ours`: the shared-wall push-apart
+  follows vsavj's engine).
+
+**How routine `0x10` is entered** (scratch reading, addresses only). The `0x06FD34` store is an effect object's own
+sub-routine (it steps `+0x05` by `addq #2` over an effect animation set), not a fighter's. A fighter enters routine
+`0x10` only from `PRG:0x026D9A`, reached from two places in the damage routine (`0x02`, handler `PRG:0x0237C6`), whose
+sequence 2 dispatches on the reaction class `+0x140`:
+- class `0x16` (`PRG:0x0254B8`): falling, the fighter is caught at the per-id height `PRG:0x0BE7FA` above its floor
+  and, unless dead (`+0x11F`), enters routine `0x10`;
+- class `0x36` (`PRG:0x025FAE`): after a `+0x26` countdown, `+0x156` takes a duration from a table by `+0x56`, then
+  routine `0x10`.
+Both classes are assigned together, `0x36` on the ground and `0x16` in the air (`+0x38`), by the damage routine's
+sequence 0 (`PRG:0x023E58`/`0x023E8C`, and sub-state `0x12` at `PRG:0x02479C`/`0x0247AE` after a `+0x5C` countdown).
+Routine `0x10` then counts `+0x156` down and, for 30 frames, takes one of three inputs. Which hit gives that reaction
+is not read; the shape (a timed state after a hit, shortened by input, death checked) suggests a stun, which nothing
+captured builds up. **Still not measured:** what the reaction is, so whether a newcomer can reach it and how vs2's
+rows would differ there.
 
 `tools/rec8_writes.py <export> <roms>` prints all of the above, with the SHA-1 of each file it read. Its gate is
 `python3 tests/test_rec8_writes.py`, anchored on the reference dumps:

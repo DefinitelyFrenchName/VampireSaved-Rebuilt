@@ -86,8 +86,8 @@ original's PASS with every section `ok` on all 12, none failed or skipped. Contr
 - normal, first run (2,165.7 s): the original *"PASS: CPS-2 WIDE profile gate (MAME) … over 12 replays"*; sections
   1, 2 and 3 each `ok 12, failed 0`; both controls FIRED (*"02_demitri_vs_cpu: sections 1 and 2 ok, section 3 FAIL on
   the framebuffer alone"*); the wrapper's verdict FAIL on W2 from its own corpus count (the gotcha below);
-- `--control canary-unreached` (1,417.7 s): FAIL (W2), section 3 *"ok 1, failed 11"*, sections 1 and 2 ok 12. One of
-  the twelve replays draws no bank-2/3 sprite (which one was not read);
+- `--control canary-unreached` (1,417.7 s): FAIL (W2), section 3 *"ok 1, failed 11"*, sections 1 and 2 ok 12. The one
+  replay left `ok` is `06_test_mode` (a measurer read the log), which draws no bank-2/3 sprite;
 - `--control ref-as-wide`: FAIL (W1).
 The superset invariant and inertness hold on RAM and pixels, and the 19-bit tile address reaches the appended banks.
 
