@@ -6,7 +6,7 @@ head). A session key is `R-NNN`, one per sitting, never renamed or renumbered ([
 their own namespaces. A group's form, kept from the original: `## Session KEY — banner`, then `### opened with` and one
 `### (N) TITLE` section per piece of work. An open list holds only what is open.
 
-## Session R-004 — **#5 ruled: (a) the measurer runs one command per tool call; #4: the extraction tabled, its jump, cancel and short bank rows decoded; every manifest row mapped to a correction, 16 parts added.** Opened 2026-10-19 on Opus 5.5 (the ruled orchestrator); transcript `dc3ff4f7`.
+## Session R-004 — **#5 ruled: (a) the measurer runs one command per tool call; #4: the extraction tabled, its jump, cancel and short bank rows decoded; every manifest row mapped to a correction, 16 parts added; the rec8 writes read statically, the newcomers' own rows found to be veterans' copies.** Opened 2026-10-19 on Opus 5.5 (the ruled orchestrator); transcript `dc3ff4f7`.
 
 ### opened with
 
@@ -100,6 +100,30 @@ The gate `tests/test_port_corrections.py` gains C3 (coverage: every manifest row
 (each anchor at its line, inside its row's reach), with three controls (`row-dropped`, `part-unknown`,
 `anchor-outside`). All five controls FIRED, `--control part-unknown` FAILs, and the first green was read by its
 printed values. That reading found 20 reconciliation rows anchored on a bare `vsav2 = `; they now quote their whole line.
+
+### (5) #4: WHAT THE BUILD WROTE FOR REC8_A/REC8_B; THE NEWCOMERS' OWN ROWS ARE VETERANS' COPIES
+
+The maintainer: *"take than on"*, to the next-session item, read from the generator because the original's image
+cannot be built here (no vhunt2). `tools/rec8_writes.py` and its gate `tests/test_rec8_writes.py` (R1–R3, three
+controls, all FIRED; the first green read by its printed values). Detail and quotes: `docs/project/tables/README.md`
+"What the build wrote for rec8_a and rec8_b".
+- **The six writes change nothing.** The generator writes each tenant's 8 bytes at the table's vsavj base + id*8
+  (Donovan at 0x13 on the merged build's profile). That lands inside veterans' rows. A measurer: *"rec8 writes equal
+  to vsavj's bytes: 6 of 6"*. A reader quoted the write rule, the empty skip set (`port_param32 = true` in all three
+  manifests) and the disabled gap tables.
+- **The newcomers' own rows of the table at `PRG:0x0BE3FA` (id*0x20) are never written**, by reading the generator
+  and phase 0's tables (absence, [VSR-52]).
+  - In vsavj they equal rows 3, 0 and 1: Donovan, Huitzil and Pyron hold Victor's, Bulleta's and Demitri's.
+  - vs2's rows for the three differ.
+  - Both games' one load of the table (vsavj `PRG:0x026646`, vs2 `PRG:0x0252DC`) indexes by `+0x382`, the raw id. So
+    a newcomer in that state takes a veteran's values.
+- **Not measured:** which move the state (`+0x04` = `0x02100600`) is, and whether a newcomer reaches it. The original
+  calls the table "the PURSUIT physics record pair", tied to chain `a2:0x4C`, and this reading does not confirm it.
+  A capture in play settles it ([VSR-43]). Porting vs2's rows has gameplay consequences, so it is under "Decisions
+  pending".
+
+The disassembly was read in a scratch, and nothing of it is committed beyond addresses and the instruction shapes the
+gate checks.
 
 ## Session R-003 — **Phase 0 closed on parse-equality (the build proof moved to phase 1); vhunt2's role found (#4); the original's corrections per tenant gathered; R-002 archived.** Opened 2026-10-18 on Opus 5.5 (the ruled orchestrator); transcript `5e9e8b49`.
 
@@ -219,9 +243,18 @@ validation of `CLAUDE.md` v1.0, the read-only sources, phase 0's place and pin).
 
 ## Decisions pending (human)
 
-none.
+- **#4: the newcomers' own rows of the table at `PRG:0x0BE3FA`** (R-004 (5)). The original's build leaves Donovan,
+  Huitzil and Pyron reading Victor's, Bulleta's and Demitri's rows there. vs2's own rows for them differ, and both
+  games index the table by the raw id. Options:
+  - (a) phase 1 ports vs2's three rows, as the original did for the walk rows (`port_param32`);
+  - (b) keep the original's behaviour, the veterans' copies;
+  - (c) decide after a capture.
+
+  Recommendation: (c) then (a). First capture in play which move the state is and how native vs2 and the original's
+  build differ there ([VSR-43]); then port vs2's rows if the difference is the newcomers' own. Nothing is blocked: the
+  rebuild has no build yet.
 
 ## The next session starts with
 
-1. #4: what the original's build wrote for `rec8_a`/`rec8_b` (slices of other characters' rows, R-004 (3)) and
-   whether the tenants' own pursuit records (`id*0x20`) were ported; measure on the original's built image.
+1. #4: when an instrument can run the original's build, capture which move enters state `0x02100600` (vsavj
+   `PRG:0x026670`) for each newcomer, native vs2 against the build. That settles the pending decision's facts.

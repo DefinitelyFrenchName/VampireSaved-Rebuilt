@@ -248,9 +248,56 @@ extractor's own `table_addr`, with `bank_map.toml`'s facts (`facts/origins.tsv`,
 
 So a tenant's `rec8_a`/`rec8_b` bytes are another character's data. For Donovan (`0x13*8 = 0x98`) they are char 3's
 neutral-jump `yv`/`gravity` and char 4's second pursuit variant's `yv`/`yacc`. They stay as written in
-`extraction/values.tsv`, never in a gameplay table that would call them the tenant's. Two things are not measured
-(#4): what the original's build wrote for these rows, and whether the tenants' own pursuit records were ported. Those
-records are not in the extraction record.
+`extraction/values.tsv`, never in a gameplay table that would call them the tenant's. What the original's build wrote
+for them, and what the tenants' own rows hold, is the next paragraph (R-004; until then both were "not measured").
+
+**What the build wrote for `rec8_a` and `rec8_b`, and the tenants' own rows (R-004, read statically).** The original's
+merged build cannot be rebuilt here (#4: it needs vhunt2), so this is read from its generator and the reference dumps,
+not measured on its built image.
+- **The write rule, quoted by a reader** from the original's `tools/gen_donovan_patch.py`: a value row's address is
+  *"`return _int(t["vsavj"]) + slot * es, es`"* (line 1630), with *"`es = ... (t["stride"] // 32)`"* (line 1629). It
+  is written by *"`poke_bytes(a, data, f"{v['table']}[{dst_slot:#x}] value")`"* (line 3677), with
+  *"`p["dst_slot"] = tid`"* (line 134). The variant mirror is *"`t.get("mirror_variant", tid < 0x10)`"* (line 135).
+  The skip set is empty when *"`port_param32 = true`"*, which all three manifests declare (donovan.toml:32,
+  huitzil.toml:42, pyron.toml:72). The gap tables are *"GAP TABLES DISABLED (session 14w)"* (line 3685). The merged
+  build runs *"`--profile cps2-wide-v1`"* (`build_merged.sh`:60), which puts Donovan at 0x13 (`roster.tsv`'s
+  `id_by_profile`).
+- **The six writes change nothing.** By that rule each tenant's 8 bytes land at the table's vsavj base + id*8
+  (Donovan 0x13 at `PRG:0x0BDC12`/`PRG:0x0BE492`, Huitzil 0x10 at `PRG:0x0BDBFA`/`PRG:0x0BE47A`, Pyron 0x11 at
+  `PRG:0x0BDC02`/`PRG:0x0BE482`). These sit inside veterans' rows. Each write equals vsavj's bytes already there.
+- **The tenants' own rows are a veteran's copy.** No generic value write reaches the newcomers' own rows of the
+  table at `PRG:0x0BE3FA` (row id*0x20): a rec8 row writes id*8, and the gap rows that slice the table are not
+  written. No manifest row phase 0 tables writes into the table either; the one address in its range is a
+  `capture_kf_leilei` source (that is a reading of the manifests, and absence is the weakest evidence, [VSR-52]).
+  - In vsavj each tenant's row equals its base-half row: Donovan's equals row 3, Huitzil's row 0, Pyron's row 1.
+  - vs2's row for each tenant differs from it.
+- **Both games read the table by the raw id.** The one load of the table in each game (vsavj `PRG:0x026646`, vs2
+  `PRG:0x0252DC`) takes its index from `+0x382`, the character id. It multiplies it by 0x20 and adds 0x10 when `+0x0A`
+  is set.
+  - No ported region references vs2's table: the ported code's bank refs point elsewhere (`extraction/refs.tsv`).
+  - In vsavj the load is called from substate 0 of a state handler at `PRG:0x026670`. That substate sets `+0x38`. Its
+    substate 2 compares against the per-id word at `PRG:0x0BE7FA` (the `word_y_off` row).
+  - The state (`+0x04` = `0x02100600`) is entered from `PRG:0x02657A`, which picks the variant from a 32-entry table
+    by a call to `PRG:0x014E8A`. It is also entered from `PRG:0x026600`, which picks it from bits of `+0x395`.
+
+So a newcomer that enters that state takes Victor's, Bulleta's or Demitri's values for it, not vs2's own. **Not
+measured:**
+- which move or situation the state is (the original's note calls the table "the PURSUIT physics record pair" and
+  ties it to chain `a2:0x4C`; this reading does not confirm either);
+- whether a newcomer reaches it;
+- how the difference feels.
+
+Those need a capture in play ([VSR-43]). Whether to port vs2's rows is the maintainer's call (STATE.md "Decisions
+pending").
+
+`tools/rec8_writes.py <export> <roms>` prints all of the above, with the SHA-1 of each file it read. Its gate is
+`python3 tests/test_rec8_writes.py`, anchored on the reference dumps:
+- R1: the 6 writes equal vsavj's bytes.
+- R2: the 3 rows are base-half copies, and vs2's 3 rows differ.
+- R3: one load per game, indexed from `+0x382`.
+
+Its three controls (`value-flipped`, `row-unaliased`, `index-elsewhere`) fire, and a control mode FAILs. Measured
+(R-004, a measurer): `rec8 writes equal to vsavj's bytes: 6 of 6`, with both readers indexed from `+0x382`.
 
 **No ROM bytes** ([VSR-8]): the tables hold addresses, offsets, lengths, shifts, short discrete values and SHA-1s.
 No cell but a `sha1` holds a run of 17 or more hex bytes, which the gate checks (E4). The three long rows are the
