@@ -1,13 +1,14 @@
-"""test_extraction_tables.py — the gate on the extraction tables and the two gameplay tables decoded from them
+"""test_extraction_tables.py — the gate on the extraction tables and the three gameplay tables decoded from them
 (tools/extract_regions.py; docs/project/tables/README.md "The extraction tables"; #4).
 
 Needs an export of the original at the tables' pin, and the reference dumps (ROMDIR, read only) for E3.
   E1 FRESH     tools/extract_regions.py, run anew from the export, writes files byte-identical to the committed tables
   E2 WHOLE     the committed tables render back to each tenant's regions.json, parse equal (objects' key order aside,
                every list's order kept), and their `read:` headers name each record's SHA-1
-  E3 ANCHORED  every jump_physics and cancel_windows row, re-encoded, equals the bytes at its vs2 row in vsav2's data
-               view, at an address computed here from bank_map.toml's facts and the record's char (and the row's own
-               vs2 column says the same address); vsav2.zip's members have the SHA-1s the records read
+  E3 ANCHORED  every jump_physics, cancel_windows and bank_values value, re-encoded, equals the bytes at its vs2 row
+               in vsav2's data view, at an address computed here from bank_map.toml's facts and the record's char
+               (and the row's own vs2 column says the same address); vsav2.zip's members have the SHA-1s the records
+               read
   E4 NO-ROM    no cell of the tables but a `sha1` holds a run of 17 or more hex bytes ([VSR-8])
 
 CONTROLS ([VSR-22]):
@@ -15,6 +16,7 @@ CONTROLS ([VSR-22]):
   dropped-scan      a copy of code_scan.tsv with one row deleted: E1 and E2 must fail
   gravity-sign      a copy of jump_physics.tsv with Donovan's neutral gravity negated: E1, E2 and E3 must fail
   windows-swapped   a copy of cancel_windows.tsv with Pyron's special and EX columns swapped: E1, E2 and E3 must fail
+  air-dash-zeroed   a copy of bank_values.tsv with Huitzil's minimum air-dash height made 0: E1, E2 and E3 must fail
   bytes-in-values   a copy of values.tsv with Donovan's jump_params bytes written back in the clear: E1 and E4 must
                     fail (E2 passes: the record is still whole, which is why E4 exists)
   wrong-row         the tables untouched, E3 reads the next character's row: E3 alone must fail
@@ -44,10 +46,12 @@ import runlog  # noqa: E402
 from test_phase0_tables import read_table  # noqa: E402
 
 TABLES = os.path.join(ROOT, "docs", "project", "tables")
-FILES = ["extraction/%s.tsv" % n for n in extract_regions.COLUMNS
-         if n not in ("jump_physics", "cancel_windows")] + ["jump_physics.tsv", "cancel_windows.tsv"]
+FILES = (["extraction/%s.tsv" % n for n in extract_regions.COLUMNS if n not in extract_regions.GAMEPLAY_TABLES]
+         + ["%s.tsv" % n for n in extract_regions.GAMEPLAY_TABLES])
 CONTROLS = {"perturbed-ref": {"E1", "E2"}, "dropped-scan": {"E1", "E2"}, "gravity-sign": {"E1", "E2", "E3"},
-            "windows-swapped": {"E1", "E2", "E3"}, "bytes-in-values": {"E1", "E4"}, "wrong-row": {"E3"}}
+            "windows-swapped": {"E1", "E2", "E3"}, "air-dash-zeroed": {"E1", "E2", "E3"},
+            "bytes-in-values": {"E1", "E4"}, "wrong-row": {"E3"}}
+FORMATS = {"s16.16": 4, "u16": 2, "u8": 1}
 HEX_RUN = re.compile(r"[0-9a-fA-F]{34,}")
 
 
@@ -64,9 +68,8 @@ def vs2_rows():
             if r[0] == "bank_map.toml" and r[3] in ("vsavj", "vsav2", "stride", "span"):
                 facts[(r[2], r[3])] = int(r[4], 16)
     shift = facts[("#1", "vsav2")] - facts[("#1", "vsavj")]
-    return {"jump_params": (facts[("jump_params", "vsavj")] + shift, facts[("jump_params", "stride")] // 32),
-            "byte2d_a": (facts[("byte2d_a", "vsavj")] + shift, facts[("byte2d_a", "span")] // 32),
-            "byte2d_b": (facts[("byte2d_b", "vsavj")] + shift, facts[("byte2d_b", "span")] // 32)}
+    return {t: (v + shift, facts[(t, "span" if t.startswith("byte2d") else "stride")] // 32)
+            for (t, k), v in facts.items() if k == "vsavj" and t != "#1"}
 
 
 def fixed16(text):
@@ -119,6 +122,19 @@ def checks(tmp, tables, export, data, romdir, row_bump=0):
             checked += 1
             if data[addr] != int(r[col]) or r["vs2_" + col] != "PRG:0x%06X" % addr:
                 wrong.append("%s move %s %s" % (r["tenant"], r["move"], col))
+    fields = {}
+    for r in rows_of(tables, "bank_values.tsv")[1]:
+        base, size = at[r["table"]]
+        off = fields.get((r["tenant"], r["table"]), 0)
+        fields[(r["tenant"], r["table"])] = off + FORMATS.get(r["format"], 0)
+        addr = base + char[r["tenant"]] * size + off
+        want = (fixed16(r["value"]) if r["format"] == "s16.16"
+                else int(r["value"]).to_bytes(FORMATS.get(r["format"], 1), "big"))
+        checked += 1
+        if data[addr:addr + len(want)] != want or r["vs2_addr"] != "PRG:0x%06X" % addr:
+            wrong.append("%s %s.%s" % (r["tenant"], r["table"], r["field"]))
+    short = [k for k, n in fields.items() if n != at[k[1]][1]]
+    wrong += ["%s %s: fields span %d of %d bytes" % (k[0], k[1], fields[k], at[k[1]][1]) for k in short]
     with zipfile.ZipFile(os.path.join(romdir, "vsav2.zip")) as z:
         members = {i.filename: hashlib.sha1(z.read(i)).hexdigest() for i in z.infolist()}
     inputs = rows_of(tables, "extraction/inputs.tsv")[1]
@@ -180,6 +196,9 @@ def perturb(name, tables, export):
     elif name == "windows-swapped":
         edit(tables, "cancel_windows.tsv", lambda r: dict(r, special=r["ex"], ex=r["special"])
              if r["tenant"] == "pyron" else r)
+    elif name == "air-dash-zeroed":
+        edit(tables, "bank_values.tsv", first(lambda r: r["tenant"] == "huitzil" and r["table"] == "gap_be23a",
+                                              lambda r: dict(r, value="0")))
     elif name == "bytes-in-values":
         recs, _ = extract_regions.records(export)
         doc = json.load(open(os.path.join(export, dict(recs)["donovan"])))

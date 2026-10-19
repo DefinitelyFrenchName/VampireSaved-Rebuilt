@@ -13,7 +13,7 @@ donovan	gap_bdf7a	values	ffffec00
 donovan	gap_bdffa	values	ffff9c00
 donovan	gap_be07a	values	ffffa000
 donovan	gap_be0fa	values	ffff9a00
-donovan	gap_be23a	values	0000
+donovan	gap_be23a	values	TABLE:bank_values
 donovan	gap_be37a	values	fffde000
 donovan	gap_be4fa	values	ffff8300
 donovan	gap_be57a	values	ffffa000
@@ -32,7 +32,7 @@ huitzil	gap_bdf7a	values	fffd8000
 huitzil	gap_bdffa	values	0002d000
 huitzil	gap_be07a	values	00000000
 huitzil	gap_be0fa	values	fffbc000
-huitzil	gap_be23a	values	0018
+huitzil	gap_be23a	values	TABLE:bank_values
 huitzil	gap_be37a	values	00019000
 huitzil	gap_be4fa	values	00000000
 huitzil	gap_be57a	values	00000000
@@ -51,7 +51,7 @@ pyron	gap_bdf7a	values	00000000
 pyron	gap_bdffa	values	fffffb00
 pyron	gap_be07a	values	00000000
 pyron	gap_be0fa	values	00000500
-pyron	gap_be23a	values	0000
+pyron	gap_be23a	values	TABLE:bank_values
 pyron	gap_be37a	values	fffde000
 pyron	gap_be4fa	values	00000000
 pyron	gap_be57a	values	00000000

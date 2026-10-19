@@ -8,9 +8,10 @@ dispatch pairs, the per-character bank values. This tool writes them into OUT_DI
 - under extraction/, one table per section of the record, in the record's own columns, with a leading `tenant`
   column (runs, inputs, shifts, regions, region_lists, refs, variant_sites, pcrel_refs, code_scan, dispatch,
   engine_dispatch, values, auto_tables);
-- two gameplay tables (the maintainer's ruling, SPEC.md §0, "Readable gameplay table"): jump_physics.tsv
-  (`jump_params` as named 16.16 fields) and cancel_windows.tsv (`byte2d_a` and `byte2d_b`, one row per move index).
-  Their rows in extraction/values.tsv say `TABLE:<name>` instead of the bytes.
+- three gameplay tables (the maintainer's rulings, SPEC.md §0, "Readable gameplay table" and the short values):
+  jump_physics.tsv (`jump_params` as named 16.16 fields), cancel_windows.tsv (`byte2d_a` and `byte2d_b`, one row
+  per move index) and bank_values.tsv (each tenant's own short bank rows, one row per field). Their rows in
+  extraction/values.tsv and extraction/auto_tables.tsv say `TABLE:<name>` instead of the bytes.
 Every integer is written in hex (`0x…`, `-0x…`) except `width`, a bit count; an absent key is `-`. The JSON objects'
 key order is not carried (it is not data); every list's order and the regions' order are, by row order.
 
@@ -49,14 +50,31 @@ COLUMNS = {
     "auto_tables": ("tenant", "table", "verdict", "entry_guess"),
     "jump_physics": ("tenant", "jump", "xv", "xaccel", "yv", "gravity", "vs2_row"),
     "cancel_windows": ("tenant", "move", "special", "ex", "vs2_special", "vs2_ex"),
+    "bank_values": ("tenant", "table", "field", "value", "format", "vs2_addr"),
 }
+GAMEPLAY_TABLES = ("jump_physics", "cancel_windows", "bank_values")
 REGION_SCALARS = ("src", "orc", "len", "grow", "kind", "shift", "source_only", "pre_classified", "raw_from", "sha1")
 REGION_LISTS = ("dead", "ins", "charid_sites", "table_bytes")       # dead and ins hold [start, end] pairs
 REGION_RECORDS = {"refs": "refs", "variant_sites": "variant_sites", "pcrel_refs": "pcrel_refs"}
 SECTIONS = ("code_scan", "dispatch", "engine_dispatch", "values", "auto_tables")
 JUMPS = ("neutral", "forward", "back")                              # three 0x10 rows of (xv, xaccel, yv, gravity)
 JUMP_FIELDS = ("xv", "xaccel", "yv", "gravity")
-GAMEPLAY = {"jump_params": "jump_physics", "byte2d_a": "cancel_windows", "byte2d_b": "cancel_windows"}
+# The tenant's own short rows, each a field list of (name, format). Not rec8_a or rec8_b: the extractor reads 8 bytes
+# at char*8 there, which is a slice of another character's jump_params or pursuit record (bank_map.toml's notes).
+BANK_FIELDS = {
+    "param32_a": (("fwd_walk_xv", "s16.16"), ("back_walk_xv", "s16.16")),
+    "param32_b": (("long0", "s16.16"), ("long1", "s16.16")),
+    "word132": (("value", "u16"),),
+    "word_pos_a": (("value", "u16"),),
+    "word_pos_b": (("value", "u16"),),
+    "gap_be23a": (("min_air_dash_height", "u16"),),
+    "word_y_off": (("value", "u16"),),
+    "word_range": (("value", "u16"),),
+    "byte15b": (("value", "u8"),),
+}
+WIDTH = {"s16.16": 4, "u16": 2, "u8": 1}
+GAMEPLAY = {"jump_params": "jump_physics", "byte2d_a": "cancel_windows", "byte2d_b": "cancel_windows",
+            **{t: "bank_values" for t in BANK_FIELDS}}
 TITLES = {
     "runs": "EXTRACTION: each tenant's record, the sets it diffed and the character id",
     "inputs": "EXTRACTION: the SHA-1 of every source-set member each record read",
@@ -73,6 +91,7 @@ TITLES = {
     "auto_tables": "EXTRACTION: the bank gaps the extractor classified, with its entry guess",
     "jump_physics": "GAMEPLAY: each tenant's three jumps from vs2's jump_params row, as 16.16 values",
     "cancel_windows": "GAMEPLAY: each tenant's special- and EX-cancel window per move index, from vs2's byte2d rows",
+    "bank_values": "GAMEPLAY: each tenant's own short bank rows from vs2 (walk speeds, pursuit leap, words), by field",
 }
 
 
@@ -157,6 +176,22 @@ def jump_rows(tenant, raw, row0):
     return rows
 
 
+def bank_rows(tenant, table, raw, addr):
+    rows, off = [], 0
+    for field, fmt in BANK_FIELDS[table]:
+        chunk = raw[off:off + WIDTH[fmt]]
+        rows.append({"tenant": tenant, "table": table, "field": field, "format": fmt, "vs2_addr": prg(addr + off),
+                     "value": fixed(chunk) if fmt == "s16.16" else str(int.from_bytes(chunk, "big"))})
+        off += WIDTH[fmt]
+    assert off == len(raw), "%s: %d bytes for %d" % (table, len(raw), off)
+    return rows
+
+
+def unbank(rows):
+    return b"".join(unfixed(r["value"]) if r["format"] == "s16.16" else int(r["value"]).to_bytes(WIDTH[r["format"]], "big")
+                    for r in rows)
+
+
 def tables_of(tenant, record_path, doc, rows0):
     """{table: [row dict]} for one tenant's record; rows0 is bank()'s {table: (row-0 address, entry size)}."""
     t = {name: [] for name in COLUMNS}
@@ -187,12 +222,17 @@ def tables_of(tenant, record_path, doc, rows0):
                 elif x["table"] == "byte2d_a":
                     t["cancel_windows"] += [{"tenant": tenant, "move": m, "special": b,
                                              "vs2_special": prg(at["byte2d_a"] + m)} for m, b in enumerate(raw)]
-                else:
+                elif x["table"] == "byte2d_b":
                     ex = {r["move"]: r for r in t["cancel_windows"] if r["tenant"] == tenant}
                     assert len(ex) == len(raw), "byte2d_b before byte2d_a, or of another length"
                     for m, b in enumerate(raw):
                         ex[m].update(ex=b, vs2_ex=prg(at["byte2d_b"] + m))
+                else:
+                    t["bank_values"] += bank_rows(tenant, x["table"], raw, at[x["table"]])
                 row["value"] = "TABLE:" + GAMEPLAY[x["table"]]
+            elif sec == "auto_tables" and x["table"] in BANK_FIELDS:
+                t["bank_values"] += bank_rows(tenant, x["table"], bytes.fromhex(x["entry_guess"]), at[x["table"]])
+                row["entry_guess"] = "TABLE:bank_values"
             t[sec].append(row)
     return t
 
@@ -205,7 +245,7 @@ def gameplay_cell(key, v):
 
 def write(out, pin, tables, read):
     for name, rows in tables.items():
-        sub = "" if name in ("jump_physics", "cancel_windows") else "extraction"
+        sub = "" if name in GAMEPLAY_TABLES else "extraction"
         path = os.path.join(out, sub, name + ".tsv")
         os.makedirs(os.path.dirname(path), exist_ok=True)
         with open(path, "w") as f:
@@ -242,7 +282,7 @@ def render(tables_dir):
     """{tenant: record} rebuilt from the tables (the inverse of tables_of)."""
     t = {}
     for name in COLUMNS:
-        sub = "" if name in ("jump_physics", "cancel_windows") else "extraction"
+        sub = "" if name in GAMEPLAY_TABLES else "extraction"
         t[name] = read_rows(os.path.join(tables_dir, sub, name + ".tsv"))[1]
     docs = {}
     for run in t["runs"]:
@@ -281,6 +321,13 @@ def render(tables_dir):
                 col = "special" if x["table"] == "byte2d_a" else "ex"
                 rows = sorted((int(r["move"]), int(r[col])) for r in t["cancel_windows"] if r["tenant"] == tenant)
                 x["value"] = bytes(b for _, b in rows).hex()
+            elif x.get("value") == "TABLE:bank_values":
+                x["value"] = unbank(r for r in t["bank_values"]
+                                    if (r["tenant"], r["table"]) == (tenant, x["table"])).hex()
+        for x in doc["auto_tables"]:
+            if x.get("entry_guess") == "TABLE:bank_values":
+                x["entry_guess"] = unbank(r for r in t["bank_values"]
+                                          if (r["tenant"], r["table"]) == (tenant, x["table"])).hex()
     return docs
 
 

@@ -16,7 +16,7 @@ by the maintainer's ruling, then the facts.
 
 The original had 15 of these values in-table (the `edges_in` rows, in its `select_wheel.md`) and 221 baked.
 
-Two more gameplay tables, `jump_physics.tsv` and `cancel_windows.tsv`, are decoded from the original's extraction
+Three more gameplay tables, `jump_physics.tsv`, `cancel_windows.tsv` and `bank_values.tsv`, are decoded from the original's extraction
 records, not from the census (below, "The extraction tables"; #4).
 
 ## The fact tables (the census's `fact` column, 8,520 values), under `facts/`
@@ -164,7 +164,7 @@ build by `python3 tests/test_build_proof.py`:
 
 Its own control is `blind-compare`.
 
-## The extraction tables, under `extraction/`, and the two gameplay tables decoded from them (#4)
+## The extraction tables, under `extraction/`, and the three gameplay tables decoded from them (#4)
 
 **What they are.** The original's extractor (`tools/extract_char.py`) diffs vsav2 against its sibling vhunt2 and
 writes one record per tenant, `regions.json`. It holds every ported region with its vhunt2 twin and shift, every
@@ -195,8 +195,8 @@ table, with a leading `tenant` column:
 | `extraction/code_scan.tsv` | 4,524 | the code scanner's operands, in order |
 | `extraction/dispatch.tsv` | 58 | the per-character dispatch targets, vsav2 and vhunt2 |
 | `extraction/engine_dispatch.tsv` | 2 | the engine dispatch targets that differ by a delta |
-| `extraction/values.tsv` | 87 | the per-character bank rows: pointers and short values as written; the three gameplay rows say `TABLE:<name>` |
-| `extraction/auto_tables.tsv` | 57 | the bank gaps the extractor classified, with its entry guess |
+| `extraction/values.tsv` | 87 | the per-character bank rows: pointers as written; each decoded row says `TABLE:<name>` |
+| `extraction/auto_tables.tsv` | 57 | the bank gaps the extractor classified, with its entry guess (`gap_be23a`'s says `TABLE:bank_values`) |
 
 Every integer is hex (`0x…`, `-0x…`) except `width`, a bit count. Strings are as written (a `ptr` stays `"0x27f548"`).
 An absent key is `-`. Addresses are PRG offsets of the set the column names ([VSR-31]). The JSON objects' key order
@@ -204,8 +204,9 @@ is not carried, because it is not data; every list's order and the regions' orde
 names the pin and the SHA-1 of `build_merged.sh` and the three records. The gameplay tables' headers also name the
 two fact tables they compute addresses from.
 
-**The two gameplay tables** (the maintainer's ruling, `SPEC.md` §0, *"Readable gameplay table (Recommended)"*). Each
-record carries three vs2 bank rows as raw bytes. They are decoded into named fields here, and each row names the vs2
+**The three gameplay tables** (the maintainer's rulings, `SPEC.md` §0: *"Readable gameplay table (Recommended)"* for
+the three long rows, and *"I lean yes since tables is what we decided and that data is valuable"* for the short
+ones). Each record carries vs2 bank rows as raw bytes. They are decoded into named fields here, and each row names the vs2
 address it was read from, `origins.vsav2 + (vsavj − origins.vsavj) + char × entry size`. That is the original
 extractor's own `table_addr`, with `bank_map.toml`'s facts (`facts/origins.tsv`, `facts/table.tsv`).
 - `jump_physics.tsv` (9 rows): `jump_params`, three jumps per tenant (`neutral`, `forward`, `back`) of `xv`, `xaccel`,
@@ -221,15 +222,41 @@ extractor's own `table_addr`, with `bank_map.toml`'s facts (`facts/origins.tsv`,
   is *"the same for EX: table PRG:0x0BEC5A (12 typical, 3/11 others)"*. So a value is a window in ticks. Which normal
   each move index is was not measured, there or here.
 
-The other short bank values (`param32_a`/`_b`, which the original's decoder reads as walk velocities, `rec8_a`/`_b`,
-the `value16`/`value8` rows) are carried as written in `extraction/values.tsv`. The ruling named the three rows
-above.
+- `bank_values.tsv` (33 rows): each tenant's own short bank rows, one row per field, with `format` (`s16.16` as
+  above, `u16`, `u8`) and the vs2 address. The fields:
+  - `param32_a`: `fwd_walk_xv`, `back_walk_xv`, the original decoder's names. Its consumer is *"read id*8 from
+    0x0BD87A at vsavj 0x0228E2/0x0271A8"*. Its notes on the `gap_bd8fa` slice (`bank_map.toml` line 210) record
+    the reader, not the meaning. The original measured the meaning in play: Donovan's *"X-velocity word, 2.5 ->
+    3.0"* at the first movement frame once his vs2 rows were ported (its `patch_index.md` line 159). The table reads
+    3 for him.
+  - `param32_b`: `long0`, `long1`, named by position. The original's decoder calls them walk velocities too. But
+    its 14z-121 note says *"param32_b read id*8 from 0x0BE2FA at vsavj 0x026484 for chain a2:0x4C, the pursuit
+    leap"* (`bank_map.toml` line 392), so what the two fields are is not measured.
+  - `gap_be23a`: `min_air_dash_height`. Among the auto gaps it is a *"REAL per-char WORD table (14z-121): the MINIMUM
+    AIR-DASH HEIGHT"*. In the original, *"Phobos's row 0x10 carries vs2's 24 (0x0018) in ours, Donovan's and
+    Pyron's stay 0"* (`bank_map.toml` line 342). The table reads 24, 0 and 0.
+  - `word132`, `word_pos_a`, `word_pos_b`, `word_y_off`, `word_range` (`u16`) and `byte15b` (`u8`): the field is
+    `value`. Their names are the original's, and their meaning is not recorded there. The extractor's entry size
+    (stride / 32: 2 bytes, 1 byte) is the only layout evidence.
+
+**Two rows are not the tenant's: `rec8_a` and `rec8_b`.** The extractor reads every `rec8` row as 8 bytes at
+`char*8`. The original's notes put both inside larger per-character records:
+- `rec8_a` is *"SLICE of jump_params rows 0-5 (14z-121: jump_params is read id*0x30 + {0,0x10,0x20} from 0x0BDB7A
+  at vsavj 0x027A76; no reader of this base)"* (line 245);
+- `rec8_b` is *"the PURSUIT physics record pair (14z-121): read id*0x20 + (+0x0A ? 0x10 : 0) from 0x0BE3FA at vsavj
+  0x026646 = four longs (xv, xacc, yv, yacc) x 2 variants per char"* (line 399).
+
+So a tenant's `rec8_a`/`rec8_b` bytes are another character's data. For Donovan (`0x13*8 = 0x98`) they are char 3's
+neutral-jump `yv`/`gravity` and char 4's second pursuit variant's `yv`/`yacc`. They stay as written in
+`extraction/values.tsv`, never in a gameplay table that would call them the tenant's. Two things are not measured
+(#4): what the original's build wrote for these rows, and whether the tenants' own pursuit records were ported. Those
+records are not in the extraction record.
 
 **No ROM bytes** ([VSR-8]): the tables hold addresses, offsets, lengths, shifts, short discrete values and SHA-1s.
 No cell but a `sha1` holds a run of 17 or more hex bytes, which the gate checks (E4). The three long rows are the
-decoded tables above.
+decoded tables above, and the short rows are written as numbers.
 
-**Generated and gated.** `tools/extract_regions.py <export> <pin> <out>` writes all 15 tables and prints the SHA-1 of
+**Generated and gated.** `tools/extract_regions.py <export> <pin> <out>` writes all 16 tables and prints the SHA-1 of
 every file it read. `render()` there is the inverse. The gate is `python3 tests/test_extraction_tables.py` (it needs
 `../ROMS`):
 - E1: the tables regenerate byte for byte.
@@ -239,18 +266,26 @@ every file it read. `render()` there is the inverse. The gate is `python3 tests/
   included, have the SHA-1s the records read. The anchor is the reference dump, not the record ([VSR-51]).
 - E4: no hex runs of 17 or more bytes.
 
-Its six controls are `perturbed-ref`, `dropped-scan`, `gravity-sign`, `windows-swapped`, `bytes-in-values` (E2 stays
+Its seven controls are `perturbed-ref`, `dropped-scan`, `gravity-sign`, `windows-swapped`, `air-dash-zeroed`, `bytes-in-values` (E2 stays
 green, so E4 is what catches bytes in the clear) and `wrong-row` (E3 alone, with the tables untouched). The phase-0
-gate and the renderer skip the two gameplay tables by their `GENERATED by tools/extract_regions.py` header. That is
+gate and the renderer skip the three gameplay tables by their `GENERATED by tools/extract_regions.py` header. That is
 the one way a table leaves `test_phase0_tables.py`'s G1, so a phase-0 table given that header would leave it too.
 
-Measured at the extraction (R-004): 30,401 rows in 15 tables, 1,484 KB under `extraction/`. E1–E4 pass:
+Measured at the extraction (R-004): 30,401 rows in 15 tables. E1–E4 pass:
 - E1: 15 files, 0 differing.
 - E2: 3 of 3 records render equal.
 - E3: 189 values checked, 0 differing from vsav2's row; 27 inputs, 0 not in vsav2.zip.
 - E4: 225,847 cells, 0 runs.
 
 All six controls FIRED, and each control mode gives `VERDICT: FAIL`.
+
+Measured at the short rows (R-004): 30,434 rows in 16 tables (`bank_values.tsv` 33). E1–E4 pass:
+- E1: 16 files, 0 differing.
+- E2: 3 of 3 records render equal.
+- E3: 222 values checked, 0 differing from vsav2's row; 27 inputs, 0 not in vsav2.zip.
+- E4: 226,045 cells, 0 runs.
+
+All seven controls FIRED, and the new control's mode (`air-dash-zeroed`) gives `VERDICT: FAIL (E1, E2, E3)`.
 
 ## The format, and why
 

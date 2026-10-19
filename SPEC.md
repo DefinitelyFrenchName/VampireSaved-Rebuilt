@@ -110,6 +110,14 @@ recommendation, then verbatim in bold): *"I recommend (a) now and (b) if it happ
 (b), a hook that refuses a worker's concurrent tool calls, is built if a worker runs side by side again; that
 recurrence opens a ticket with its evidence ([VSR-50]).
 
+The maintainer's answer on the other short bank values the extraction records carry (2026-10-19, R-004; quoting
+Claude's question, then verbatim in bold): *"Should they get readable tables too?"* **"I lean yes since tables is what
+we decided and that data is valuable"**. So each tenant's own short bank rows are decoded into a third gameplay
+table, `docs/project/tables/bank_values.tsv`, one row per field, with provenance to vs2's address. Two rows of the
+question, `rec8_a` and `rec8_b`, turned out not to be the tenant's own data. The extractor reads them 8 bytes at
+`char*8`, but the original's notes put the real records at `id*0x30` (`jump_params`) and `id*0x20` (the pursuit
+record). So they stay as written in `extraction/values.tsv`, and the README explains why (#4).
+
 ## 1. What the rebuild is, and what it is not
 
 **The same project, rebuilt.** The goal, the non-goals and the background facts are the original's `SPEC.md` §1-§2 and its
