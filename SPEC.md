@@ -104,6 +104,12 @@ The maintainer's answer on the three vs2 rows each extraction record carries as 
 gameplay table (Recommended)"**. They are decoded into named fields in a gameplay table the community can review and
 adjust, with provenance to vs2's row, and the build writes them from the table ([VSR-6]).
 
+The maintainer's answer on #5, the measurer's three side-by-side runs in R-003 (2026-10-19, R-004; quoting Claude's
+recommendation, then verbatim in bold): *"I recommend (a) now and (b) if it happens again."* **"agreed"**. So (a): the
+`measurer` definition (`.claude/agents/measurer.md`) now says commands run one per tool call, never two in one message.
+(b), a hook that refuses a worker's concurrent tool calls, is built if a worker runs side by side again; that
+recurrence opens a ticket with its evidence ([VSR-50]).
+
 ## 1. What the rebuild is, and what it is not
 
 **The same project, rebuilt.** The goal, the non-goals and the background facts are the original's `SPEC.md` §1-§2 and its

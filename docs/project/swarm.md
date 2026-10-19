@@ -90,6 +90,11 @@ moved to the model checker (ruled 2026-09-23, *"Move it to C1 (Recommended)"*).
   written and returns each figure with the command that produced it) and `reader` (returns each fact as a verbatim
   quote with its path and line). Their template is `docs/project/worker_spec.md`: TASK as a question, pinned INPUTS,
   numbered COMMANDS, a RETURN of `FIG` and `NOT MEASURED` lines only, MUST NOT, STOP.
+- **A measurer runs its commands one at a time** (ruled 2026-10-19, #5, `SPEC.md` §0): one command per tool call,
+  never two in one message, because calls sent together run side by side. In R-003 a measurer ran commands side by
+  side three times against specs that ran them in order. Once, that exposed a gate whose runs shared a scratch
+  directory. Only the definition says this; if it happens again, a hook that refuses a worker's concurrent calls
+  follows.
 - **A figure that will be quoted goes through a worker** ([VSR-47]). The original's working practice since 14z-180
   (its session notes, not a ruling): exploratory reads to write a spec may stay with the orchestrator, the quoted
   figure may not, and a worker figure that disagrees with its own command output is re-derived before it is quoted.

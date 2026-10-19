@@ -6,6 +6,29 @@ head). A session key is `R-NNN`, one per sitting, never renamed or renumbered ([
 their own namespaces. A group's form, kept from the original: `## Session KEY — banner`, then `### opened with` and one
 `### (N) TITLE` section per piece of work. An open list holds only what is open.
 
+## Session R-004 — **#5 ruled: (a) the measurer runs one command per tool call.** Opened 2026-10-19 on Opus 5.5 (the ruled orchestrator); transcript `dc3ff4f7`.
+
+### opened with
+
+*"read state.md"*, then, on the pending decision #5 quoted back with Claude's recommendation (*"I recommend (a) now
+and (b) if it happens again."*): *"agreed"*.
+
+### (1) #5 RULED: THE MEASURER RUNS ONE COMMAND PER TOOL CALL
+
+The ruling is verbatim in `SPEC.md` §0. (a) is applied: `.claude/agents/measurer.md` step 1 now says commands run one
+at a time, one per Bash call and one tool call per message, even when two look independent. `docs/project/swarm.md`
+§2 records it. (b), a hook that refuses a worker's concurrent calls, is built if it happens again; that recurrence
+opens a ticket with its evidence. #5 is done in `docs/project/tickets.tsv`. The definitions are not edit-locked here
+(`.claude/hooks/guard_readonly.py` locks only the settings and the hooks; `swarm.md` §4 leaves that open), so the
+session made the edit.
+
+Checked on one live run: a measurer given three commands, each printing its start and end times around a 2 s
+sleep, returned C1 1792397861.051–863.056, C2 863.185–865.190, C3 865.309–867.312: in order, no overlap. That is
+one sample. It does not show that the sentence prevents a recurrence, and whether the worker read the edited
+definition or a copy loaded at session start was not measured. The gates were run on the working tree before this
+record: the six gates PASS and `tools/metrics.py check` 311 figures, 0 bad. No rule-checker ran before closing #5
+([VSR-48]; the tool does not exist yet).
+
 ## Session R-003 — **Phase 0 closed on parse-equality (the build proof moved to phase 1); vhunt2's role found (#4); the original's corrections per tenant gathered; R-002 archived.** Opened 2026-10-18 on Opus 5.5 (the ruled orchestrator); transcript `5e9e8b49`.
 
 ### opened with
@@ -124,9 +147,7 @@ validation of `CLAUDE.md` v1.0, the read-only sources, phase 0's place and pin).
 
 ## Decisions pending (human)
 
-1. **#5: whether the swarm changes after the measurer's three side-by-side runs** ([VSR-50]; evidence in the issue).
-   Options: (a) a sentence in `.claude/agents/measurer.md` that commands run one per tool call; (b) a hook that
-   refuses a worker's concurrent tool calls; (c) no change. Recommendation: (a) now, (b) if it recurs.
+none.
 
 ## The next session starts with
 

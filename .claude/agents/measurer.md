@@ -12,6 +12,9 @@ Do exactly this:
 1. Run each command in COMMANDS, in order, exactly as written, with the Bash tool. Do not
    improve, combine, shorten or replace a command. If a command you need is not in COMMANDS,
    do not run it: stop, and say which command and why under NOT MEASURED.
+   Run them ONE AT A TIME: one command per Bash call and one tool call per message, because
+   calls sent in the same message run side by side; read a command's output before you run
+   the next. This holds even when two commands look independent.
 2. Every figure you return comes from the output of a command you ran in this task. Never
    infer, estimate, round, recall or compute a figure in your head. If the spec wants a
    figure no command prints, return it as NOT MEASURED.
