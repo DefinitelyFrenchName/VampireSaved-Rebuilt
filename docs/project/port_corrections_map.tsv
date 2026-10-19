@@ -1,0 +1,726 @@
+# port_corrections_map.tsv — EVERY ROW OF THE TENANTS' MANIFESTS, MAPPED TO THE PART OF port_corrections.tsv IT FIXES,
+# OR SAID NOT TO BE A FIX (#4, next-session item 1 of R-003; R-004). HAND-WRITTEN in R-004 from three forks' drafts (one
+# per tenant), over the original's export at bf92acd2, then made consistent across the tenants by the orchestrator
+# (docs/project/port_corrections.md "The map"). A row is a manifest row as phase 0's tables key it: (manifest, kind,
+# row) for the tenant's own manifest, its move list and its reconciliation overlay; a section's form record `(kind)`
+# is not a row. Gated by tests/test_port_corrections.py (C3, C4).
+# role: fix (the row is there because the extraction or an engine difference left the character wrong without it;
+# `part` names the tenant's catalogue parts it carries, comma-separated) | frame (what any port of the character needs
+# by design: where it lives, who it is, its move list, a feature; part `-`) | unclear (part `-`).
+# `line` is the manifest line `anchor` (a verbatim fragment) is on, within two lines; it lies between the start of the
+# nearest comment block above the row's header and the row's last line.
+tenant	manifest	kind	row	role	part	line	anchor
+donovan	donovan.toml	tenant	donovan	fix	36	5	A tenant is one ported character occupying one character id. This row is
+donovan	donovan.toml	port	#1	frame	-	74	every bank repoint patches BOTH 0x0F and its aliasing variant row 0x1F
+donovan	donovan.toml	hole_a	#1	frame	-	84	free-space holes (verified 0xFF fill, tools/extract free-space scan)
+donovan	donovan.toml	hole_b	#1	frame	-	84	free-space holes (verified 0xFF fill, tools/extract free-space scan)
+donovan	donovan.toml	space	hole_a	frame	-	94	Ordered list of places ported content may live. This supersedes the two
+donovan	donovan.toml	space	hole_b	frame	-	94	Ordered list of places ported content may live. This supersedes the two
+donovan	donovan.toml	space	wide_ext	frame	-	121	CPS-2 WIDE v1 program extension: 4MB -> 6MB, proven readable by B4 on BOTH
+donovan	donovan.toml	port_patch	#1	fix	1	146	object-update class 7 — a queue class that exists only in vsav2 (its
+donovan	donovan.toml	state_hook	#1	fix	3	160	has 89 entries; vsav2's twin (0x29B50/0x29B6C) has 101 — 12 newcomer
+donovan	donovan.toml	reaction_hook	#1	fix	4,5,6	215	reaction ids 0xA2/0xA4/0xA6 — Donovan's ES DP inflicts 0xA2 (measured:
+donovan	donovan.toml	init_shim	#1	fix	56,35	289	Pool-seeding init shim (stage 4+): vanilla vsav never seeds the
+donovan	donovan.toml	obj_hook	#1	fix	2	335	THE WALKER IS RELOCATED, THE SITE IS NOT PATCHED (14z-91). Until now the
+donovan	donovan.toml	obj_hook	#2	fix	2	335	THE WALKER IS RELOCATED, THE SITE IS NOT PATCHED (14z-91). Until now the
+donovan	donovan.toml	aux_poke	hud_name_entry_0f_hi	frame	-	410	14z-49: HUD name-plate table entry for slot 0x0F (per-char table
+donovan	donovan.toml	aux_poke	hud_name_entry_0f_lo	frame	-	424	14z-62c: entry 0x0F of a 16-WIDE table (the venue-asset family folds the
+donovan	donovan.toml	aux_poke	hud_mug_entry_13	fix	58	437	14z-63 (variant-id HUD): both HUD consumers are UNMASKED — the mugshot
+donovan	donovan.toml	aux_poke	hud_name_entry_13_hi	fix	58	437	14z-63 (variant-id HUD): both HUD consumers are UNMASKED — the mugshot
+donovan	donovan.toml	aux_poke	hud_name_entry_13_lo	fix	58	437	14z-63 (variant-id HUD): both HUD consumers are UNMASKED — the mugshot
+donovan	donovan.toml	win_pal_variant	don_win_pal	fix	28	493	sparse block ran off the end into fill = the WHITE portraits.
+donovan	donovan.toml	layout_group	#1	fix	61	512	Layout groups: regions that PC-reference each other (directly or via
+donovan	donovan.toml	layout_group	#2	fix	61	512	Layout groups: regions that PC-reference each other (directly or via
+donovan	donovan.toml	port_patch	#2	fix	23	542	OBJ bank setter: vs2 bank 3 -> vsav bank 2 (Jedah band) / WIDE bank 4
+donovan	donovan.toml	port_patch	#3	fix	23	551	OBJ bank setter (a4 form): vs2 bank 3 -> vsav bank 2 / WIDE bank 4
+donovan	donovan.toml	port_patch	#4	fix	23	560	OBJ bank setter (a4 form): vs2 bank 3 -> vsav bank 2 / WIDE bank 4
+donovan	donovan.toml	port_patch	#5	fix	23	569	OBJ bank setter: vs2 bank 3 -> vsav bank 2 / WIDE bank 4
+donovan	donovan.toml	port_patch	#6	fix	23	578	OBJ bank setter: vs2 bank 3 -> vsav bank 2 / WIDE bank 4
+donovan	donovan.toml	port_patch	#7	fix	23	587	OBJ bank setter: vs2 bank 3 -> vsav bank 2 / WIDE bank 4
+donovan	donovan.toml	table_fix	#1	fix	23	607	ported per-char OBJ bank table -> vanilla vsavj values (0x282D4)
+donovan	donovan.toml	gfx_remap	#1	frame	-	609	(record + coordinate-list pointers are validated against PLACED
+donovan	donovan.toml	palette	sprite	fix	26	630	rows to palette RAM 0x90C140) was never repointed — Donovan rendered
+donovan	donovan.toml	palette	effect	fix	26	644	electrocute X-ray rendered grey with purple electricity = JEDAH'S
+donovan	donovan.toml	port_patch	#8	fix	14	686	throw dmg: flag var -> vsavj layout (-0x4BBA)
+donovan	donovan.toml	port_patch	#9	fix	14	694	throw dmg: clr damage var -> vsavj layout (-0x4BBE)
+donovan	donovan.toml	port_patch	#10	fix	14	702	throw dmg: scaled damage -> vsavj layout (-0x4BBE)
+donovan	donovan.toml	port_patch	#11	fix	14	710	throw dmg: flag clear -> vsavj layout (-0x4BBA)
+donovan	donovan.toml	port_patch	#12	fix	14	718	throw dmg: clr white var -> vsavj layout (-0x4BBC)
+donovan	donovan.toml	port_patch	#13	fix	14	726	throw dmg: white damage -> vsavj layout (-0x4BBC)
+donovan	donovan.toml	port_patch	#14	fix	15	757	throw state clr.b: vs2 -0x4B3D -> vsavj -0x4B8F
+donovan	donovan.toml	port_patch	#15	fix	15	765	grab ptr store a6: vs2 -0x4B74 -> vsavj -0x4BC6
+donovan	donovan.toml	port_patch	#16	fix	15	773	grab ptr store a1: vs2 -0x4B72 -> vsavj -0x4BC4
+donovan	donovan.toml	port_patch	#17	fix	15	781	throw state clr.b (site 2)
+donovan	donovan.toml	port_patch	#18	fix	15	789	grab ptr store a6 (site 2)
+donovan	donovan.toml	port_patch	#19	fix	15	797	grab ptr store a1 (site 2)
+donovan	donovan.toml	port_patch	#20	fix	15	805	grab ptr store a6 (site 3)
+donovan	donovan.toml	port_patch	#21	fix	15	813	grab ptr store a1 (site 3)
+donovan	donovan.toml	port_patch	#22	fix	16	828	meter adder: Dark Force test +0x1C3 (vs2 Power) -> +0x111 (vsavj Change), #157 D
+donovan	donovan.toml	port_patch	#23	fix	17	850	EX route disabled: bne.w -> bra.w past the EX check (vs2's no-stock path at ever
+donovan	donovan.toml	data_port	throw_victim_keyframes	fix	19,20	856	(0x0B19F8) held JEDAH's keyframe table (0x198 bytes/victim), which
+donovan	donovan.toml	site_thunk	spark_spawn_mark	fix	34	963	resolve to VANILLA art (measured: anim walks 0x28391C+ instead of the
+donovan	donovan.toml	site_thunk	spark_bank_swap	fix	34	994	ROUND-25 REGRESSION + ROLLBACK (session 14z-4): bank_swap alone GARBLES
+donovan	donovan.toml	data_port	weapon_accent_t0	fix	27	1010	Sword red blink (sessions 14z-13..19, rounds 16..35 — THE oldest
+donovan	donovan.toml	data_port	weapon_accent_t1	fix	27	1028	14z-62c: the HOST slot's accent slots — vanilla-read whenever the host
+donovan	donovan.toml	data_port	weapon_accent_rowd_slot	fix	27	1051	Row-D companion slot (layout position 0x39FC20 = the would-be T0 of
+donovan	donovan.toml	code_word	select_companion_entry_0f	fix	30	1157	delta) — but activation also wakes a SECOND select drawer that
+donovan	donovan.toml	code_word	obj_bank_word_slot	fix	24	1181	first 0x13 match rendered with Victor's alias (0x2000, bank 1): right
+donovan	donovan.toml	site_thunk	select_companion_tbl_a	fix	30,62	1214	14z-78: the table address was a BAKED LITERAL
+donovan	donovan.toml	site_thunk	select_companion_tbl_b	fix	30,62	1214	14z-78: the table address was a BAKED LITERAL
+donovan	donovan.toml	site_thunk	select_companion_resolve_s1	fix	30	1249	word $30(a6); vs2's Donovan handler carries `move.b #8,$3C(a4)` —
+donovan	donovan.toml	site_thunk	select_companion_resolve_s2	fix	30	1249	word $30(a6); vs2's Donovan handler carries `move.b #8,$3C(a4)` —
+donovan	donovan.toml	data_port	hit_class_props_ext_hi	fix	10	1282	FINISH banner). vsavj's table is ZERO there (spare zero-filled
+donovan	donovan.toml	data_port	hit_class_props_ext_lo	fix	10	1314	14z-44: property[0x4E/0x4F] RESTORED (partial un-revert of 14z-28).
+donovan	donovan.toml	site_thunk	accent_color_aware_0	fix	27	1340	14z-31: COLOR-AWARE ACCENT (round-44: "sword starts blinking the
+donovan	donovan.toml	site_thunk	accent_color_aware_1	fix	27	1340	14z-31: COLOR-AWARE ACCENT (round-44: "sword starts blinking the
+donovan	donovan.toml	site_thunk	accent_color_aware_2	fix	27	1340	14z-31: COLOR-AWARE ACCENT (round-44: "sword starts blinking the
+donovan	donovan.toml	site_thunk	accent_color_aware_3	fix	27	1340	14z-31: COLOR-AWARE ACCENT (round-44: "sword starts blinking the
+donovan	donovan.toml	site_thunk	ls_freeze_vs2_attacker	fix	12	1404	tail) but carries the OLDER engine's freeze tuning: attacker
+donovan	donovan.toml	site_thunk	ls_freeze_vs2_victim	fix	12	1404	tail) but carries the OLDER engine's freeze tuning: attacker
+donovan	donovan.toml	region_fix	#1	fix	9	1519	deity node next-state vs2 0x51 -> 0x44 (the 14z-110b five-consumer equivalence;
+donovan	donovan.toml	region_fix	#2	fix	9	1527	deity node next-state vs2 0x51 -> 0x44 (the 14z-110b five-consumer equivalence;
+donovan	donovan.toml	region_fix	#3	fix	9	1535	deity node next-state vs2 0x51 -> 0x44 (the 14z-110b five-consumer equivalence;
+donovan	donovan.toml	region_fix	#4	fix	9	1543	deity node next-state vs2 0x51 -> 0x44 (the 14z-110b five-consumer equivalence;
+donovan	donovan.toml	region_fix	#5	fix	9	1551	deity node next-state vs2 0x51 -> 0x44 (the 14z-110b five-consumer equivalence;
+donovan	donovan.toml	region_fix	#6	fix	9	1559	deity node next-state vs2 0x51 -> 0x44 (the 14z-110b five-consumer equivalence;
+donovan	donovan.toml	site_thunk	es_type51_dispatch	fix	7	1562	KO branch — vsavj's KO table 0x0185DA ends at 0x4F and reads [0x52] as the
+donovan	donovan.toml	region_fix	#7	fix	7	1598	RETIRED 14z-170 (native 0x52, the class-0x52 rule) — was: column KO record type
+donovan	donovan.toml	region_fix	#8	fix	7	1610	RETIRED 14z-170 (native 0x52, the class-0x52 rule) — was: column sibling hit rec
+donovan	donovan.toml	region_fix	#9	fix	7	1618	RETIRED 14z-170 (native 0x52, the class-0x52 rule) — was: column sibling hit rec
+donovan	donovan.toml	region_fix	#10	fix	8	1626	extended record type 0x50 -> 0x0F (vs2 dispatch alias: entry 0x50 word 0x16E ==
+donovan	donovan.toml	region_fix	#11	fix	8	1634	extended record type 0x50 -> 0x0F (vs2 dispatch alias: entry 0x50 word 0x16E ==
+donovan	donovan.toml	region_fix	#12	fix	8	1642	extended record type 0x50 -> 0x0F (vs2 dispatch alias: entry 0x50 word 0x16E ==
+donovan	donovan.toml	region_fix	#13	fix	8	1650	extended record type 0x50 -> 0x0F (vs2 dispatch alias: entry 0x50 word 0x16E ==
+donovan	donovan.toml	region_fix	#14	fix	8	1658	extended record type 0x50 -> 0x0F (vs2 dispatch alias: entry 0x50 word 0x16E ==
+donovan	donovan.toml	region_fix	#15	fix	8	1666	extended record type 0x50 -> 0x0F (vs2 dispatch alias: entry 0x50 word 0x16E ==
+donovan	donovan.toml	region_fix	#16	fix	9	1684	RETIRED 14z-43 (was: 0x51->0x4E crash preempt) — superseded by the es_type51_dis
+donovan	donovan.toml	region_fix	#17	fix	9	1692	RETIRED 14z-43 (was: 0x51->0x4E crash preempt) — superseded by the es_type51_dis
+donovan	donovan.toml	region_fix	#18	fix	9	1700	RETIRED 14z-43 (was: 0x51->0x4E crash preempt) — superseded by the es_type51_dis
+donovan	donovan.toml	region_fix	#19	fix	9	1708	RETIRED 14z-43 (was: 0x51->0x4E crash preempt) — superseded by the es_type51_dis
+donovan	donovan.toml	region_fix	#20	fix	9	1716	RETIRED 14z-43 (was: 0x51->0x4E crash preempt) — superseded by the es_type51_dis
+donovan	donovan.toml	region_fix	#21	fix	9	1724	RETIRED 14z-43 (was: 0x51->0x4E crash preempt) — superseded by the es_type51_dis
+donovan	donovan.toml	region_fix	#28	fix	11	1733	type-0x4E = the copy-class routine). Remap the 7 sworded records
+donovan	donovan.toml	region_fix	#22	fix	11	1745	sworded deity hit 1/7: type 0x4E -> 0x06 (vs2 dispatch alias — class-8 native el
+donovan	donovan.toml	region_fix	#23	fix	11	1753	sworded deity hit 2/7: type 0x4E -> 0x06 (vs2 dispatch alias — class-8 native el
+donovan	donovan.toml	region_fix	#24	fix	11	1761	sworded deity hit 3/7: type 0x4E -> 0x06 (vs2 dispatch alias — class-8 native el
+donovan	donovan.toml	region_fix	#25	fix	11	1769	sworded deity hit 4/7: type 0x4E -> 0x06 (vs2 dispatch alias — class-8 native el
+donovan	donovan.toml	region_fix	#26	fix	11	1777	sworded deity hit 5/7: type 0x4E -> 0x06 (vs2 dispatch alias — class-8 native el
+donovan	donovan.toml	region_fix	#27	fix	11	1785	sworded deity hit 6/7: type 0x4E -> 0x06 (vs2 dispatch alias — class-8 native el
+donovan	donovan.toml	region_fix	#29	fix	11	1810	ES-variant deity record type 0x4E -> 0x06 (14z-44; vs2-alias-proven, the 14z-36
+donovan	donovan.toml	region_fix	#30	fix	11	1818	ES-variant deity record type 0x4E -> 0x06 (14z-44; vs2-alias-proven, the 14z-36
+donovan	donovan.toml	region_fix	#31	fix	11	1826	ES-variant deity record type 0x4E -> 0x06 (14z-44; vs2-alias-proven, the 14z-36
+donovan	donovan.toml	region_fix	#32	fix	11	1834	ES-variant deity record type 0x4E -> 0x06 (14z-44; vs2-alias-proven, the 14z-36
+donovan	donovan.toml	region_fix	#33	fix	11	1842	ES-variant deity record type 0x4E -> 0x06 (14z-44; vs2-alias-proven, the 14z-36
+donovan	donovan.toml	region_fix	#34	fix	11	1850	ES-variant deity record type 0x4E -> 0x06 (14z-44; vs2-alias-proven, the 14z-36
+donovan	donovan.toml	region_fix	#35	fix	11	1858	ES-variant deity record type 0x4E -> 0x06 (14z-44; vs2-alias-proven, the 14z-36
+donovan	donovan.toml	code_word	win_pos_x_slot	fix	28	1862	purple, Anita a grey silhouette, BOTH figures shifted (-128,+24)).
+donovan	donovan.toml	code_word	win_pos_y_slot	fix	28	1862	purple, Anita a grey silhouette, BOTH figures shifted (-128,+24)).
+donovan	donovan.toml	data_port	win_pal_slot0f_c0	fix	28	1878	- data_port x8 win_pal_slot0f_c0..c7: JEDAH'S OWN SLICES of the
+donovan	donovan.toml	data_port	win_pal_slot0f_c1	fix	28	1878	- data_port x8 win_pal_slot0f_c0..c7: JEDAH'S OWN SLICES of the
+donovan	donovan.toml	data_port	win_pal_slot0f_c2	fix	28	1878	- data_port x8 win_pal_slot0f_c0..c7: JEDAH'S OWN SLICES of the
+donovan	donovan.toml	data_port	win_pal_slot0f_c3	fix	28	1878	- data_port x8 win_pal_slot0f_c0..c7: JEDAH'S OWN SLICES of the
+donovan	donovan.toml	data_port	win_pal_slot0f_c4	fix	28	1878	- data_port x8 win_pal_slot0f_c0..c7: JEDAH'S OWN SLICES of the
+donovan	donovan.toml	data_port	win_pal_slot0f_c5	fix	28	1878	- data_port x8 win_pal_slot0f_c0..c7: JEDAH'S OWN SLICES of the
+donovan	donovan.toml	data_port	win_pal_slot0f_c6	fix	28	1878	- data_port x8 win_pal_slot0f_c0..c7: JEDAH'S OWN SLICES of the
+donovan	donovan.toml	data_port	win_pal_slot0f_c7	fix	28	1878	- data_port x8 win_pal_slot0f_c0..c7: JEDAH'S OWN SLICES of the
+donovan	donovan.toml	data_port	med_pal_row14_a	fix	29	2005	wing-wrapped icon; the maintainer's "still Jedah's" medallion). The
+donovan	donovan.toml	site_thunk	name_bank_variant_id	fix	59	2030	── 14z-62j phase 2: NAME-BANNER drawer bank gate ───────────────────────────
+donovan	donovan.toml	site_thunk	splash_bank_variant_id	fix	59	2048	── 14z-62j phase 2: VS-SPLASH drawer bank gate ─────────────────────────────
+donovan	donovan.toml	site_thunk	winquote_bank_variant_id	fix	59	2062	── 14z-62j phase 2: WIN-QUOTE drawer bank gate ─────────────────────────────
+donovan	donovan.toml	site_thunk	select_sword_pal_variant_id	fix	60	2080	── 14z-62k: SELECT-FIGURE SWORD palette at a variant id ────────────────────
+donovan	donovan.toml	site_thunk	select_pal_variant_id	fix	29	2131	with the id UNMASKED, so id 0x13 reads Victor's variant-1 slot (measured:
+donovan	donovan.toml	sound_table	don_sfx_records	fix	32	2159	and calls the sound helper. Slot 0x0F's row still pointed at JEDAH's
+donovan	donovan.toml	site_thunk	voice_borrow_keep_tenant	fix	33	2247	14z-87 option (b): keep a tenant's own voice class at the borrow write (all-tena
+donovan	donovan.toml	code_word	voice_borrow_site_pad	fix	33	2256	14z-87: the stolen site's 4th word (tail of move.b d1,(0x382,a1)) -> nop; pairs
+donovan	donovan.toml	code_word	don_kernel_voice_e0	fix	32	2281	14z-96 #101: kernel voice table .0, row 0x13 — vs2 0x700 via authored pair 0xd9/
+donovan	donovan.toml	code_word	don_kernel_voice_e1	fix	32	2290	14z-96 #101: kernel voice table .1, row 0x13 — vs2 0x701 via authored pair 0xda/
+donovan	donovan.toml	code_word	don_kernel_voice_e2	fix	32	2299	14z-96 #101: kernel voice table .2, row 0x13 — vs2 0x702 via authored pair 0xdb/
+donovan	donovan.toml	code_word	don_kernel_voice_e3	fix	32	2308	14z-96 #101: kernel voice table .3, row 0x13 — vs2 0x703 via authored pair 0xdc/
+donovan	donovan.toml	data_port	voice_borrow_candidates_a	fix	33	2325	14z-87 option (c): vs2's Donovan row of the voice-class candidate table (8 venue
+donovan	donovan.toml	data_port	voice_borrow_voicenums_b	fix	33	2336	14z-87 option (c): vs2's Donovan row of the paired voice-number table (feeds $FF
+donovan	donovan.toml	data_port	defense_curve_row	fix	18	2358	14z-170 (ruled 14z-168): vs2's Donovan defense-curve row over vsavj's variant ro
+donovan	donovan.toml	data_port	defense_rally_threshold	fix	18	2377	14z-170 (ruled 14z-168): vs2's Donovan low-HP rally threshold (48 HP) over vsavj
+donovan	donovan.toml	code_word	landing_bigbody_mask_hi_a	fix	44	2382	effects should be swapped to match VS2"): vs2's whole high word 0x0441 (bit 0x10
+donovan	donovan.toml	code_word	landing_bigbody_mask_hi_b	fix	44	2382	effects should be swapped to match VS2"): vs2's whole high word 0x0441 (bit 0x10
+donovan	donovan.toml	select_wheel	roster21	fix	29	2403	Adds Huitzil/Phobos (0x10), Pyron (0x11) and Donovan (0x13) to the
+donovan	donovan.toml	select_records	portrait	fix	29	2507	cursor CELL/ID with NO 4-bit fold. Rows 0x10-0x1F alias 0x00-0x0F in
+donovan	donovan.toml	select_records	name_banner	fix	29	2552	14z-62j phase 2: native codes, art in group C bank 5 (includes the
+donovan	donovan.toml	select_records	highlight	fix	29	2569	array follows it immediately). vs2 carries Donovan's own records at row
+donovan	donovan.toml	select_records	splash_p1	fix	29	2569	array follows it immediately). vs2 carries Donovan's own records at row
+donovan	donovan.toml	select_records	splash_p2	fix	29	2569	array follows it immediately). vs2 carries Donovan's own records at row
+donovan	donovan.toml	select_records	win_quote	fix	29	2569	array follows it immediately). vs2 carries Donovan's own records at row
+donovan	donovan.toml	aux_poke	voice_alias_thunk_w00	fix	57	2632	helper 0x4CE2: ids in the authored voice range 0x58-0xA6 SKIP the
+donovan	donovan.toml	aux_poke	voice_alias_thunk_w01	fix	57	2632	helper 0x4CE2: ids in the authored voice range 0x58-0xA6 SKIP the
+donovan	donovan.toml	aux_poke	voice_alias_thunk_w02	fix	57	2632	helper 0x4CE2: ids in the authored voice range 0x58-0xA6 SKIP the
+donovan	donovan.toml	aux_poke	voice_alias_thunk_w03	fix	57	2632	helper 0x4CE2: ids in the authored voice range 0x58-0xA6 SKIP the
+donovan	donovan.toml	aux_poke	voice_alias_thunk_w04	fix	57	2632	helper 0x4CE2: ids in the authored voice range 0x58-0xA6 SKIP the
+donovan	donovan.toml	aux_poke	voice_alias_thunk_w05	fix	57	2632	helper 0x4CE2: ids in the authored voice range 0x58-0xA6 SKIP the
+donovan	donovan.toml	aux_poke	voice_alias_thunk_w06	fix	57	2632	helper 0x4CE2: ids in the authored voice range 0x58-0xA6 SKIP the
+donovan	donovan.toml	aux_poke	voice_alias_thunk_w07	fix	57	2632	helper 0x4CE2: ids in the authored voice range 0x58-0xA6 SKIP the
+donovan	donovan.toml	aux_poke	voice_alias_thunk_w08	fix	57	2632	helper 0x4CE2: ids in the authored voice range 0x58-0xA6 SKIP the
+donovan	donovan.toml	aux_poke	voice_alias_thunk_w09	fix	57	2632	helper 0x4CE2: ids in the authored voice range 0x58-0xA6 SKIP the
+donovan	donovan.toml	aux_poke	voice_alias_thunk_w10	fix	57	2632	helper 0x4CE2: ids in the authored voice range 0x58-0xA6 SKIP the
+donovan	donovan.toml	aux_poke	voice_alias_thunk_w11	fix	57	2632	helper 0x4CE2: ids in the authored voice range 0x58-0xA6 SKIP the
+donovan	donovan.toml	aux_poke	voice_alias_thunk_w12	fix	57	2632	helper 0x4CE2: ids in the authored voice range 0x58-0xA6 SKIP the
+donovan	donovan.toml	aux_poke	voice_alias_thunk_w13	fix	57	2632	helper 0x4CE2: ids in the authored voice range 0x58-0xA6 SKIP the
+donovan	donovan.toml	aux_poke	voice_alias_thunk_w14	fix	57	2632	helper 0x4CE2: ids in the authored voice range 0x58-0xA6 SKIP the
+donovan	donovan.toml	pcrel_escape_fix	#1	fix	49	2754	14z-98): x026142's node op at +0x162 (vs2 0x262A4) ends `bra.w $25F9A`,
+donovan	donovan.toml	pcrel_escape_fix	#2	fix	49	2782	0x635fc -> 0x5b25c; H ships this exact row):
+donovan	donovan.toml	data_port	capture_kf_anakaris	fix	21	2831	capture sub-block — Donovan gets Victor's, Phobos gets Bulleta's; Pyron's
+donovan	donovan.toml	data_port	capture_kf_aulbath	fix	21	2831	capture sub-block — Donovan gets Victor's, Phobos gets Bulleta's; Pyron's
+donovan	donovan.toml	data_port	capture_kf_bishamon	fix	21	2831	capture sub-block — Donovan gets Victor's, Phobos gets Bulleta's; Pyron's
+donovan	donovan.toml	data_port	capture_kf_bulleta	fix	21	2831	capture sub-block — Donovan gets Victor's, Phobos gets Bulleta's; Pyron's
+donovan	donovan.toml	data_port	capture_kf_demitri	fix	21	2831	capture sub-block — Donovan gets Victor's, Phobos gets Bulleta's; Pyron's
+donovan	donovan.toml	data_port	capture_kf_felicia	fix	21	2831	capture sub-block — Donovan gets Victor's, Phobos gets Bulleta's; Pyron's
+donovan	donovan.toml	data_port	capture_kf_gallon	fix	21	2831	capture sub-block — Donovan gets Victor's, Phobos gets Bulleta's; Pyron's
+donovan	donovan.toml	data_port	capture_kf_jedah	fix	21	2831	capture sub-block — Donovan gets Victor's, Phobos gets Bulleta's; Pyron's
+donovan	donovan.toml	data_port	capture_kf_leilei	fix	21	2831	capture sub-block — Donovan gets Victor's, Phobos gets Bulleta's; Pyron's
+donovan	donovan.toml	data_port	capture_kf_lilith	fix	21	2831	capture sub-block — Donovan gets Victor's, Phobos gets Bulleta's; Pyron's
+donovan	donovan.toml	data_port	capture_kf_morrigan	fix	21	2831	capture sub-block — Donovan gets Victor's, Phobos gets Bulleta's; Pyron's
+donovan	donovan.toml	data_port	capture_kf_qbee	fix	21	2831	capture sub-block — Donovan gets Victor's, Phobos gets Bulleta's; Pyron's
+donovan	donovan.toml	data_port	capture_kf_sasquatch	fix	21	2831	capture sub-block — Donovan gets Victor's, Phobos gets Bulleta's; Pyron's
+donovan	donovan.toml	data_port	capture_kf_victor	fix	21	2831	capture sub-block — Donovan gets Victor's, Phobos gets Bulleta's; Pyron's
+donovan	donovan.toml	data_port	capture_kf_zabel	fix	21	2831	capture sub-block — Donovan gets Victor's, Phobos gets Bulleta's; Pyron's
+donovan	donovan.toml	site_thunk	oboro_select_hook	frame	-	3045	── THE OBORO SELECT HOOK (W1, 14z-105; maintainer-ruled 2026-08-22:
+donovan	donovan.toml	site_thunk	random_select_bound	fix	31	3092	vsavj's table is 15 entries (the base-half roster minus 0x0B); both bounds
+donovan	donovan.toml	site_thunk	random_select_roster	fix	31	3092	vsavj's table is 15 entries (the base-half roster minus 0x0B); both bounds
+donovan	donovan.toml	site_thunk	facing_rule5	fix	22	3141	── #159 (14z-185): THE VICTIM FACING RULE 5 — vs2's own rule-5 branch taught to
+donovan	donovan.toml	aux_poke	boot_title_saved_1	frame	-	3178	THE BOOT NAME SCREEN: "VAMPIRE SAVIOR" -> "VAMPIRE SAVED" (14z-127,
+donovan	donovan.toml	aux_poke	boot_title_saved_2	frame	-	3178	THE BOOT NAME SCREEN: "VAMPIRE SAVIOR" -> "VAMPIRE SAVED" (14z-127,
+donovan	donovan.toml	aux_poke	boot_title_saved_3	frame	-	3178	THE BOOT NAME SCREEN: "VAMPIRE SAVIOR" -> "VAMPIRE SAVED" (14z-127,
+donovan	donovan.toml	site_thunk	pursuit_mark_hit	fix	13	3236	#195 (14z-188): mark the victim (+0x293) on this tenant's vs2-class-0x51 hit; an
+donovan	donovan.toml	site_thunk	pursuit_mark_tail	fix	13	3245	#195 (14z-188): the knockdown tail's move.l, then +0x117 := 1 when the mark is s
+donovan	donovan.toml	code_word	pursuit_mark_tail_pad	fix	13	3253	#195 (14z-188): the displaced move.l's last word -> nop; pairs with pursuit_mark
+donovan	moves_donovan.toml	move	Sharirum Luna	frame	-	39	name = "Sharirum Luna
+donovan	moves_donovan.toml	move	Sword Grapple	frame	-	47	name = "Sword Grapple
+donovan	moves_donovan.toml	move	Killshread Surf	frame	-	57	name = "Killshread Surf
+donovan	moves_donovan.toml	move	Killshread Dive	frame	-	65	name = "Killshread Dive
+donovan	moves_donovan.toml	move	Hop Kick	frame	-	73	name = "Hop Kick
+donovan	moves_donovan.toml	move	Foot Stab	frame	-	83	name = "Foot Stab
+donovan	moves_donovan.toml	move	Foot Stab (ES)	frame	-	91	name = "Foot Stab (ES)
+donovan	moves_donovan.toml	move	Killshread	frame	-	99	name = "Killshread
+donovan	moves_donovan.toml	move	Killshread (ES)	frame	-	107	name = "Killshread (ES)
+donovan	moves_donovan.toml	move	Killshread Summon	frame	-	115	name = "Killshread Summon
+donovan	moves_donovan.toml	move	Killshread Lightning	frame	-	123	name = "Killshread Lightning
+donovan	moves_donovan.toml	move	Killshread Lightning (ES)	frame	-	131	name = "Killshread Lightning (ES)
+donovan	moves_donovan.toml	move	Ifrit Sword	frame	-	139	name = "Ifrit Sword
+donovan	moves_donovan.toml	move	Ifrit Sword (ES)	frame	-	147	name = "Ifrit Sword (ES)
+donovan	moves_donovan.toml	move	Blizzard Sword	frame	-	155	name = "Blizzard Sword
+donovan	moves_donovan.toml	move	Blizzard Sword (ES)	frame	-	163	name = "Blizzard Sword (ES)
+donovan	moves_donovan.toml	move	Lightning Sword	frame	-	171	name = "Lightning Sword
+donovan	moves_donovan.toml	move	Lightning Sword (ES)	frame	-	179	name = "Lightning Sword (ES)
+donovan	moves_donovan.toml	move	Press of Death	frame	-	189	name = "Press of Death
+donovan	moves_donovan.toml	move	Change Immortal	frame	-	197	name = "Change Immortal
+donovan	moves_donovan.toml	move	Slay Shred	frame	-	207	name = "Slay Shred
+donovan	moves_donovan.toml	move	5LP	frame	-	217	name = "5LP
+donovan	moves_donovan.toml	move	5MP	frame	-	225	name = "5MP
+donovan	moves_donovan.toml	move	5HP	frame	-	233	name = "5HP
+donovan	moves_donovan.toml	move	5LK	frame	-	241	name = "5LK
+donovan	moves_donovan.toml	move	5MK	frame	-	249	name = "5MK
+donovan	moves_donovan.toml	move	5HK	frame	-	257	name = "5HK
+donovan	moves_donovan.toml	move	2LP	frame	-	265	name = "2LP
+donovan	moves_donovan.toml	move	2MP	frame	-	273	name = "2MP
+donovan	moves_donovan.toml	move	2HP	frame	-	281	name = "2HP
+donovan	moves_donovan.toml	move	2LK	frame	-	289	name = "2LK
+donovan	moves_donovan.toml	move	2MK	frame	-	297	name = "2MK
+donovan	moves_donovan.toml	move	2HK	frame	-	305	name = "2HK
+donovan	moves_donovan.toml	move	j.LP	frame	-	313	name = "j.LP
+donovan	moves_donovan.toml	move	j.MP	frame	-	321	name = "j.MP
+donovan	moves_donovan.toml	move	j.HP	frame	-	329	name = "j.HP
+donovan	moves_donovan.toml	move	j.LK	frame	-	337	name = "j.LK
+donovan	moves_donovan.toml	move	j.MK	frame	-	345	name = "j.MK
+donovan	moves_donovan.toml	move	j.HK	frame	-	353	name = "j.HK
+donovan	moves_donovan.toml	move	Forward dash	frame	-	363	name = "Forward dash
+donovan	moves_donovan.toml	move	Back dash	frame	-	371	name = "Back dash
+donovan	moves_donovan.toml	move	Walk forward	frame	-	379	name = "Walk forward
+donovan	moves_donovan.toml	move	Walk back	frame	-	387	name = "Walk back
+donovan	moves_donovan.toml	move	Crouch	frame	-	395	name = "Crouch
+donovan	moves_donovan.toml	move	Jump	frame	-	403	name = "Jump
+donovan	moves_donovan.toml	move	5LP (swordless)	frame	-	413	name = "5LP (swordless)
+donovan	moves_donovan.toml	move	5MP (swordless)	frame	-	421	name = "5MP (swordless)
+donovan	moves_donovan.toml	move	5HP (swordless)	frame	-	429	name = "5HP (swordless)
+donovan	moves_donovan.toml	move	5LK (swordless)	frame	-	437	name = "5LK (swordless)
+donovan	moves_donovan.toml	move	5MK (swordless)	frame	-	445	name = "5MK (swordless)
+donovan	moves_donovan.toml	move	5HK (swordless)	frame	-	453	name = "5HK (swordless)
+donovan	moves_donovan.toml	move	2MP (swordless)	frame	-	461	name = "2MP (swordless)
+donovan	moves_donovan.toml	move	2HP (swordless)	frame	-	469	name = "2HP (swordless)
+donovan	reconciliation_donovan.toml	map	#1	fix	49	20	x026142 escape twin (14z-66 site-twin method); carried for donovan 14z-98
+donovan	reconciliation_donovan.toml	map	#2	fix	49	27	x026142 escape twin (14z-66 site-twin method); carried for donovan 14z-98
+donovan	reconciliation_donovan.toml	map	#3	fix	49	34	x026142 escape twin (14z-66 site-twin method); carried for donovan 14z-98
+donovan	reconciliation_donovan.toml	map	#4	fix	49	41	x026142 escape twin (14z-66 site-twin method); carried for donovan 14z-98
+donovan	reconciliation_donovan.toml	map	#5	fix	49	48	x026142 escape twin (14z-66 site-twin method); carried for donovan 14z-98
+donovan	reconciliation_donovan.toml	map	#6	fix	49	55	x026142 escape twin (14z-66 site-twin method); carried for donovan 14z-98
+donovan	reconciliation_donovan.toml	map	#7	fix	49	62	x026142 escape twin (14z-66 site-twin method); carried for donovan 14z-98
+donovan	reconciliation_donovan.toml	map	#8	fix	49	69	x05c800 tail-escape twin (14z-67 census find): subq.b #1,$149(a4) + jmp engine —
+huitzil	huitzil.toml	tenant	huitzil	fix	13,18	26	14z-65: the slot-clearing alloc wrappers (the Donovan row
+huitzil	huitzil.toml	init_shim	#1	fix	13,14	45	hunt). Vanilla vsavj never seeds the secondary-object pools during a
+huitzil	huitzil.toml	layout_group	#1	fix	2	75	── Layout group (14z-65, THE watchdog-reboot fix): the sibling-insertion
+huitzil	huitzil.toml	space	hole_a	frame	-	86	── ADDRESS-SPACE MODEL — same shape as donovan.toml's; duplicated for the
+huitzil	huitzil.toml	space	hole_b	frame	-	86	── ADDRESS-SPACE MODEL — same shape as donovan.toml's; duplicated for the
+huitzil	huitzil.toml	space	wide_ext	frame	-	86	── ADDRESS-SPACE MODEL — same shape as donovan.toml's; duplicated for the
+huitzil	huitzil.toml	port_patch	#1	fix	15	115	exist on vsavj (7 classes, 0-6). Unremapped, the registration leaves a
+huitzil	huitzil.toml	obj_hook	#1	fix	8	130	the sites un-hooked, the vanilla 114-entry table was over-indexed and
+huitzil	huitzil.toml	obj_hook	#2	fix	8	130	the sites un-hooked, the vanilla 114-entry table was over-indexed and
+huitzil	huitzil.toml	data_in_code	#1	fix	10	209	in the crypt hole, where placed bytes are stored re-encrypted for
+huitzil	huitzil.toml	data_in_code	#2	fix	10	225	lea(pc)+read-(An,Xn) shape with an in-region target) found FOUR more
+huitzil	huitzil.toml	data_in_code	#3	fix	10	225	lea(pc)+read-(An,Xn) shape with an in-region target) found FOUR more
+huitzil	huitzil.toml	data_in_code	#4	fix	10	225	lea(pc)+read-(An,Xn) shape with an in-region target) found FOUR more
+huitzil	huitzil.toml	data_in_code	#5	fix	10	225	lea(pc)+read-(An,Xn) shape with an in-region target) found FOUR more
+huitzil	huitzil.toml	pcrel_escape_fix	#1	fix	11	283	The clone's word-form pcrel escapes (35 unique targets, censused) get
+huitzil	huitzil.toml	pcrel_escape_fix	#2	fix	11	292	x026142 has the same disease (14z-66, found via the air-dash seq
+huitzil	huitzil.toml	site_thunk	tenant_jump_seq	fix	17	304	name = "tenant_jump_seq"
+huitzil	huitzil.toml	site_thunk	shadow_seq_guard	fix	16	319	body: cmpi.w #$40e,d0; bcs.s +2 [vanilla]; moveq #0,d0;
+huitzil	huitzil.toml	pcrel_escape_fix	#3	fix	11	332	The x05c800 latent tail escapes (14z-67 census find, the x026142
+huitzil	huitzil.toml	port_patch	#2	fix	26	355	note = "OBJ bank setter (H own zone): vs2 bank 3 -> WIDE bank 4"
+huitzil	huitzil.toml	port_patch	#3	fix	26	364	note = "OBJ bank setter (shared zone): vs2 bank 3 -> WIDE bank 4"
+huitzil	huitzil.toml	port_patch	#4	fix	26	373	note = "OBJ bank setter (shared zone): vs2 bank 3 -> WIDE bank 4"
+huitzil	huitzil.toml	port_patch	#5	fix	26	382	note = "OBJ bank setter (shared zone): vs2 bank 3 -> WIDE bank 4"
+huitzil	huitzil.toml	port_patch	#6	fix	26	391	note = "OBJ bank setter (shared zone): vs2 bank 3 -> WIDE bank 4"
+huitzil	huitzil.toml	port_patch	#7	fix	26	400	note = "OBJ bank setter (shared zone): vs2 bank 3 -> WIDE bank 4"
+huitzil	huitzil.toml	port_patch	#8	fix	26	409	note = "OBJ bank setter (shared zone): vs2 bank 3 -> WIDE bank 4"
+huitzil	huitzil.toml	port_patch	#9	fix	26	418	note = "OBJ bank setter (H farm zone): vs2 bank 3 -> WIDE bank 4"
+huitzil	huitzil.toml	port_patch	#10	fix	26	427	note = "OBJ bank setter (H farm zone): vs2 bank 3 -> WIDE bank 4"
+huitzil	huitzil.toml	port_patch	#11	fix	26	436	note = "OBJ bank setter (H farm zone): vs2 bank 3 -> WIDE bank 4"
+huitzil	huitzil.toml	port_patch	#12	fix	26	445	note = "OBJ bank setter (H farm zone): vs2 bank 3 -> WIDE bank 4"
+huitzil	huitzil.toml	port_patch	#13	fix	26	454	note = "OBJ bank setter (H farm zone): vs2 bank 3 -> WIDE bank 4"
+huitzil	huitzil.toml	port_patch	#14	fix	46	481	note = "obj-hit dmg: flag var -> vsavj layout (-0x4BBA)"
+huitzil	huitzil.toml	port_patch	#15	fix	46	489	note = "obj-hit dmg: clr damage var -> vsavj layout (-0x4BBE)"
+huitzil	huitzil.toml	port_patch	#16	fix	46	497	note = "obj-hit dmg: scaled damage -> vsavj layout (-0x4BBE)"
+huitzil	huitzil.toml	port_patch	#17	fix	46	505	note = "obj-hit dmg: flag clear -> vsavj layout (-0x4BBA)"
+huitzil	huitzil.toml	port_patch	#18	fix	46	513	note = "obj-hit dmg: clr white var -> vsavj layout (-0x4BBC)"
+huitzil	huitzil.toml	port_patch	#19	fix	46	521	note = "obj-hit dmg: white damage -> vsavj layout (-0x4BBC)"
+huitzil	huitzil.toml	port_patch	#20	fix	47	536	note = "meter adder: Dark Force test +0x1C3 (vs2 Power) -> +0x111 (vsavj Change)
+huitzil	huitzil.toml	port_patch	#21	fix	47	558	note = "EX route disabled: bne.w -> bra.w past the EX check (vs2's no-stock path
+huitzil	huitzil.toml	table_fix	#1	fix	26	561	truncation + vs2-values defects Donovan's table_fix repairs). Rows =
+huitzil	huitzil.toml	code_word	obj_bank_word_slot	fix	26	582	name = "obj_bank_word_slot"
+huitzil	huitzil.toml	palette	effect	fix	27	589	── Sprite + effect palettes (the Donovan template, H's vs2 blocks:
+huitzil	huitzil.toml	palette	sprite	fix	27	589	── Sprite + effect palettes (the Donovan template, H's vs2 blocks:
+huitzil	huitzil.toml	select_records	name_banner	fix	27	611	── Select records (the M3a variant-id mechanism, H's rows; anchors
+huitzil	huitzil.toml	select_records	portrait	fix	27	611	── Select records (the M3a variant-id mechanism, H's rows; anchors
+huitzil	huitzil.toml	select_records	splash_p1	fix	27	611	── Select records (the M3a variant-id mechanism, H's rows; anchors
+huitzil	huitzil.toml	select_records	splash_p2	fix	27	611	── Select records (the M3a variant-id mechanism, H's rows; anchors
+huitzil	huitzil.toml	select_records	win_quote	fix	27	674	THIS ENTRY PORTS THE WIN-SCREEN PORTRAIT — and it WORKS (Phobos' portrait
+huitzil	huitzil.toml	select_records	highlight	fix	27	693	highlight = host_ring exactly as ratified for Donovan (records encode
+huitzil	huitzil.toml	site_thunk	name_bank_variant_id	fix	27	712	── Drawer bank gates (verbatim from the Donovan rows — the bodies use
+huitzil	huitzil.toml	site_thunk	splash_bank_variant_id	fix	27	712	── Drawer bank gates (verbatim from the Donovan rows — the bodies use
+huitzil	huitzil.toml	site_thunk	winquote_bank_variant_id	fix	27	712	── Drawer bank gates (verbatim from the Donovan rows — the bodies use
+huitzil	huitzil.toml	site_thunk	select_pal_variant_id	fix	27	738	── Select-portrait palettes (14z-67): vs2's OWN uploader remaps H
+huitzil	huitzil.toml	aux_poke	hud_mug_entry_10	fix	28	754	── Variant-id HUD rows (the 14z-63 mechanism, H's values read 14z-67
+huitzil	huitzil.toml	aux_poke	hud_name_entry_10_hi	fix	28	754	── Variant-id HUD rows (the 14z-63 mechanism, H's values read 14z-67
+huitzil	huitzil.toml	aux_poke	hud_name_entry_10_lo	fix	28	754	── Variant-id HUD rows (the 14z-63 mechanism, H's values read 14z-67
+huitzil	huitzil.toml	code_word	win_pos_x_slot	fix	29	816	+0x382(a4). vsavj row 0x10 is the plain alias (0x0080,0x0098);
+huitzil	huitzil.toml	code_word	win_pos_y_slot	fix	29	816	+0x382(a4). vsavj row 0x10 is the plain alias (0x0080,0x0098);
+huitzil	huitzil.toml	win_pal_variant	hui_win_pal	fix	29	849	colors = 10   # 8 -> 10 AT THE 14z-99 WINDOW (#105 fix, landed). Sets 8/9 are
+huitzil	huitzil.toml	select_wheel	roster21	frame	-	861	── SELECT WHEEL (verbatim from donovan.toml roster21 — the extension
+huitzil	huitzil.toml	port_patch	#22	fix	60	926	note = "companion-piece bank setter: effect page bank 1 -> WIDE bank 5 (native c
+huitzil	huitzil.toml	port_patch	#23	fix	60	935	note = "companion-piece bank setter: effect page bank 1 -> WIDE bank 5 (native c
+huitzil	huitzil.toml	port_patch	#24	fix	60	944	note = "companion-piece bank setter: effect page bank 1 -> WIDE bank 5 (native c
+huitzil	huitzil.toml	aux_poke	effect_map_4e4f	fix	32	950	entries (ids 0x4E-0x53 -> indexes 0F/1B/1F/19/0F/03) read ZERO on
+huitzil	huitzil.toml	aux_poke	effect_map_5051	fix	32	950	entries (ids 0x4E-0x53 -> indexes 0F/1B/1F/19/0F/03) read ZERO on
+huitzil	huitzil.toml	aux_poke	effect_map_5253	fix	32	950	entries (ids 0x4E-0x53 -> indexes 0F/1B/1F/19/0F/03) read ZERO on
+huitzil	huitzil.toml	site_thunk	throw_arc_tables	fix	33	993	reads PAST map1 into table2's bytes -> regular-arc rows = the
+huitzil	huitzil.toml	pcrel_escape_fix	#4	fix	11	1122	region = "x022400"
+huitzil	huitzil.toml	site_thunk	idmask_piece_subtype	fix	41	1168	vsavj loads a WORD, so d1's HIGH word is stale; a newcomer id
+huitzil	huitzil.toml	site_thunk	idmask_victim_spawn	fix	41	1168	vsavj loads a WORD, so d1's HIGH word is stale; a newcomer id
+huitzil	huitzil.toml	pcrel_escape_fix	#5	fix	11	1200	region = "x06cac0"
+huitzil	huitzil.toml	site_thunk	df_gold_variant_id	fix	44	1401	name = "df_gold_variant_id"
+huitzil	huitzil.toml	code_word	df_seq_entry_10	fix	44	1410	THE ROW WORD MUST BE A CODE OP, NOT A DATA POKE (measured 14z-84: the
+huitzil	huitzil.toml	data_port	grab_hold_keyframes	fix	45	1462	note = "grab-hold victim keyframes: row 0x10 <- H's own block (vs2 0x0C56AA), wa
+huitzil	huitzil.toml	code_ptr	beam_effect_class16	fix	34	1516	note = "effect-class row 16 -> the ported vs2 row-16 handler family (the beam)"
+huitzil	huitzil.toml	code_ptr	beam_effect_class31	fix	39	1557	note = "effect-class row 31 -> the ported vs2 row-31 handler family (the clone-m
+huitzil	huitzil.toml	site_thunk	beam_list_type6	fix	34	1559	── 14z-71 THE BEAM, stage 2: vsav's sprite-list drawer has no LIST TYPE 12
+huitzil	huitzil.toml	port_patch	#25	fix	34	1748	note = "composite list 24A744: list-type 12 -> the taken-over type 6"
+huitzil	huitzil.toml	port_patch	#26	fix	34	1756	note = "composite list 24ADEC: list-type 12 -> the taken-over type 6"
+huitzil	huitzil.toml	port_patch	#27	fix	34	1764	note = "composite list 24AFCC: list-type 12 -> the taken-over type 6"
+huitzil	huitzil.toml	port_patch	#28	fix	34	1772	note = "composite list 24B0BC: list-type 12 -> the taken-over type 6"
+huitzil	huitzil.toml	port_patch	#29	fix	34	1780	note = "composite list 24E968: list-type 12 -> the taken-over type 6"
+huitzil	huitzil.toml	port_patch	#30	fix	34	1788	note = "composite list 24E980: list-type 12 -> the taken-over type 6"
+huitzil	huitzil.toml	port_patch	#31	fix	34	1796	note = "composite list 24E998: list-type 12 -> the taken-over type 6"
+huitzil	huitzil.toml	port_patch	#32	fix	34	1804	note = "composite list 24E9B0: list-type 12 -> the taken-over type 6"
+huitzil	huitzil.toml	port_patch	#33	fix	34	1812	note = "composite list 24E9C8: list-type 12 -> the taken-over type 6"
+huitzil	huitzil.toml	port_patch	#34	fix	34	1820	note = "composite list 24E9E0: list-type 12 -> the taken-over type 6"
+huitzil	huitzil.toml	port_patch	#35	fix	34	1828	note = "composite list 24E9F8: list-type 12 -> the taken-over type 6"
+huitzil	huitzil.toml	port_patch	#36	fix	34	1836	note = "composite list 24EA10: list-type 12 -> the taken-over type 6"
+huitzil	huitzil.toml	port_patch	#37	fix	34	1844	note = "composite list 24EA28: list-type 12 -> the taken-over type 6"
+huitzil	huitzil.toml	port_patch	#38	fix	34	1852	note = "composite list 251CD2: list-type 12 -> the taken-over type 6"
+huitzil	huitzil.toml	port_patch	#39	fix	34	1860	note = "composite list 251CE6: list-type 12 -> the taken-over type 6"
+huitzil	huitzil.toml	port_patch	#40	fix	34	1868	note = "composite list 251D02: list-type 12 -> the taken-over type 6"
+huitzil	huitzil.toml	port_patch	#41	fix	34	1876	note = "composite list 251D1E: list-type 12 -> the taken-over type 6"
+huitzil	huitzil.toml	port_patch	#42	fix	34	1884	note = "composite list 251D3A: list-type 12 -> the taken-over type 6"
+huitzil	huitzil.toml	port_patch	#43	fix	34	1892	note = "composite list 251D56: list-type 12 -> the taken-over type 6"
+huitzil	huitzil.toml	port_patch	#44	fix	34	1900	note = "composite list 251D72: list-type 12 -> the taken-over type 6"
+huitzil	huitzil.toml	port_patch	#45	fix	34	1908	note = "composite list 251D8E: list-type 12 -> the taken-over type 6"
+huitzil	huitzil.toml	port_patch	#46	fix	34	1916	note = "composite list 251DAA: list-type 12 -> the taken-over type 6"
+huitzil	huitzil.toml	port_patch	#47	fix	34	1924	note = "composite list 251DC6: list-type 12 -> the taken-over type 6"
+huitzil	huitzil.toml	port_patch	#48	fix	34	1932	note = "composite list 251DE2: list-type 12 -> the taken-over type 6"
+huitzil	huitzil.toml	port_patch	#49	fix	34	1940	note = "composite list 251DFE: list-type 12 -> the taken-over type 6"
+huitzil	huitzil.toml	port_patch	#50	fix	34	1948	note = "composite list 251E12: list-type 12 -> the taken-over type 6"
+huitzil	huitzil.toml	port_patch	#51	fix	34	1956	note = "composite list 251E26: list-type 12 -> the taken-over type 6"
+huitzil	huitzil.toml	port_patch	#52	fix	34	1964	note = "composite list 251E42: list-type 12 -> the taken-over type 6"
+huitzil	huitzil.toml	port_patch	#53	fix	34	1972	note = "composite list 251E56: list-type 12 -> the taken-over type 6"
+huitzil	huitzil.toml	port_patch	#54	fix	34	1980	note = "composite list 251E72: list-type 12 -> the taken-over type 6"
+huitzil	huitzil.toml	port_patch	#55	fix	34	1988	note = "composite list 251E8E: list-type 12 -> the taken-over type 6"
+huitzil	huitzil.toml	port_patch	#56	fix	34	1996	note = "composite list 251EAA: list-type 12 -> the taken-over type 6"
+huitzil	huitzil.toml	port_patch	#57	fix	34	2004	note = "composite list 251EC6: list-type 12 -> the taken-over type 6"
+huitzil	huitzil.toml	port_patch	#58	fix	34	2012	note = "composite list 251EE2: list-type 12 -> the taken-over type 6"
+huitzil	huitzil.toml	port_patch	#59	fix	34	2020	note = "composite list 251EFE: list-type 12 -> the taken-over type 6"
+huitzil	huitzil.toml	port_patch	#60	fix	34	2028	note = "composite list 251F1A: list-type 12 -> the taken-over type 6"
+huitzil	huitzil.toml	port_patch	#61	fix	34	2036	note = "composite list 251F2E: list-type 12 -> the taken-over type 6"
+huitzil	huitzil.toml	port_patch	#62	fix	34	2044	note = "composite list 251F42: list-type 12 -> the taken-over type 6"
+huitzil	huitzil.toml	port_patch	#63	fix	34	2052	note = "composite list 251F56: list-type 12 -> the taken-over type 6"
+huitzil	huitzil.toml	site_thunk	index_window_018468	fix	42	2058	THE CLASS. vsavj's sub-state table at 0x018468 has 80 entries; vs2's twin
+huitzil	huitzil.toml	site_thunk	hitclass_map_extend	fix	43	2154	maps BOTH colliding objects' type bytes through ONE 64-entry byte map at
+huitzil	huitzil.toml	region_fix	#1	fix	48	2231	note = "trap dome hit record 1: class 0x52 -> 0x06 (vs2-alias-proven; routes vsa
+huitzil	huitzil.toml	region_fix	#2	fix	48	2240	note = "trap dome hit record 2: class 0x52 -> 0x06 (vs2-alias-proven)"
+huitzil	huitzil.toml	sound_table	hui_sfx_records	fix	21	2285	name = "hui_sfx_records"
+huitzil	huitzil.toml	site_thunk	voice_borrow_keep_tenant	fix	61	2312	note = "14z-87 option (b): keep a tenant's own voice class at the borrow write (
+huitzil	huitzil.toml	code_word	voice_borrow_site_pad	fix	61	2321	note = "14z-87: the stolen site's 4th word (tail of move.b d1,(0x382,a1)) -> nop
+huitzil	huitzil.toml	code_word	hui_kernel_voice_e0	fix	23	2326	THIS IS THE MEASURED GRUNT FIX: event .2 fired vsavj's row-copy alias
+huitzil	huitzil.toml	code_word	hui_kernel_voice_e1	fix	23	2326	THIS IS THE MEASURED GRUNT FIX: event .2 fired vsavj's row-copy alias
+huitzil	huitzil.toml	code_word	hui_kernel_voice_e2	fix	23	2326	THIS IS THE MEASURED GRUNT FIX: event .2 fired vsavj's row-copy alias
+huitzil	huitzil.toml	code_word	hui_kernel_voice_e3	fix	23	2326	THIS IS THE MEASURED GRUNT FIX: event .2 fired vsavj's row-copy alias
+huitzil	huitzil.toml	data_port	voice_borrow_candidates_a	fix	61	2380	note = "14z-87 option (c): vs2's Huitzil row of the voice-class candidate table 
+huitzil	huitzil.toml	data_port	voice_borrow_voicenums_b	fix	24,61	2391	THE #92 FIX (14z-94, maintainer-decided). This is the ARCADE-LADDER stage
+huitzil	huitzil.toml	data_port	defense_curve_row	fix	49	2440	note = "14z-170 (ruled 14z-168): vs2's Phobos defense-curve row over vsavj's var
+huitzil	huitzil.toml	data_port	defense_rally_threshold	fix	49	2458	note = "14z-170 (ruled 14z-168): vs2's Phobos low-HP rally threshold (40 HP) ove
+huitzil	huitzil.toml	code_word	air_dash_mask_hi	fix	51	2462	THE AIR-DASH MINIMUM HEIGHT (#222; RULED 2026-10-05, 14z-191: "yes, since Phobos
+huitzil	huitzil.toml	data_port	air_dash_height_row	fix	51	2462	THE AIR-DASH MINIMUM HEIGHT (#222; RULED 2026-10-05, 14z-191: "yes, since Phobos
+huitzil	huitzil.toml	code_word	landing_bigbody_mask_hi_a	fix	51	2486	THE LANDING SOUND'S BIG-BODY MASK (#223; RULED 2026-10-05, 14z-191: "#223 I conf
+huitzil	huitzil.toml	code_word	landing_bigbody_mask_hi_b	fix	51	2486	THE LANDING SOUND'S BIG-BODY MASK (#223; RULED 2026-10-05, 14z-191: "#223 I conf
+huitzil	huitzil.toml	aux_poke	voice_alias_thunk_w00	fix	20	2507	THE VOICE ALIAS THUNK (14z-86, shared by all tenants — identical
+huitzil	huitzil.toml	aux_poke	voice_alias_thunk_w01	fix	20	2507	THE VOICE ALIAS THUNK (14z-86, shared by all tenants — identical
+huitzil	huitzil.toml	aux_poke	voice_alias_thunk_w02	fix	20	2507	THE VOICE ALIAS THUNK (14z-86, shared by all tenants — identical
+huitzil	huitzil.toml	aux_poke	voice_alias_thunk_w03	fix	20	2507	THE VOICE ALIAS THUNK (14z-86, shared by all tenants — identical
+huitzil	huitzil.toml	aux_poke	voice_alias_thunk_w04	fix	20	2507	THE VOICE ALIAS THUNK (14z-86, shared by all tenants — identical
+huitzil	huitzil.toml	aux_poke	voice_alias_thunk_w05	fix	20	2507	THE VOICE ALIAS THUNK (14z-86, shared by all tenants — identical
+huitzil	huitzil.toml	aux_poke	voice_alias_thunk_w06	fix	20	2507	THE VOICE ALIAS THUNK (14z-86, shared by all tenants — identical
+huitzil	huitzil.toml	aux_poke	voice_alias_thunk_w07	fix	20	2507	THE VOICE ALIAS THUNK (14z-86, shared by all tenants — identical
+huitzil	huitzil.toml	aux_poke	voice_alias_thunk_w08	fix	20	2507	THE VOICE ALIAS THUNK (14z-86, shared by all tenants — identical
+huitzil	huitzil.toml	aux_poke	voice_alias_thunk_w09	fix	20	2507	THE VOICE ALIAS THUNK (14z-86, shared by all tenants — identical
+huitzil	huitzil.toml	aux_poke	voice_alias_thunk_w10	fix	20	2507	THE VOICE ALIAS THUNK (14z-86, shared by all tenants — identical
+huitzil	huitzil.toml	aux_poke	voice_alias_thunk_w11	fix	20	2507	THE VOICE ALIAS THUNK (14z-86, shared by all tenants — identical
+huitzil	huitzil.toml	aux_poke	voice_alias_thunk_w12	fix	20	2507	THE VOICE ALIAS THUNK (14z-86, shared by all tenants — identical
+huitzil	huitzil.toml	aux_poke	voice_alias_thunk_w13	fix	20	2507	THE VOICE ALIAS THUNK (14z-86, shared by all tenants — identical
+huitzil	huitzil.toml	aux_poke	voice_alias_thunk_w14	fix	20	2507	THE VOICE ALIAS THUNK (14z-86, shared by all tenants — identical
+huitzil	huitzil.toml	data_port	capture_kf_anakaris	fix	45	2649	alias rows 0x10-0x1F onto 0x00-0x0F (14 by offset, Zabel/special by
+huitzil	huitzil.toml	data_port	capture_kf_aulbath	fix	45	2649	alias rows 0x10-0x1F onto 0x00-0x0F (14 by offset, Zabel/special by
+huitzil	huitzil.toml	data_port	capture_kf_bishamon	fix	45	2649	alias rows 0x10-0x1F onto 0x00-0x0F (14 by offset, Zabel/special by
+huitzil	huitzil.toml	data_port	capture_kf_bulleta	fix	45	2649	alias rows 0x10-0x1F onto 0x00-0x0F (14 by offset, Zabel/special by
+huitzil	huitzil.toml	data_port	capture_kf_demitri	fix	45	2649	alias rows 0x10-0x1F onto 0x00-0x0F (14 by offset, Zabel/special by
+huitzil	huitzil.toml	data_port	capture_kf_felicia	fix	45	2649	alias rows 0x10-0x1F onto 0x00-0x0F (14 by offset, Zabel/special by
+huitzil	huitzil.toml	data_port	capture_kf_gallon	fix	45	2649	alias rows 0x10-0x1F onto 0x00-0x0F (14 by offset, Zabel/special by
+huitzil	huitzil.toml	data_port	capture_kf_jedah	fix	45	2649	alias rows 0x10-0x1F onto 0x00-0x0F (14 by offset, Zabel/special by
+huitzil	huitzil.toml	data_port	capture_kf_leilei	fix	45	2649	alias rows 0x10-0x1F onto 0x00-0x0F (14 by offset, Zabel/special by
+huitzil	huitzil.toml	data_port	capture_kf_lilith	fix	45	2649	alias rows 0x10-0x1F onto 0x00-0x0F (14 by offset, Zabel/special by
+huitzil	huitzil.toml	data_port	capture_kf_morrigan	fix	45	2649	alias rows 0x10-0x1F onto 0x00-0x0F (14 by offset, Zabel/special by
+huitzil	huitzil.toml	data_port	capture_kf_qbee	fix	45	2649	alias rows 0x10-0x1F onto 0x00-0x0F (14 by offset, Zabel/special by
+huitzil	huitzil.toml	data_port	capture_kf_sasquatch	fix	45	2649	alias rows 0x10-0x1F onto 0x00-0x0F (14 by offset, Zabel/special by
+huitzil	huitzil.toml	data_port	capture_kf_victor	fix	45	2649	alias rows 0x10-0x1F onto 0x00-0x0F (14 by offset, Zabel/special by
+huitzil	huitzil.toml	data_port	capture_kf_zabel	fix	45	2649	alias rows 0x10-0x1F onto 0x00-0x0F (14 by offset, Zabel/special by
+huitzil	huitzil.toml	site_thunk	oboro_select_hook	frame	-	2885	── THE OBORO SELECT HOOK (W1, 14z-105; maintainer-ruled 2026-08-22:
+huitzil	huitzil.toml	site_thunk	random_select_bound	fix	31	2932	vsavj's table is 15 entries (the base-half roster minus 0x0B); both bounds
+huitzil	huitzil.toml	site_thunk	random_select_roster	fix	31	2932	vsavj's table is 15 entries (the base-half roster minus 0x0B); both bounds
+huitzil	huitzil.toml	site_thunk	air_block_guard_window	fix	50	2984	ported at 0x414920: `tst.b $158(a6); beq fail`) from an AIR block; vsavj's block
+huitzil	huitzil.toml	aux_poke	boot_title_saved_1	frame	-	3018	THE BOOT NAME SCREEN: "VAMPIRE SAVIOR" -> "VAMPIRE SAVED" (14z-127,
+huitzil	huitzil.toml	aux_poke	boot_title_saved_2	frame	-	3018	THE BOOT NAME SCREEN: "VAMPIRE SAVIOR" -> "VAMPIRE SAVED" (14z-127,
+huitzil	huitzil.toml	aux_poke	boot_title_saved_3	frame	-	3018	THE BOOT NAME SCREEN: "VAMPIRE SAVIOR" -> "VAMPIRE SAVED" (14z-127,
+huitzil	huitzil.toml	port_patch	#64	fix	46	3066	note = "#157: grab ptr store a6: vs2 -0x4B74 -> vsavj -0x4BC6"
+huitzil	huitzil.toml	port_patch	#65	fix	46	3074	note = "#157: grab ptr store a1: vs2 -0x4B72 -> vsavj -0x4BC4"
+huitzil	huitzil.toml	port_patch	#66	fix	46	3082	note = "#157: grab ptr store a6 (site 2)"
+huitzil	huitzil.toml	port_patch	#67	fix	46	3090	note = "#157: grab ptr store a1 (site 2)"
+huitzil	huitzil.toml	port_patch	#68	fix	46	3098	note = "#157: grab ptr store a6 (site 3)"
+huitzil	huitzil.toml	port_patch	#69	fix	46	3106	note = "#157: grab ptr store a1 (site 3)"
+huitzil	moves_huitzil.toml	move	Magnet Slam	frame	-	26	name = "Magnet Slam"
+huitzil	moves_huitzil.toml	move	Sky Capture	frame	-	34	name = "Sky Capture"
+huitzil	moves_huitzil.toml	move	Circuit Scrapper	frame	-	42	name = "Circuit Scrapper"
+huitzil	moves_huitzil.toml	move	Circuit Scrapper (ES)	frame	-	50	name = "Circuit Scrapper (ES)"
+huitzil	moves_huitzil.toml	move	6LP	frame	-	60	name = "6LP"
+huitzil	moves_huitzil.toml	move	6MP	frame	-	68	name = "6MP"
+huitzil	moves_huitzil.toml	move	6HP	frame	-	76	name = "6HP"
+huitzil	moves_huitzil.toml	move	6LK	frame	-	84	name = "6LK"
+huitzil	moves_huitzil.toml	move	6MK	frame	-	92	name = "6MK"
+huitzil	moves_huitzil.toml	move	6HK	frame	-	100	name = "6HK"
+huitzil	moves_huitzil.toml	move	Sitting Attack	frame	-	110	name = "Sitting Attack"
+huitzil	moves_huitzil.toml	move	Sitting Attack (ES)	frame	-	118	name = "Sitting Attack (ES)"
+huitzil	moves_huitzil.toml	move	Plasma Beam	frame	-	126	name = "Plasma Beam"
+huitzil	moves_huitzil.toml	move	Plasma Beam (ES)	frame	-	134	name = "Plasma Beam (ES)"
+huitzil	moves_huitzil.toml	move	Mighty Launcher	frame	-	142	name = "Mighty Launcher"
+huitzil	moves_huitzil.toml	move	Mighty Launcher (ES)	frame	-	150	name = "Mighty Launcher (ES)"
+huitzil	moves_huitzil.toml	move	Reflect Wall	frame	-	158	name = "Reflect Wall"
+huitzil	moves_huitzil.toml	move	Genocide Vulcan	frame	-	166	name = "Genocide Vulcan"
+huitzil	moves_huitzil.toml	move	Genocide Vulcan (ES)	frame	-	174	name = "Genocide Vulcan (ES)"
+huitzil	moves_huitzil.toml	move	Plasma Trap	frame	-	182	name = "Plasma Trap"
+huitzil	moves_huitzil.toml	move	Plasma Trap (ES)	frame	-	190	name = "Plasma Trap (ES)"
+huitzil	moves_huitzil.toml	move	Final Guardian Beta	frame	-	200	name = "Final Guardian Beta"
+huitzil	moves_huitzil.toml	move	Erasing Sphere	frame	-	208	name = "Erasing Sphere"
+huitzil	moves_huitzil.toml	move	Ray of Doom	frame	-	218	name = "Ray of Doom"
+huitzil	moves_huitzil.toml	move	5LP	frame	-	228	name = "5LP"
+huitzil	moves_huitzil.toml	move	5MP	frame	-	236	name = "5MP"
+huitzil	moves_huitzil.toml	move	5HP	frame	-	244	name = "5HP"
+huitzil	moves_huitzil.toml	move	5LK	frame	-	252	name = "5LK"
+huitzil	moves_huitzil.toml	move	5MK	frame	-	260	name = "5MK"
+huitzil	moves_huitzil.toml	move	5HK	frame	-	268	name = "5HK"
+huitzil	moves_huitzil.toml	move	2LP	frame	-	276	name = "2LP"
+huitzil	moves_huitzil.toml	move	2MP	frame	-	284	name = "2MP"
+huitzil	moves_huitzil.toml	move	2HP	frame	-	292	name = "2HP"
+huitzil	moves_huitzil.toml	move	2LK	frame	-	300	name = "2LK"
+huitzil	moves_huitzil.toml	move	2MK	frame	-	308	name = "2MK"
+huitzil	moves_huitzil.toml	move	2HK	frame	-	316	name = "2HK"
+huitzil	moves_huitzil.toml	move	j.LP	frame	-	324	name = "j.LP"
+huitzil	moves_huitzil.toml	move	j.MP	frame	-	332	name = "j.MP"
+huitzil	moves_huitzil.toml	move	j.HP	frame	-	340	name = "j.HP"
+huitzil	moves_huitzil.toml	move	j.LK	frame	-	348	name = "j.LK"
+huitzil	moves_huitzil.toml	move	j.MK	frame	-	356	name = "j.MK"
+huitzil	moves_huitzil.toml	move	j.HK	frame	-	364	name = "j.HK"
+huitzil	moves_huitzil.toml	move	Air Dash	frame	-	374	name = "Air Dash"
+huitzil	moves_huitzil.toml	move	Float	frame	-	382	name = "Float"
+huitzil	moves_huitzil.toml	move	Forward dash	frame	-	390	name = "Forward dash"
+huitzil	moves_huitzil.toml	move	Back dash	frame	-	398	name = "Back dash"
+huitzil	moves_huitzil.toml	move	Walk forward	frame	-	406	name = "Walk forward"
+huitzil	moves_huitzil.toml	move	Walk back	frame	-	414	name = "Walk back"
+huitzil	moves_huitzil.toml	move	Crouch	frame	-	422	name = "Crouch"
+huitzil	moves_huitzil.toml	move	Jump	frame	-	430	name = "Jump"
+huitzil	reconciliation_huitzil.toml	map	#1	fix	20	13	note = "H KEPT SILENT (14z-65 sweep 2, handler regions): sfx id 0x1d4 — vsavj sa
+huitzil	reconciliation_huitzil.toml	map	#2	fix	20	23	note = "M5 VOICE RESTORED (14z-86): vs2 sfx 0x748 -> authored vsavj id 0x90 (qs_
+huitzil	reconciliation_huitzil.toml	map	#3	fix	20	33	note = "M5 VOICE RESTORED (14z-86): vs2 sfx 0x74c -> authored vsavj id 0x94 (qs_
+huitzil	reconciliation_huitzil.toml	map	#4	fix	20	40	note = "H KEPT SILENT (14z-65): sfx id 0x74f — newcomer voice-bank range (0x7xx)
+huitzil	reconciliation_huitzil.toml	map	#5	fix	22	61	note = "H RESTORED 14z-85g: trap detonation chirp — vs2 0x73A content == vsavj 0
+huitzil	reconciliation_huitzil.toml	map	#6	fix	20	71	note = "M5 VOICE RESTORED (14z-86): vs2 sfx 0x735 -> authored vsavj id 0x7f (qs_
+huitzil	reconciliation_huitzil.toml	map	#7	fix	20	81	note = "M5 VOICE RESTORED (14z-86): vs2 sfx 0x748 -> authored vsavj id 0x90 (qs_
+huitzil	reconciliation_huitzil.toml	map	#8	fix	20	91	note = "M5 VOICE RESTORED (14z-86): vs2 sfx 0x729 -> authored vsavj id 0xa0 (qs_
+huitzil	reconciliation_huitzil.toml	map	#9	fix	20	101	note = "M5 VOICE RESTORED (14z-86): vs2 sfx 0x72e -> authored vsavj id 0xa5 (qs_
+huitzil	reconciliation_huitzil.toml	map	#10	fix	62	104	vsav2 = 0x2bc3ec
+huitzil	reconciliation_huitzil.toml	map	#11	fix	62	111	vsav2 = 0x2bc46e
+huitzil	reconciliation_huitzil.toml	map	#12	fix	62	118	vsav2 = 0x2bc8f8
+huitzil	reconciliation_huitzil.toml	map	#13	fix	62	125	vsav2 = 0x2bd7de
+huitzil	reconciliation_huitzil.toml	map	#14	fix	62	132	vsav2 = 0x2bd810
+huitzil	reconciliation_huitzil.toml	map	#15	fix	62	139	vsav2 = 0x2bd842
+huitzil	reconciliation_huitzil.toml	map	#16	fix	62	146	vsav2 = 0x2bd92e
+huitzil	reconciliation_huitzil.toml	map	#17	fix	62	153	vsav2 = 0x2bd960
+huitzil	reconciliation_huitzil.toml	map	#18	fix	62	160	vsav2 = 0x2bd996
+huitzil	reconciliation_huitzil.toml	map	#19	fix	62	167	vsav2 = 0x2c3136
+huitzil	reconciliation_huitzil.toml	map	#20	fix	62	174	vsav2 = 0x2c3170
+huitzil	reconciliation_huitzil.toml	map	#21	fix	62	181	vsav2 = 0x2c31aa
+huitzil	reconciliation_huitzil.toml	map	#22	fix	62	188	vsav2 = 0x2c31e4
+huitzil	reconciliation_huitzil.toml	map	#23	fix	62	195	vsav2 = 0x2c3236
+huitzil	reconciliation_huitzil.toml	map	#24	fix	62	202	vsav2 = 0x2c325c
+huitzil	reconciliation_huitzil.toml	map	#25	fix	62	209	vsav2 = 0x2c3272
+huitzil	reconciliation_huitzil.toml	map	#26	fix	62	216	vsav2 = 0x2c3280
+huitzil	reconciliation_huitzil.toml	map	#27	fix	62	223	vsav2 = 0x2c3296
+huitzil	reconciliation_huitzil.toml	map	#28	fix	62	230	vsav2 = 0x2c32a4
+huitzil	reconciliation_huitzil.toml	map	#29	fix	62	237	vsav2 = 0x2c32b2
+huitzil	reconciliation_huitzil.toml	map	#30	fix	11	256	note = "jump-family twin (14z-66 alignment; x02592a escapes)"
+huitzil	reconciliation_huitzil.toml	map	#31	fix	11	263	note = "jump-family twin (14z-66 alignment; x02592a escapes)"
+huitzil	reconciliation_huitzil.toml	map	#32	fix	11	270	note = "jump-family twin (14z-66 alignment; x02592a escapes)"
+huitzil	reconciliation_huitzil.toml	map	#33	fix	11	277	note = "jump-family twin (14z-66 alignment; x02592a escapes)"
+huitzil	reconciliation_huitzil.toml	map	#34	fix	11	284	note = "jump-family twin (14z-66 alignment; x02592a escapes)"
+huitzil	reconciliation_huitzil.toml	map	#35	fix	11	291	note = "jump-family twin (14z-66 alignment; x02592a escapes)"
+huitzil	reconciliation_huitzil.toml	map	#36	fix	11	298	note = "jump-family twin (14z-66 alignment; x02592a escapes)"
+huitzil	reconciliation_huitzil.toml	map	#37	fix	11	305	note = "jump-family twin (14z-66 alignment; x02592a escapes)"
+huitzil	reconciliation_huitzil.toml	map	#38	fix	11	312	note = "jump-family twin (14z-66 alignment; x02592a escapes)"
+huitzil	reconciliation_huitzil.toml	map	#39	fix	11	319	note = "jump-family twin (14z-66 alignment; x02592a escapes)"
+huitzil	reconciliation_huitzil.toml	map	#40	fix	11	326	note = "jump-family twin (14z-66 alignment; x02592a escapes)"
+huitzil	reconciliation_huitzil.toml	map	#41	fix	11	333	note = "jump-family twin (14z-66 alignment; x02592a escapes)"
+huitzil	reconciliation_huitzil.toml	map	#42	fix	11	340	note = "jump-family twin (14z-66 alignment; x02592a escapes)"
+huitzil	reconciliation_huitzil.toml	map	#43	fix	11	347	note = "jump-family twin (14z-66 alignment; x02592a escapes)"
+huitzil	reconciliation_huitzil.toml	map	#44	fix	11	354	note = "jump-family twin (14z-66 alignment; x02592a escapes)"
+huitzil	reconciliation_huitzil.toml	map	#45	fix	11	361	note = "jump-family twin (14z-66 alignment; x02592a escapes)"
+huitzil	reconciliation_huitzil.toml	map	#46	fix	11	368	note = "jump-family twin (14z-66 alignment; x02592a escapes)"
+huitzil	reconciliation_huitzil.toml	map	#47	fix	11	375	note = "jump-family twin (14z-66 alignment; x02592a escapes)"
+huitzil	reconciliation_huitzil.toml	map	#48	fix	11	382	note = "jump-family twin (14z-66 alignment; x02592a escapes)"
+huitzil	reconciliation_huitzil.toml	map	#49	fix	11	389	note = "jump-family twin (14z-66 alignment; x02592a escapes)"
+huitzil	reconciliation_huitzil.toml	map	#50	fix	11	396	note = "jump-family twin (14z-66 alignment; x02592a escapes)"
+huitzil	reconciliation_huitzil.toml	map	#51	fix	11	403	note = "jump-family twin (14z-66 alignment; x02592a escapes)"
+huitzil	reconciliation_huitzil.toml	map	#52	fix	11	410	note = "jump-family twin (14z-66 alignment; x02592a escapes)"
+huitzil	reconciliation_huitzil.toml	map	#53	fix	11	417	note = "jump-family twin (14z-66 alignment; x02592a escapes)"
+huitzil	reconciliation_huitzil.toml	map	#54	fix	11	424	note = "jump-family twin (14z-66 alignment; x02592a escapes)"
+huitzil	reconciliation_huitzil.toml	map	#55	fix	11	431	note = "jump-family twin (14z-66 alignment; x02592a escapes)"
+huitzil	reconciliation_huitzil.toml	map	#56	fix	11	438	note = "jump-family twin (14z-66 alignment; x02592a escapes)"
+huitzil	reconciliation_huitzil.toml	map	#57	fix	11	445	note = "jump-family twin (14z-66 alignment; x02592a escapes)"
+huitzil	reconciliation_huitzil.toml	map	#58	fix	11	452	note = "float-body helper selecting vs2 data 0xD8358/0xD8398 by +0x115 — operand
+huitzil	reconciliation_huitzil.toml	map	#59	fix	11	467	note = "x026142 escape twin (14z-66 site-twin method)"
+huitzil	reconciliation_huitzil.toml	map	#60	fix	11	474	note = "x026142 escape twin (14z-66 site-twin method)"
+huitzil	reconciliation_huitzil.toml	map	#61	fix	11	481	note = "x026142 escape twin (14z-66 site-twin method)"
+huitzil	reconciliation_huitzil.toml	map	#62	fix	11	488	note = "x026142 escape twin (14z-66 site-twin method)"
+huitzil	reconciliation_huitzil.toml	map	#63	fix	11	495	note = "x026142 escape twin (14z-66 site-twin method)"
+huitzil	reconciliation_huitzil.toml	map	#64	fix	11	502	note = "x026142 escape twin (14z-66 site-twin method)"
+huitzil	reconciliation_huitzil.toml	map	#65	fix	11	509	note = "x026142 escape twin (14z-66 site-twin method)"
+huitzil	reconciliation_huitzil.toml	map	#66	fix	11	516	note = "x05c800 tail-escape twin (14z-67 census find): subq.b #1,$149(a4) + jmp 
+huitzil	reconciliation_huitzil.toml	map	#67	fix	11	529	note = "stage-2 record installer entry B (movea #D7098 <-> #BCEFA; bank_map 14z-
+huitzil	reconciliation_huitzil.toml	map	#68	fix	11	536	note = "stage-2 record installer entry C (movea #D7118 <-> #BCF7A)"
+huitzil	reconciliation_huitzil.toml	map	#69	fix	11	543	note = "stage-2 record installer entry A (movea #D7018 <-> #BCE7A)"
+huitzil	reconciliation_huitzil.toml	map	#70	fix	11	550	note = "the effect id->index byte map (DATA view; vj copy carries the 14z-67 pok
+huitzil	reconciliation_huitzil.toml	map	#71	fix	11	557	note = "byte map +2 (the fleet sites' lea reads the map at an offset)"
+huitzil	reconciliation_huitzil.toml	map	#72	fix	11	564	note = "per-char effect-handler pointer table (id-indexed longs, zero = skip; PE
+huitzil	reconciliation_huitzil.toml	map	#73	fix	53	578	note = "14z-111: seq/command helper (+0x243 sub-dispatch, +0x208 countdown); 0x4
+huitzil	reconciliation_huitzil.toml	map	#74	fix	53	585	note = "14z-111: RNG-gated pick (+0x22e latch): identical modulo operands — RNG 
+huitzil	reconciliation_huitzil.toml	map	#75	fix	53	592	note = "14z-111: +0x230-driven stream stepper: identical modulo operands — word-
+huitzil	reconciliation_huitzil.toml	map	#76	fix	53	599	note = "14z-111: kernel/service band, same-address entry (jsr 0x330e; d1=#$2ff; 
+pyron	moves_pyron.toml	move	Corona Whip	frame	-	27	notes = "Ground throw, must be performed up close; direction by 4/6, M
+pyron	moves_pyron.toml	move	Galactic Throw	frame	-	35	notes = "Air throw, must be performed up close; direction by 4/6, MP o
+pyron	moves_pyron.toml	move	Planet Burning	frame	-	43	notes = "Command throw; ground throw, must be performed up close; MP o
+pyron	moves_pyron.toml	move	Planet Burning (ES)	frame	-	51	notes = "ES of Planet Burning; any two punches; ground throw, must be
+pyron	moves_pyron.toml	move	Rushing Punch	frame	-	61	notes = "Command normal; while dashing, 6 + any P; MEASURED 14z-120: t
+pyron	moves_pyron.toml	move	Diving Punch	frame	-	69	notes = "Command normal; dive-kick-type move; any P; MEASURED 14z-120:
+pyron	moves_pyron.toml	move	Sitting Attack	frame	-	79	notes = "Pursuit move; P or K; ES = Sitting Attack (ES); MEASURED 14z-
+pyron	moves_pyron.toml	move	Sitting Attack (ES)	frame	-	87	notes = "ES of Sitting Attack; pursuit move; MEASURED 14z-120: a2:0x3f
+pyron	moves_pyron.toml	move	Sol Smasher	frame	-	95	notes = "Projectile; usable in air; ES = Sol Smasher (ES); MEASURED 14
+pyron	moves_pyron.toml	move	Sol Smasher (ES)	frame	-	103	notes = "ES of Sol Smasher; projectile; usable in air; MEASURED 14z-12
+pyron	moves_pyron.toml	move	Zodiac Fire	frame	-	111	notes = "Pyron's guard cancel: can be guard cancelled into (623P in bl
+pyron	moves_pyron.toml	move	Zodiac Fire (ES)	frame	-	119	notes = "ES of Zodiac Fire; MEASURED 14z-120: a2:0x31 then a2:0x35, on
+pyron	moves_pyron.toml	move	Orbital Blaze	frame	-	127	notes = "Air only; tatsu-type move; ES = Orbital Blaze (ES); MEASURED
+pyron	moves_pyron.toml	move	Orbital Blaze (ES)	frame	-	135	notes = "ES of Orbital Blaze; air only; tatsu-type move; MEASURED 14z-
+pyron	moves_pyron.toml	move	Galaxy Trip	frame	-	143	notes = "Teleport; SIX destinations, one per button; usable in air; NO
+pyron	moves_pyron.toml	move	Cosmo Disruption	frame	-	153	notes = "Either pair; the pair can be held to delay, the move comes ou
+pyron	moves_pyron.toml	move	Piled Hell	frame	-	161	notes = "Ground or air; MEASURED 14z-120: ground and air both enter a2
+pyron	moves_pyron.toml	move	Shining Gemini	frame	-	171	notes = "Dark Force; creates a clone (a bit like Genei-Jin); P+K of th
+pyron	moves_pyron.toml	move	5LP	frame	-	181	notes = "MEASURED 14z-120 (the same layout as Donovan's)"
+pyron	moves_pyron.toml	move	5MP	frame	-	189	notes = "MEASURED 14z-120 (the same layout as Donovan's)"
+pyron	moves_pyron.toml	move	5HP	frame	-	197	notes = "MEASURED 14z-120 (the same layout as Donovan's)"
+pyron	moves_pyron.toml	move	5LK	frame	-	205	notes = "MEASURED 14z-120 (the same layout as Donovan's)"
+pyron	moves_pyron.toml	move	5MK	frame	-	213	notes = "MEASURED 14z-120 (the same layout as Donovan's)"
+pyron	moves_pyron.toml	move	5HK	frame	-	221	notes = "MEASURED 14z-120 (the same layout as Donovan's)"
+pyron	moves_pyron.toml	move	2LP	frame	-	229	notes = "MEASURED 14z-120 (the same layout as Donovan's)"
+pyron	moves_pyron.toml	move	2MP	frame	-	237	notes = "MEASURED 14z-120 (the same layout as Donovan's)"
+pyron	moves_pyron.toml	move	2HP	frame	-	245	notes = "MEASURED 14z-120 (the same layout as Donovan's)"
+pyron	moves_pyron.toml	move	2LK	frame	-	253	notes = "MEASURED 14z-120 (the same layout as Donovan's)"
+pyron	moves_pyron.toml	move	2MK	frame	-	261	notes = "MEASURED 14z-120 (the same layout as Donovan's)"
+pyron	moves_pyron.toml	move	2HK	frame	-	269	notes = "MEASURED 14z-120 (the same layout as Donovan's)"
+pyron	moves_pyron.toml	move	j.LP	frame	-	277	notes = "MEASURED 14z-120 (the same layout as Donovan's); [9] (a forwa
+pyron	moves_pyron.toml	move	j.MP	frame	-	285	notes = "MEASURED 14z-120 (the same layout as Donovan's); [9] (a forwa
+pyron	moves_pyron.toml	move	j.HP	frame	-	293	notes = "MEASURED 14z-120 (the same layout as Donovan's); [9] (a forwa
+pyron	moves_pyron.toml	move	j.LK	frame	-	301	notes = "MEASURED 14z-120 (the same layout as Donovan's); [9] (a forwa
+pyron	moves_pyron.toml	move	j.MK	frame	-	309	notes = "MEASURED 14z-120 (the same layout as Donovan's); [9] (a forwa
+pyron	moves_pyron.toml	move	j.HK	frame	-	317	notes = "MEASURED 14z-120 (the same layout as Donovan's); [9] (a forwa
+pyron	moves_pyron.toml	move	Forward dash	frame	-	327	notes = "MEASURED 14z-120: a2:0x24 (a loop chain) for BOTH directions"
+pyron	moves_pyron.toml	move	Back dash	frame	-	335	notes = "MEASURED 14z-120: the same chain as the forward dash"
+pyron	moves_pyron.toml	move	Walk forward	frame	-	343	notes = "MEASURED 14z-120 (idle = a:0x00)"
+pyron	moves_pyron.toml	move	Walk back	frame	-	351	notes = "MEASURED 14z-120"
+pyron	moves_pyron.toml	move	Crouch	frame	-	359	notes = "MEASURED 14z-120: a:0x09 -> a:0x01 -> a:0x06"
+pyron	moves_pyron.toml	move	Jump	frame	-	367	notes = "Neutral / back / forward; MEASURED 14z-120: pre-jump a:0x0e -
+pyron	pyron.toml	tenant	pyron	fix	6,5	48	WITHOUT this his rows fall back to a vanilla alias and he moves under
+pyron	pyron.toml	space	hole_a	frame	-	74	── ADDRESS-SPACE MODEL — same shape as the other tenants'; duplicated
+pyron	pyron.toml	space	hole_b	frame	-	74	── ADDRESS-SPACE MODEL — same shape as the other tenants'; duplicated
+pyron	pyron.toml	space	wide_ext	frame	-	74	── ADDRESS-SPACE MODEL — same shape as the other tenants'; duplicated
+pyron	pyron.toml	port_patch	#1	fix	33	116	note = "companion queue class 7 (vs2-only) -> vsavj class 6 (the Anita
+pyron	pyron.toml	obj_hook	#1	fix	34	119	vanilla tables over-index for newcomer types otherwise; the H f4983
+pyron	pyron.toml	obj_hook	#2	fix	34	119	vanilla tables over-index for newcomer types otherwise; the H f4983
+pyron	pyron.toml	data_in_code	#1	fix	2	145	The pod-zone embedded offset/record word table (x088512+0x3AE4 reader
+pyron	pyron.toml	data_in_code	#2	fix	1	155	── AIR DIVE per-strength velocity table (14z-74) — THE air 214+P BUG.
+pyron	pyron.toml	pcrel_escape_fix	#1	fix	4	198	The shared zones' pcrel escapes (oracle-invisible; targets resolved
+pyron	pyron.toml	pcrel_escape_fix	#2	fix	4	198	The shared zones' pcrel escapes (oracle-invisible; targets resolved
+pyron	pyron.toml	port_patch	#2	fix	8	248	note = "OBJ bank setter (P own code zone): vs2 bank 3 -> WIDE bank 4"
+pyron	pyron.toml	port_patch	#3	fix	8	257	note = "OBJ bank setter (shared zone): vs2 bank 3 -> WIDE bank 4"
+pyron	pyron.toml	port_patch	#4	fix	8	266	note = "OBJ bank setter (shared zone): vs2 bank 3 -> WIDE bank 4"
+pyron	pyron.toml	port_patch	#5	fix	8	275	note = "OBJ bank setter (shared zone): vs2 bank 3 -> WIDE bank 4"
+pyron	pyron.toml	port_patch	#6	fix	8	284	note = "OBJ bank setter (shared zone): vs2 bank 3 -> WIDE bank 4"
+pyron	pyron.toml	port_patch	#7	fix	8	293	note = "OBJ bank setter (shared zone): vs2 bank 3 -> WIDE bank 4"
+pyron	pyron.toml	port_patch	#8	fix	8	302	note = "OBJ bank setter (shared zone): vs2 bank 3 -> WIDE bank 4"
+pyron	pyron.toml	port_patch	#9	fix	8	311	note = "OBJ bank setter (shared zone): vs2 bank 3 -> WIDE bank 4"
+pyron	pyron.toml	port_patch	#10	fix	8	320	note = "OBJ bank setter (shared zone): vs2 bank 3 -> WIDE bank 4"
+pyron	pyron.toml	port_patch	#11	fix	8	329	note = "OBJ bank setter (pod/companion zone): vs2 bank 3 -> WIDE bank
+pyron	pyron.toml	port_patch	#12	fix	8	338	note = "OBJ bank setter (pod/companion zone): vs2 bank 3 -> WIDE bank
+pyron	pyron.toml	port_patch	#13	fix	8	347	note = "OBJ bank setter (pod/companion zone): vs2 bank 3 -> WIDE bank
+pyron	pyron.toml	port_patch	#14	fix	21	364	note = "obj-hit dmg: flag var -> vsavj layout (-0x4BBA)"
+pyron	pyron.toml	port_patch	#15	fix	21	372	note = "obj-hit dmg: clr damage var -> vsavj layout (-0x4BBE)"
+pyron	pyron.toml	port_patch	#16	fix	21	380	note = "obj-hit dmg: scaled damage -> vsavj layout (-0x4BBE)"
+pyron	pyron.toml	port_patch	#17	fix	21	388	note = "obj-hit dmg: flag clear -> vsavj layout (-0x4BBA)"
+pyron	pyron.toml	port_patch	#18	fix	21	396	note = "obj-hit dmg: clr white var -> vsavj layout (-0x4BBC)"
+pyron	pyron.toml	port_patch	#19	fix	21	404	note = "obj-hit dmg: white damage -> vsavj layout (-0x4BBC)"
+pyron	pyron.toml	port_patch	#20	fix	23	419	note = "meter adder: Dark Force test +0x1C3 (vs2 Power) -> +0x111 (vsa
+pyron	pyron.toml	port_patch	#21	fix	23	444	note = "EX route disabled: bne.w -> bra.w past the EX check (the input
+pyron	pyron.toml	table_fix	#1	fix	8	468	note = "ported per-char OBJ bank table -> vanilla vsavj values + row 0
+pyron	pyron.toml	code_word	obj_bank_word_slot	fix	8	471	reads row = runtime char id. Variant row 0x11 is a vanilla alias of ro
+pyron	pyron.toml	palette	sprite	fix	9	484	playtest: "palettes are wrong" — this is that gap. His blocks are read
+pyron	pyron.toml	palette	effect	fix	10	539	WHAT IT COST HIM WHILE UNPORTED: row 0x11 aliases row 0x01, so he wore
+pyron	pyron.toml	select_records	name_banner	fix	38	571	── Select family (the H/Donovan template; arrays are shared, only the
+pyron	pyron.toml	select_records	portrait	fix	38	571	── Select family (the H/Donovan template; arrays are shared, only the
+pyron	pyron.toml	select_records	splash_p1	fix	38	571	── Select family (the H/Donovan template; arrays are shared, only the
+pyron	pyron.toml	select_records	splash_p2	fix	38	571	── Select family (the H/Donovan template; arrays are shared, only the
+pyron	pyron.toml	select_records	win_quote	fix	38	630	but it ports the win-screen PORTRAIT record. The win-screen QUOTE TEXT
+pyron	pyron.toml	select_records	highlight	fix	38	646	highlight = host_ring exactly as ratified for Donovan and H: the recor
+pyron	pyron.toml	site_thunk	name_bank_variant_id	fix	38	666	── Drawer bank gates: VERBATIM from the H/Donovan rows. The bodies use
+pyron	pyron.toml	site_thunk	splash_bank_variant_id	fix	38	666	── Drawer bank gates: VERBATIM from the H/Donovan rows. The bodies use
+pyron	pyron.toml	site_thunk	winquote_bank_variant_id	fix	38	666	── Drawer bank gates: VERBATIM from the H/Donovan rows. The bodies use
+pyron	pyron.toml	site_thunk	select_pal_variant_id	fix	38	693	── Select-portrait palettes: Pyron takes the DONOVAN DEDICATED-BLOCK
+pyron	pyron.toml	aux_poke	hud_mug_entry_11	fix	11	713	maintainer sees the in-match plate reading "Demitri" with Demitri's
+pyron	pyron.toml	aux_poke	hud_name_entry_11_hi	fix	11	713	maintainer sees the in-match plate reading "Demitri" with Demitri's
+pyron	pyron.toml	aux_poke	hud_name_entry_11_lo	fix	11	713	maintainer sees the in-match plate reading "Demitri" with Demitri's
+pyron	pyron.toml	code_word	win_pos_x_slot	fix	12	773	POSITION. The per-winner table vsavj 0x5F200 (x.w,y.w per winner id) h
+pyron	pyron.toml	code_word	win_pos_y_slot	fix	12	773	POSITION. The per-winner table vsavj 0x5F200 (x.w,y.w per winner id) h
+pyron	pyron.toml	win_pal_variant	pyr_win_pal	fix	12,13	801	PALETTE. The winner's colour set is chosen by remapping the char id
+pyron	pyron.toml	select_wheel	roster21	frame	-	830	── The 21-cell wheel: tenant-independent, verbatim from H's row.
+pyron	pyron.toml	code_word	palette_routine_row_11	fix	18	953	══ 14z-75 THE SPRITE/HUD BLINK — ROOT-CAUSED, and it is a DEAD ROW ═══
+pyron	pyron.toml	code_word	palette_routine_row_11_b	fix	18	1003	the SELECT screen and on the between-fight ROUTE MAP. Same defect, two
+pyron	pyron.toml	code_word	palette_routine_row_11_c	fix	18	1003	the SELECT screen and on the between-fight ROUTE MAP. Same defect, two
+pyron	pyron.toml	port_patch	#22	fix	15,16	1039	══ 14z-75 THE COSMO DISRUPTION CRASH — FIXED IN HIS OWN DATA ═════════
+pyron	pyron.toml	site_thunk	hitclass_map_extend	fix	19	1138	note = "14z-82c: extend the projectile hit-class byte map to vs2's 80
+pyron	pyron.toml	sound_table	pyr_sfx_records	fix	24	1141	records, the don_sfx_records precedent verbatim. THE MEASURED DEFECT:
+pyron	pyron.toml	site_thunk	voice_borrow_keep_tenant	fix	24	1189	note = "14z-87 option (b): keep a tenant's own voice class at the borr
+pyron	pyron.toml	code_word	voice_borrow_site_pad	fix	24	1198	note = "14z-87: the stolen site's 4th word (tail of move.b d1,(0x382,a
+pyron	pyron.toml	code_word	pyr_kernel_voice_e0	fix	24	1214	note = "14z-96 #101: kernel voice table .0, row 0x11 — vs2 0x720 via a
+pyron	pyron.toml	code_word	pyr_kernel_voice_e1	fix	24	1223	note = "14z-96 #101: kernel voice table .1, row 0x11 — vs2's 0x2a1, th
+pyron	pyron.toml	code_word	pyr_kernel_voice_e2	fix	24	1232	note = "14z-96 #101: kernel voice table .2, row 0x11 — vs2's 0x2a2, th
+pyron	pyron.toml	code_word	pyr_kernel_voice_e3	fix	24	1241	note = "14z-96 #101: kernel voice table .3, row 0x11 — vs2 0x723 via a
+pyron	pyron.toml	data_port	voice_borrow_candidates_a	fix	24	1252	note = "14z-87 option (c): vs2's Pyron row of the voice-class candidat
+pyron	pyron.toml	data_port	voice_borrow_voicenums_b	fix	25,24	1263	THE #92 FIX (14z-94, maintainer-decided) — the twin of huitzil.toml's
+pyron	pyron.toml	aux_poke	voice_alias_thunk_w00	fix	35	1275	rows dedupe on merge). A range-gated clone of the per-node sfx
+pyron	pyron.toml	aux_poke	voice_alias_thunk_w01	fix	35	1275	rows dedupe on merge). A range-gated clone of the per-node sfx
+pyron	pyron.toml	aux_poke	voice_alias_thunk_w02	fix	35	1275	rows dedupe on merge). A range-gated clone of the per-node sfx
+pyron	pyron.toml	aux_poke	voice_alias_thunk_w03	fix	35	1275	rows dedupe on merge). A range-gated clone of the per-node sfx
+pyron	pyron.toml	aux_poke	voice_alias_thunk_w04	fix	35	1275	rows dedupe on merge). A range-gated clone of the per-node sfx
+pyron	pyron.toml	aux_poke	voice_alias_thunk_w05	fix	35	1275	rows dedupe on merge). A range-gated clone of the per-node sfx
+pyron	pyron.toml	aux_poke	voice_alias_thunk_w06	fix	35	1275	rows dedupe on merge). A range-gated clone of the per-node sfx
+pyron	pyron.toml	aux_poke	voice_alias_thunk_w07	fix	35	1275	rows dedupe on merge). A range-gated clone of the per-node sfx
+pyron	pyron.toml	aux_poke	voice_alias_thunk_w08	fix	35	1275	rows dedupe on merge). A range-gated clone of the per-node sfx
+pyron	pyron.toml	aux_poke	voice_alias_thunk_w09	fix	35	1275	rows dedupe on merge). A range-gated clone of the per-node sfx
+pyron	pyron.toml	aux_poke	voice_alias_thunk_w10	fix	35	1275	rows dedupe on merge). A range-gated clone of the per-node sfx
+pyron	pyron.toml	aux_poke	voice_alias_thunk_w11	fix	35	1275	rows dedupe on merge). A range-gated clone of the per-node sfx
+pyron	pyron.toml	aux_poke	voice_alias_thunk_w12	fix	35	1275	rows dedupe on merge). A range-gated clone of the per-node sfx
+pyron	pyron.toml	aux_poke	voice_alias_thunk_w13	fix	35	1275	rows dedupe on merge). A range-gated clone of the per-node sfx
+pyron	pyron.toml	aux_poke	voice_alias_thunk_w14	fix	35	1275	rows dedupe on merge). A range-gated clone of the per-node sfx
+pyron	pyron.toml	data_port	capture_kf_anakaris	fix	37	1416	alias rows 0x10-0x1F onto 0x00-0x0F (14 by offset, Zabel/special by
+pyron	pyron.toml	data_port	capture_kf_aulbath	fix	37	1416	alias rows 0x10-0x1F onto 0x00-0x0F (14 by offset, Zabel/special by
+pyron	pyron.toml	data_port	capture_kf_bishamon	fix	37	1416	alias rows 0x10-0x1F onto 0x00-0x0F (14 by offset, Zabel/special by
+pyron	pyron.toml	data_port	capture_kf_bulleta	fix	37	1416	alias rows 0x10-0x1F onto 0x00-0x0F (14 by offset, Zabel/special by
+pyron	pyron.toml	data_port	capture_kf_demitri	fix	37	1416	alias rows 0x10-0x1F onto 0x00-0x0F (14 by offset, Zabel/special by
+pyron	pyron.toml	data_port	capture_kf_felicia	fix	37	1416	alias rows 0x10-0x1F onto 0x00-0x0F (14 by offset, Zabel/special by
+pyron	pyron.toml	data_port	capture_kf_gallon	fix	37	1416	alias rows 0x10-0x1F onto 0x00-0x0F (14 by offset, Zabel/special by
+pyron	pyron.toml	data_port	capture_kf_jedah	fix	37	1416	alias rows 0x10-0x1F onto 0x00-0x0F (14 by offset, Zabel/special by
+pyron	pyron.toml	data_port	capture_kf_leilei	fix	37	1416	alias rows 0x10-0x1F onto 0x00-0x0F (14 by offset, Zabel/special by
+pyron	pyron.toml	data_port	capture_kf_lilith	fix	37	1416	alias rows 0x10-0x1F onto 0x00-0x0F (14 by offset, Zabel/special by
+pyron	pyron.toml	data_port	capture_kf_morrigan	fix	37	1416	alias rows 0x10-0x1F onto 0x00-0x0F (14 by offset, Zabel/special by
+pyron	pyron.toml	data_port	capture_kf_qbee	fix	37	1416	alias rows 0x10-0x1F onto 0x00-0x0F (14 by offset, Zabel/special by
+pyron	pyron.toml	data_port	capture_kf_sasquatch	fix	37	1416	alias rows 0x10-0x1F onto 0x00-0x0F (14 by offset, Zabel/special by
+pyron	pyron.toml	data_port	capture_kf_victor	fix	37	1416	alias rows 0x10-0x1F onto 0x00-0x0F (14 by offset, Zabel/special by
+pyron	pyron.toml	data_port	capture_kf_zabel	fix	37	1416	alias rows 0x10-0x1F onto 0x00-0x0F (14 by offset, Zabel/special by
+pyron	pyron.toml	data_port	pyron_capture_keyframes	fix	26	1690	note = "capture-pose keyframes: attacker row 0x11 <- Pyron's own block
+pyron	pyron.toml	site_thunk	oboro_select_hook	frame	-	1709	── THE OBORO SELECT HOOK (W1, 14z-105; maintainer-ruled 2026-08-22:
+pyron	pyron.toml	site_thunk	random_select_bound	fix	29	1745	── 14z-117: RANDOM SELECT INCLUDES THE TENANTS ───────────────────────
+pyron	pyron.toml	site_thunk	random_select_roster	fix	29	1745	── 14z-117: RANDOM SELECT INCLUDES THE TENANTS ───────────────────────
+pyron	pyron.toml	aux_poke	boot_title_saved_1	frame	-	1816	THE BOOT NAME SCREEN: "VAMPIRE SAVIOR" -> "VAMPIRE SAVED" (14z-127,
+pyron	pyron.toml	aux_poke	boot_title_saved_2	frame	-	1816	THE BOOT NAME SCREEN: "VAMPIRE SAVIOR" -> "VAMPIRE SAVED" (14z-127,
+pyron	pyron.toml	aux_poke	boot_title_saved_3	frame	-	1816	THE BOOT NAME SCREEN: "VAMPIRE SAVIOR" -> "VAMPIRE SAVED" (14z-127,
+pyron	pyron.toml	port_patch	#23	fix	22	1864	note = "#157: grab ptr store a6: vs2 -0x4B74 -> vsavj -0x4BC6"
+pyron	pyron.toml	port_patch	#24	fix	22	1872	note = "#157: grab ptr store a1: vs2 -0x4B72 -> vsavj -0x4BC4"
+pyron	pyron.toml	port_patch	#25	fix	22	1880	note = "#157: grab ptr store a6 (site 2)"
+pyron	pyron.toml	port_patch	#26	fix	22	1888	note = "#157: grab ptr store a1 (site 2)"
+pyron	pyron.toml	port_patch	#27	fix	22	1896	note = "#157: grab ptr store a6 (site 3)"
+pyron	pyron.toml	port_patch	#28	fix	22	1904	note = "#157: grab ptr store a1 (site 3)"
+pyron	pyron.toml	site_thunk	pursuit_mark_hit	fix	17	1927	note = "#195 (14z-188): mark the victim (+0x293) on this tenant's vs2-
+pyron	pyron.toml	site_thunk	pursuit_mark_tail	fix	17	1936	note = "#195 (14z-188): the knockdown tail's move.l, then +0x117 := 1
+pyron	pyron.toml	code_word	pursuit_mark_tail_pad	fix	17	1944	note = "#195 (14z-188): the displaced move.l's last word -> nop; pairs
+pyron	reconciliation_pyron.toml	map	#1	fix	4	24	note = "x026142 escape twin (14z-66 site-twin method; shared-zone copy
+pyron	reconciliation_pyron.toml	map	#2	fix	4	31	note = "x026142 escape twin (14z-66 site-twin method; shared-zone copy
+pyron	reconciliation_pyron.toml	map	#3	fix	4	38	note = "x026142 escape twin (14z-66 site-twin method; shared-zone copy
+pyron	reconciliation_pyron.toml	map	#4	fix	4	45	note = "x026142 escape twin (14z-66 site-twin method; shared-zone copy
+pyron	reconciliation_pyron.toml	map	#5	fix	4	52	note = "x026142 escape twin (14z-66 site-twin method; shared-zone copy
+pyron	reconciliation_pyron.toml	map	#6	fix	4	59	note = "x026142 escape twin (14z-66 site-twin method; shared-zone copy
+pyron	reconciliation_pyron.toml	map	#7	fix	4	66	note = "x026142 escape twin (14z-66 site-twin method; shared-zone copy
+pyron	reconciliation_pyron.toml	map	#8	fix	4	73	note = "x05c800 tail-escape twin (14z-67 census find; shared-zone copy
+pyron	reconciliation_pyron.toml	map	#9	fix	36	88	note = "P KEPT SILENT: sfx id 0x1d4 — vsavj same-id keys DIFFERENT con
+pyron	reconciliation_pyron.toml	map	#10	fix	35	98	note = "M5 VOICE RESTORED (14z-86): vs2 sfx 0x748 -> authored vsavj id
+pyron	reconciliation_pyron.toml	map	#11	fix	36	105	note = "P KEPT SILENT: sfx id 0x73a — newcomer voice range (shared far
+pyron	reconciliation_pyron.toml	map	#12	fix	35	115	note = "M5 VOICE RESTORED (14z-86): vs2 sfx 0x735 -> authored vsavj id
+pyron	reconciliation_pyron.toml	map	#13	fix	35	125	note = "M5 VOICE RESTORED (14z-86): vs2 sfx 0x729 -> authored vsavj id
+pyron	reconciliation_pyron.toml	map	#14	fix	35	135	note = "M5 VOICE RESTORED (14z-86): vs2 sfx 0x72e -> authored vsavj id

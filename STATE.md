@@ -6,7 +6,7 @@ head). A session key is `R-NNN`, one per sitting, never renamed or renumbered ([
 their own namespaces. A group's form, kept from the original: `## Session KEY — banner`, then `### opened with` and one
 `### (N) TITLE` section per piece of work. An open list holds only what is open.
 
-## Session R-004 — **#5 ruled: (a) the measurer runs one command per tool call; #4: the extraction tabled, its jump, cancel and short bank rows decoded.** Opened 2026-10-19 on Opus 5.5 (the ruled orchestrator); transcript `dc3ff4f7`.
+## Session R-004 — **#5 ruled: (a) the measurer runs one command per tool call; #4: the extraction tabled, its jump, cancel and short bank rows decoded; every manifest row mapped to a correction, 16 parts added.** Opened 2026-10-19 on Opus 5.5 (the ruled orchestrator); transcript `dc3ff4f7`.
 
 ### opened with
 
@@ -80,6 +80,26 @@ Paid for this sitting: the README's first measurement quoted `extraction/` as 1,
 allocated disk blocks, and it read 2,372 KB after the files were rewritten with nearly the same content (the
 apparent size is 1,456 KB). The figure was dropped from the README, not replaced: a size is no part of what the
 tables claim.
+
+### (4) #4: EVERY MANIFEST ROW MAPPED TO A CORRECTION; 16 PARTS THE READERS MISSED
+
+The maintainer: *"continue"*, to the next-session list's item 1. `docs/project/port_corrections_map.tsv` (hand-written)
+has one line for each of the 714 rows of the tenants' manifests, move lists and reconciliation overlays that phase 0's
+tables carry. Each line gives a role: `fix` with the parts it carries, or `frame` (where the character lives, who it
+is, its move list, a feature). Each also has a verbatim anchor from the row's own comments. Three forks drafted it,
+one per tenant. The orchestrator then made it consistent across the tenants: a row a part names maps to that part,
+and the same row in another tenant maps to that tenant's part for the same fix. Figures (a measurer): fix 176/246/118, frame
+66/58/50, unclear 0; 12 rows carry several parts. The catalogue grew from 146 to 162 parts (Donovan 56–62, Huitzil
+60–62, Pyron 33–38): three `reloc`, eight engine differences, five sound and gfx. The extraction's own parts are now 30
+and the engines' differences 93. Parts with no map row: 18/23/9. Most are fixed in a generator or recorded only in a
+history, which a map of manifests cannot see. So the catalogue is complete for manifest rows, not beyond. Read while
+mapping and not settled (`port_corrections.md` "The map"): Donovan 9's thunk now serves the class-0x52 route; Donovan 33
+and Huitzil 61 are live bytes under a retracted reading; Pyron 7 has no row.
+
+The gate `tests/test_port_corrections.py` gains C3 (coverage: every manifest row once, roles and parts known) and C4
+(each anchor at its line, inside its row's reach), with three controls (`row-dropped`, `part-unknown`,
+`anchor-outside`). All five controls FIRED, `--control part-unknown` FAILs, and the first green was read by its
+printed values. That reading found 20 reconciliation rows anchored on a bare `vsav2 = `; they now quote their whole line.
 
 ## Session R-003 — **Phase 0 closed on parse-equality (the build proof moved to phase 1); vhunt2's role found (#4); the original's corrections per tenant gathered; R-002 archived.** Opened 2026-10-18 on Opus 5.5 (the ruled orchestrator); transcript `5e9e8b49`.
 
@@ -203,7 +223,5 @@ none.
 
 ## The next session starts with
 
-1. #4: the corrections catalogue's completeness: map each tenant manifest row (phase 0's tables) to a part of
-   `docs/project/port_corrections.tsv`, reading what the readers did not (`reconciliation_*.toml`, `moves_*.toml`).
-2. #4: what the original's build wrote for `rec8_a`/`rec8_b` (slices of other characters' rows, R-004 (3)) and
+1. #4: what the original's build wrote for `rec8_a`/`rec8_b` (slices of other characters' rows, R-004 (3)) and
    whether the tenants' own pursuit records (`id*0x20`) were ported; measure on the original's built image.
