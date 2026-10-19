@@ -6,7 +6,7 @@ head). A session key is `R-NNN`, one per sitting, never renamed or renumbered ([
 their own namespaces. A group's form, kept from the original: `## Session KEY — banner`, then `### opened with` and one
 `### (N) TITLE` section per piece of work. An open list holds only what is open.
 
-## Session R-005 — **vhunt2 provided; the build proof PASSES: the tables rebuild the original's frozen merged build byte for byte (#4).** Opened 2026-10-19 on Opus 5.5 (the ruled orchestrator), in R-004's transcript `dc3ff4f7` after its close.
+## Session R-005 — **vhunt2 provided; the build proof PASSES: the tables rebuild the original's frozen merged build byte for byte (#4); the reference MAME built from the pin and proven the instrument that froze the oracle.** Opened 2026-10-19 on Opus 5.5 (the ruled orchestrator), in R-004's transcript `dc3ff4f7` after its close.
 
 ### opened with
 
@@ -56,6 +56,27 @@ Runs, from the runlog:
 - 0 bytes of that table differ from vanilla.
 
 R-004 (5)'s static reading holds on the build. The pending capture is unchanged (it is about play, not bytes).
+
+### (4) THE REFERENCE MAME BUILT FROM THE PIN, AND PROVEN THE INSTRUMENT THAT FROZE THE ORACLE
+
+On Claude's proposal (plain MAME from the pinned source first, proven against vanilla; the WIDE patches only after
+the maintainer ratifies them, [VSR-2]), the maintainer: *"session has been compacted so you can"*. On the proof run
+directories: *"if we don't need them anymore, delete them"*. `proof_r005_1`, `_2`, `_4` and `_5` are deleted; no file
+in the tree named them. `proof_r005_3` stays: it holds the built image the capture needs.
+
+`tools/setup_mame.py` builds the original's pin (`27a8d9e8`, tag `mame0288`) as the reference binary, with no profile
+patch, into `build/emu/mame-ref`. `tests/test_mame_reference.py`, a class F gate, runs the original's own
+`tests/test_mame_parity.sh` unchanged with that binary, against Homebrew's MAME 0.288 as the reference. It PASSes:
+- the 24 vanilla `vsavj` logs and the 65 frozen reference logs, each reproduced twice;
+- 8 replays frozen nowhere, identical on both binaries.
+Both controls FAIL in their modes. Detail and figures: `docs/project/instruments.md`.
+
+Paid for: M2 was first written from the original's header ("every replay frozen", so the A/B sections empty) and
+FAILed a PASSing run. At `bf92acd2` eight `118_*` replays are frozen nowhere and run in section 2. M2 now requires
+every A/B row identical and none skipped.
+
+Not done: no FBNeo reference yet (the original's `tools/setup_fbneo.sh`), which the emulator superset invariant and
+the dual-emulator rule need ([VSR-13], [VSR-16]); the capture needs only MAME WIDE.
 
 
 ## Session R-004 — **#5 ruled: (a) the measurer runs one command per tool call; #4: the extraction tabled, its jump, cancel and short bank rows decoded; every manifest row mapped to a correction, 16 parts added; the rec8 writes read statically, the newcomers' own rows found to be veterans' copies, ruled (c) then (a); R-003 archived.** Opened 2026-10-19 on Opus 5.5 (the ruled orchestrator); transcript `dc3ff4f7`.
@@ -221,9 +242,11 @@ none.
 
 ## The next session starts with
 
-1. #4, ruled (c) then (a) (`SPEC.md` §0, R-004): when an instrument can run the original's build (R-005 builds it; the
-   instrument is a WIDE-profile emulator, which needs the maintainer's ratification, [VSR-2]),
-   capture which move enters state `0x02100600` (vsavj `PRG:0x026670`) for each newcomer, native vs2 against the
-   build. Then phase 1 ports vs2's three rows of the table at `PRG:0x0BE3FA` if the difference is the newcomers' own.
+1. #4, ruled (c) then (a) (`SPEC.md` §0, R-004): when an instrument can run the original's build (R-005 builds it;
+   the reference MAME is built and proven, R-005 (4); the instrument is that MAME with the WIDE profile, which needs
+   the maintainer's ratification, [VSR-2]: present the original's profile spec and its MAME patch, then build it and
+   prove the emulator superset invariant), capture which move enters state `0x02100600` (vsavj `PRG:0x026670`) for
+   each newcomer, native vs2 against the build. Then phase 1 ports vs2's three rows of the table at `PRG:0x0BE3FA`
+   if the difference is the newcomers' own.
 2. #4: give `tools/build_proof.py` a second control that the original's own checks accept, so the byte compare is
    exercised end to end (R-005 (2): `perturbed-render` is stopped by the original's HUD check first).
