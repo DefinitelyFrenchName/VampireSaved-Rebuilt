@@ -92,6 +92,13 @@ which decides each ported region's bounds (no vhunt2 byte reaches the output). S
 sets), and the byte-for-byte build proof moves to phase 1, against the rebuild's own pipeline. `tools/build_proof.py`
 stays committed, unrun; the shim ruling above stands for whenever it runs.
 
+The maintainer's direction for the extraction (2026-10-18, R-003, after Claude explained what vhunt2 does for the
+original's extractor: the sibling copy that bounds each region and yields its relocation map; verbatim): **"I would
+table the measurement AND I would look at the history of Vampire Saved to gather all the missing/wrong parts that
+had to be added/fixed for each of the three VS2 characters"**. So the extraction's measurements (each tenant's
+regions: vs2 address, vhunt2 twin, length, SHA-1, relocation refs) become tables, and the original's history is
+searched for every part the extraction missed or got wrong, per character (#4).
+
 ## 1. What the rebuild is, and what it is not
 
 **The same project, rebuilt.** The goal, the non-goals and the background facts are the original's `SPEC.md` §1-§2 and its

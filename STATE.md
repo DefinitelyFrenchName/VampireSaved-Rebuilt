@@ -80,6 +80,27 @@ The maintainer: *"start it, we have ample context"*.
   shimmed module.
 - **Not measured, for phase 1.** `beam_list_type6`'s copied drawer opens with a `bcs.w` copied unchanged, so its
   PC-relative target moves with the copy ([VSR-83]); whether it is reachable was not checked.
+Committed `5c0f149`, the five gates green on the staged tree.
+
+### (4) WHAT VHUNT2 DOES, AND THE ORIGINAL'S CORRECTIONS PER TENANT (#4)
+
+The maintainer: *"to be clear, I could provide vhunt2 but I don't understand what it brings to the table"*. Read
+from the extractor: vhunt2 is the sibling copy of the three newcomers. Diffing it against vs2 bounds each region and
+yields its relocation map (about 7,000–9,000 pointers per tenant); no vhunt2 byte reaches the output. The
+original tracks the results per tenant (`regions.json`: 21/31/26 regions, 7,736/8,915/6,882 refs). The maintainer's
+direction (verbatim, `SPEC.md` §0, #4): *"I would table the measurement AND I would look at the history of Vampire
+Saved to gather all the missing/wrong parts that had to be added/fixed for each of the three VS2 characters"*.
+- **The history.** Three reader workers, one per tenant, returned 146 parts: Donovan 55, Huitzil 59, Pyron 32.
+  They are `docs/project/port_corrections.tsv` (hand-written), each with its source line and a verbatim anchor,
+  gated by `tests/test_port_corrections.py` (C1, C2, two controls). The gate's first run caught one non-verbatim
+  quote. The classes are in `docs/project/port_corrections.md`. Only 27 parts are the extraction's own errors
+  (reach, reloc, crypt-data); 85 are the engines' differences (short tables, aliased per-character rows, vs2
+  environment assumptions), which the original found one by one and which three static enumerations would find.
+- **The measurement, not yet tabled.** Each `regions.json` holds about 49,000–55,000 values (153,013 in all). Each
+  tenant's `values` section carries three vs2 rows as raw bytes: `jump_params` (48 bytes) and `byte2d_a`/`_b`
+  (30 bytes each). These are gameplay values ([VSR-6]), so how to carry them is the maintainer's call.
+- **Guard refusal (1).** A command mixing a heredoc and escaped backticks was refused as unparseable. It was split
+  into two calls.
 
 ## Session R-002 — **#3 built and closed: the figures, their gate, the run log, the dashboard; R-001 archived.** Opened 2026-10-18 on Opus 5.5 (the ruled orchestrator); transcript `c6b8c007`.
 
