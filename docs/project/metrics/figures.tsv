@@ -312,3 +312,134 @@ R-003	gates	test_readonly_guard_fired	test_readonly_guard: controls fired	2		MEA
 R-003	gates	test_readonly_guard_seconds	test_readonly_guard: runtime	6.25	s	MEASURED	build/runs/runs.jsonl	
 R-003	gates	test_readonly_guard_runs	test_readonly_guard: runs	5		DERIVED	build/runs/runs.jsonl	runs whose start falls inside the transcript's span
 R-003	health	red_min	Minutes with a gate red	353.7	min	DERIVED	build/runs/runs.jsonl	per gate, from the end of a normal run that FAILed to the start of its next normal run (or the session's end), summed; control-mode runs aside
+R-004	time	transcript	Transcript	dc3ff4f7		MEASURED	STATE.md, the session's heading	
+R-004	time	span_min	Total (session span)	255.8	min	DERIVED	transcript dc3ff4f7	last record's timestamp minus the first's
+R-004	time	working_min	Claude working	34.5	min	DERIVED	transcript dc3ff4f7	slices of the span given to one bucket each, by precedence (docs/project/metrics/README.md): inside an API request, from its api-request record to the last assistant record answering it
+R-004	time	tools_min	Claude waiting on tools	33.5	min	DERIVED	transcript dc3ff4f7	slices of the span given to one bucket each, by precedence (docs/project/metrics/README.md): inside a tool call other than AskUserQuestion, tool_use to tool_result; or idle until a prompt of non-human origin (a hand-back, a notification)
+R-004	time	maintainer_min	Waiting on the maintainer	187.6	min	DERIVED	transcript dc3ff4f7	slices of the span given to one bucket each, by precedence (docs/project/metrics/README.md): inside an AskUserQuestion call, or idle until a prompt of human origin
+R-004	time	unaccounted_min	Unaccounted	0.2	min	DERIVED	transcript dc3ff4f7	slices of the span given to one bucket each, by precedence (docs/project/metrics/README.md): idle after the last prompt of a stretch, or idle with no prompt
+R-004	time	thinking_min	Thinking (inside working)	15.3	min	MEASURED	transcript dc3ff4f7	sum of thinkingDurationMs over assistant records
+R-004	time	turns_timed	Turns carrying a duration	10		MEASURED	transcript dc3ff4f7	
+R-004	time	turns_timed_min	Their duration	75.7	min	MEASURED	transcript dc3ff4f7	sum of system/turn_duration durationMs
+R-004	time	harness_duration_min	Harness: session duration		min	ABSENT	transcript dc3ff4f7 (no cost-state record)	totalDuration / 60000
+R-004	time	harness_api_min	Harness: API time		min	ABSENT	transcript dc3ff4f7 (no cost-state record)	totalAPIDuration / 60000
+R-004	time	harness_tool_min	Harness: tool time		min	ABSENT	transcript dc3ff4f7 (no cost-state record)	totalToolDuration / 60000
+R-004	cost	cost_usd	Cost as the harness computed it		USD	ABSENT	transcript dc3ff4f7 (no cost-state record)	
+R-004	activity	act_records_min	Activity: records	19.4	min	ESTIMATED	transcript dc3ff4f7	each tool call is classed by its input, first match wins: records (names STATE.md, STATE_HISTORY.md, tickets.tsv or docs/project/metrics/, or runs git commit/push or gh); verify (a Bash command running tests/, or a measurer or rule-checker agent); rework (an Edit/Write of a file one of the session's earlier commits already changed); author (any other Edit/Write/NotebookEdit); measure (everything else); a request's working time is split evenly among the tool calls it issued, a request with none is converse, AskUserQuestion is converse, and a call's own tool time goes to its class
+R-004	activity	act_verify_min	Activity: verify	21.3	min	ESTIMATED	transcript dc3ff4f7	each tool call is classed by its input, first match wins: records (names STATE.md, STATE_HISTORY.md, tickets.tsv or docs/project/metrics/, or runs git commit/push or gh); verify (a Bash command running tests/, or a measurer or rule-checker agent); rework (an Edit/Write of a file one of the session's earlier commits already changed); author (any other Edit/Write/NotebookEdit); measure (everything else); a request's working time is split evenly among the tool calls it issued, a request with none is converse, AskUserQuestion is converse, and a call's own tool time goes to its class
+R-004	activity	act_rework_min	Activity: rework	0.3	min	ESTIMATED	transcript dc3ff4f7	each tool call is classed by its input, first match wins: records (names STATE.md, STATE_HISTORY.md, tickets.tsv or docs/project/metrics/, or runs git commit/push or gh); verify (a Bash command running tests/, or a measurer or rule-checker agent); rework (an Edit/Write of a file one of the session's earlier commits already changed); author (any other Edit/Write/NotebookEdit); measure (everything else); a request's working time is split evenly among the tool calls it issued, a request with none is converse, AskUserQuestion is converse, and a call's own tool time goes to its class
+R-004	activity	act_author_min	Activity: author	4.5	min	ESTIMATED	transcript dc3ff4f7	each tool call is classed by its input, first match wins: records (names STATE.md, STATE_HISTORY.md, tickets.tsv or docs/project/metrics/, or runs git commit/push or gh); verify (a Bash command running tests/, or a measurer or rule-checker agent); rework (an Edit/Write of a file one of the session's earlier commits already changed); author (any other Edit/Write/NotebookEdit); measure (everything else); a request's working time is split evenly among the tool calls it issued, a request with none is converse, AskUserQuestion is converse, and a call's own tool time goes to its class
+R-004	activity	act_measure_min	Activity: measure	18.8	min	ESTIMATED	transcript dc3ff4f7	each tool call is classed by its input, first match wins: records (names STATE.md, STATE_HISTORY.md, tickets.tsv or docs/project/metrics/, or runs git commit/push or gh); verify (a Bash command running tests/, or a measurer or rule-checker agent); rework (an Edit/Write of a file one of the session's earlier commits already changed); author (any other Edit/Write/NotebookEdit); measure (everything else); a request's working time is split evenly among the tool calls it issued, a request with none is converse, AskUserQuestion is converse, and a call's own tool time goes to its class
+R-004	activity	act_converse_min	Activity: converse	1.5	min	ESTIMATED	transcript dc3ff4f7	each tool call is classed by its input, first match wins: records (names STATE.md, STATE_HISTORY.md, tickets.tsv or docs/project/metrics/, or runs git commit/push or gh); verify (a Bash command running tests/, or a measurer or rule-checker agent); rework (an Edit/Write of a file one of the session's earlier commits already changed); author (any other Edit/Write/NotebookEdit); measure (everything else); a request's working time is split evenly among the tool calls it issued, a request with none is converse, AskUserQuestion is converse, and a call's own tool time goes to its class
+R-004	events	prompts_typed	Maintainer prompts, typed	1		MEASURED	transcript dc3ff4f7	
+R-004	events	prompts_queued	Maintainer prompts, queued while Claude worked	6		MEASURED	transcript dc3ff4f7	
+R-004	events	asks	Questions asked (AskUserQuestion)	0		MEASURED	transcript dc3ff4f7	
+R-004	events	tool_calls	Tool calls	201		MEASURED	transcript dc3ff4f7	
+R-004	events	tool_Agent	Tool calls: Agent	11		MEASURED	transcript dc3ff4f7	
+R-004	events	tool_Bash	Tool calls: Bash	165		MEASURED	transcript dc3ff4f7	
+R-004	events	tool_Edit	Tool calls: Edit	13		MEASURED	transcript dc3ff4f7	
+R-004	events	tool_Read	Tool calls: Read	4		MEASURED	transcript dc3ff4f7	
+R-004	events	tool_ReadNotifications	Tool calls: ReadNotifications	3		MEASURED	transcript dc3ff4f7	
+R-004	events	tool_Skill	Tool calls: Skill	1		MEASURED	transcript dc3ff4f7	
+R-004	events	tool_Write	Tool calls: Write	4		MEASURED	transcript dc3ff4f7	
+R-004	events	bg_launched	Background launches	0		MEASURED	transcript dc3ff4f7	
+R-004	events	tool_errors	Tool results marked error	1		MEASURED	transcript dc3ff4f7	
+R-004	health	guard_refusals	Read-only guard refusals	0		MEASURED	transcript dc3ff4f7	tool results marked error whose text begins `PreToolUse:<tool> hook error:` and carries 'BLOCKED by guard_readonly'
+R-004	events	requests_unanswered	API requests with no answer on record	1		MEASURED	transcript dc3ff4f7	
+R-004	tokens	out_claude-opus-5-5	Output tokens, orchestrator (claude-opus-5-5)	196800	tokens	MEASURED	transcript dc3ff4f7	usage of each assistant message, once per message id
+R-004	tokens	think_claude-opus-5-5	of which thinking (claude-opus-5-5)	72861	tokens	MEASURED	transcript dc3ff4f7	usage of each assistant message, once per message id
+R-004	tokens	in_claude-opus-5-5	Input tokens incl. cache, orchestrator (claude-opus-5-5)	35337687	tokens	MEASURED	transcript dc3ff4f7	usage of each assistant message, once per message id
+R-004	workers	workers	Workers spawned	11		MEASURED	transcript dc3ff4f7/subagents	
+R-004	workers	workers_fork	Workers: fork	3		MEASURED	transcript dc3ff4f7/subagents	
+R-004	workers	workers_measurer	Workers: measurer	5		MEASURED	transcript dc3ff4f7/subagents	
+R-004	workers	workers_reader	Workers: reader	3		MEASURED	transcript dc3ff4f7/subagents	
+R-004	workers	worker_out	Output tokens, workers		tokens	ABSENT	transcript dc3ff4f7 (no cost-state record)	the harness's output tokens over all models minus the orchestrator's transcript usage; includes the harness's own small calls (titles)
+R-004	workers	worker_span_min	Workers' spans, summed	16.1	min	DERIVED	transcript dc3ff4f7/subagents	sum over workers of last record's timestamp minus the first's; workers can run in parallel with each other and with Claude
+R-004	workers	worker_working_min	Workers working, summed	3.2	min	DERIVED	transcript dc3ff4f7/subagents	sum over workers of their working bucket, timed as the orchestrator's
+R-004	workers	worker_out_share_pct	Workers' share of output tokens		%	ABSENT	transcript dc3ff4f7 (no cost-state record)	the harness's output tokens over all models minus the orchestrator's transcript usage; includes the harness's own small calls (titles), over the harness's total
+R-004	output	commits	Commits	5		DERIVED	git log	the session's commits: subject starting with the key, or committer time inside the transcript's span
+R-004	output	files	Files changed (sum over commits)	45		DERIVED	git log	the session's commits: subject starting with the key, or committer time inside the transcript's span
+R-004	output	insertions	Lines inserted	32709		DERIVED	git log	the session's commits: subject starting with the key, or committer time inside the transcript's span
+R-004	output	deletions	Lines deleted	116		DERIVED	git log	the session's commits: subject starting with the key, or committer time inside the transcript's span
+R-004	area	area_.claude/agents	Files changed in .claude/agents	1		DERIVED	git log	the session's commits: subject starting with the key, or committer time inside the transcript's span; the area is a path's first component, or its first two under docs/, tests/, tools/, .claude/
+R-004	area	area_SPEC.md	Files changed in SPEC.md	2		DERIVED	git log	the session's commits: subject starting with the key, or committer time inside the transcript's span; the area is a path's first component, or its first two under docs/, tests/, tools/, .claude/
+R-004	area	area_STATE.md	Files changed in STATE.md	5		DERIVED	git log	the session's commits: subject starting with the key, or committer time inside the transcript's span; the area is a path's first component, or its first two under docs/, tests/, tools/, .claude/
+R-004	area	area_docs/project	Files changed in docs/project	28		DERIVED	git log	the session's commits: subject starting with the key, or committer time inside the transcript's span; the area is a path's first component, or its first two under docs/, tests/, tools/, .claude/
+R-004	area	area_tests	Files changed in tests	5		DERIVED	git log	the session's commits: subject starting with the key, or committer time inside the transcript's span; the area is a path's first component, or its first two under docs/, tests/, tools/, .claude/
+R-004	area	area_tools	Files changed in tools	4		DERIVED	git log	the session's commits: subject starting with the key, or committer time inside the transcript's span; the area is a path's first component, or its first two under docs/, tests/, tools/, .claude/
+R-004	progress	tabled_gameplay	Phase 0: gameplay values tabled	371		MEASURED	the tree at 830e8098, the session's last commit	rows of the top-level tables
+R-004	progress	tabled_fact	Phase 0: facts tabled	8520		MEASURED	the tree at 830e8098, the session's last commit	rows of the tables under facts/, held.tsv aside
+R-004	progress	tabled_code	Phase 0: generator constants tabled	46		MEASURED	the tree at 830e8098, the session's last commit	rows of the tables under code/
+R-004	progress	census_gameplay	Phase 0: the original's census, gameplay column	236		MEASURED	SPEC.md §1 at 830e8098 (the original's census at 6dee2be7)	
+R-004	progress	census_fact	Phase 0: the original's census, fact column	8520		MEASURED	SPEC.md §1 at 830e8098 (the original's census at 6dee2be7)	
+R-004	progress	census_code	Phase 0: the original's census, code column	30		MEASURED	SPEC.md §1 at 830e8098 (the original's census at 6dee2be7)	
+R-004	progress	gates	Gates in the tree	8		MEASURED	the tree at 830e8098, the session's last commit	tests/test_*.py
+R-004	progress	gates_ported	Gates ported from the original	0		MEASURED	the tree at 830e8098, the session's last commit	tests/test_*.py with a line starting `Ported from` (SPEC.md §5.3: the port records the original gate)
+R-004	progress	gates_original	The original's gates (the inventory)	464		MEASURED	docs/tests_inventory.tsv at 830e8098	
+R-004	progress	gates_original_E1	of class E1	119		MEASURED	docs/tests_inventory.tsv at 830e8098	
+R-004	progress	gates_original_E2	of class E2	76		MEASURED	docs/tests_inventory.tsv at 830e8098	
+R-004	progress	gates_original_F	of class F	65		MEASURED	docs/tests_inventory.tsv at 830e8098	
+R-004	progress	gates_original_M	of class M	9		MEASURED	docs/tests_inventory.tsv at 830e8098	
+R-004	progress	gates_original_P	of class P	55		MEASURED	docs/tests_inventory.tsv at 830e8098	
+R-004	progress	gates_original_R	of class R	17		MEASURED	docs/tests_inventory.tsv at 830e8098	
+R-004	progress	gates_original_T	of class T	123		MEASURED	docs/tests_inventory.tsv at 830e8098	
+R-004	health	tickets_open	Open tickets	2		MEASURED	docs/project/tickets.tsv at 830e8098	
+R-004	health	decisions_pending	Decisions pending	1		MEASURED	STATE.md at 830e8098	numbered or bulleted items of the section
+R-004	health	unpushed	Session commits not on origin/main	5		MEASURED	git merge-base --is-ancestor, at collection (2026-10-19 14:28)	
+R-004	health	rule_checker_runs	Rule-checker runs before an action ([VSR-48])	0		DERIVED	the tree at 830e8098, the session's last commit	no rule-checker tool or ledger exists in the tree (docs/project/rule_checker.md is its spec), so none ran
+R-004	gates	gate_runs	Gate runs	78		DERIVED	build/runs/runs.jsonl	runs whose start falls inside the transcript's span
+R-004	gates	test_build_proof_verdict	test_build_proof: last verdict	PASS		MEASURED	build/runs/runs.jsonl	
+R-004	gates	test_build_proof_cases	test_build_proof: cases			ABSENT	build/runs/runs.jsonl	
+R-004	gates	test_build_proof_declared	test_build_proof: controls declared	1		MEASURED	build/runs/runs.jsonl	
+R-004	gates	test_build_proof_fired	test_build_proof: controls fired	1		MEASURED	build/runs/runs.jsonl	
+R-004	gates	test_build_proof_seconds	test_build_proof: runtime	0.08	s	MEASURED	build/runs/runs.jsonl	
+R-004	gates	test_build_proof_runs	test_build_proof: runs	9		DERIVED	build/runs/runs.jsonl	runs whose start falls inside the transcript's span
+R-004	gates	test_extraction_tables_verdict	test_extraction_tables: last verdict	PASS		MEASURED	build/runs/runs.jsonl	
+R-004	gates	test_extraction_tables_cases	test_extraction_tables: cases			ABSENT	build/runs/runs.jsonl	
+R-004	gates	test_extraction_tables_declared	test_extraction_tables: controls declared	7		MEASURED	build/runs/runs.jsonl	
+R-004	gates	test_extraction_tables_fired	test_extraction_tables: controls fired	7		MEASURED	build/runs/runs.jsonl	
+R-004	gates	test_extraction_tables_seconds	test_extraction_tables: runtime	11.35	s	MEASURED	build/runs/runs.jsonl	
+R-004	gates	test_extraction_tables_runs	test_extraction_tables: runs	10		DERIVED	build/runs/runs.jsonl	runs whose start falls inside the transcript's span
+R-004	gates	test_extraction_tables_modes_honoured	test_extraction_tables: control modes HONOURED	8		DERIVED	build/runs/runs.jsonl	runs whose start falls inside the transcript's span; a control mode is honoured when the gate reached its own FAIL
+R-004	gates	test_extraction_tables_modes	test_extraction_tables: control-mode runs	8		DERIVED	build/runs/runs.jsonl	runs whose start falls inside the transcript's span
+R-004	gates	test_gen_held_verdict	test_gen_held: last verdict	PASS		MEASURED	build/runs/runs.jsonl	
+R-004	gates	test_gen_held_cases	test_gen_held: cases			ABSENT	build/runs/runs.jsonl	
+R-004	gates	test_gen_held_declared	test_gen_held: controls declared	2		MEASURED	build/runs/runs.jsonl	
+R-004	gates	test_gen_held_fired	test_gen_held: controls fired	2		MEASURED	build/runs/runs.jsonl	
+R-004	gates	test_gen_held_seconds	test_gen_held: runtime	45.64	s	MEASURED	build/runs/runs.jsonl	
+R-004	gates	test_gen_held_runs	test_gen_held: runs	9		DERIVED	build/runs/runs.jsonl	runs whose start falls inside the transcript's span
+R-004	gates	test_metrics_verdict	test_metrics: last verdict	PASS		MEASURED	build/runs/runs.jsonl	
+R-004	gates	test_metrics_cases	test_metrics: cases	96		MEASURED	build/runs/runs.jsonl	
+R-004	gates	test_metrics_declared	test_metrics: controls declared	7		MEASURED	build/runs/runs.jsonl	
+R-004	gates	test_metrics_fired	test_metrics: controls fired	7		MEASURED	build/runs/runs.jsonl	
+R-004	gates	test_metrics_seconds	test_metrics: runtime	4.72	s	MEASURED	build/runs/runs.jsonl	
+R-004	gates	test_metrics_runs	test_metrics: runs	8		DERIVED	build/runs/runs.jsonl	runs whose start falls inside the transcript's span
+R-004	gates	test_phase0_tables_verdict	test_phase0_tables: last verdict	PASS		MEASURED	build/runs/runs.jsonl	
+R-004	gates	test_phase0_tables_cases	test_phase0_tables: cases	11703		MEASURED	build/runs/runs.jsonl	
+R-004	gates	test_phase0_tables_declared	test_phase0_tables: controls declared	14		MEASURED	build/runs/runs.jsonl	
+R-004	gates	test_phase0_tables_fired	test_phase0_tables: controls fired	14		MEASURED	build/runs/runs.jsonl	
+R-004	gates	test_phase0_tables_seconds	test_phase0_tables: runtime	94.39	s	MEASURED	build/runs/runs.jsonl	
+R-004	gates	test_phase0_tables_runs	test_phase0_tables: runs	10		DERIVED	build/runs/runs.jsonl	runs whose start falls inside the transcript's span
+R-004	gates	test_port_corrections_verdict	test_port_corrections: last verdict	PASS		MEASURED	build/runs/runs.jsonl	
+R-004	gates	test_port_corrections_cases	test_port_corrections: cases	162		MEASURED	build/runs/runs.jsonl	
+R-004	gates	test_port_corrections_declared	test_port_corrections: controls declared	5		MEASURED	build/runs/runs.jsonl	
+R-004	gates	test_port_corrections_fired	test_port_corrections: controls fired	5		MEASURED	build/runs/runs.jsonl	
+R-004	gates	test_port_corrections_seconds	test_port_corrections: runtime	0.29	s	MEASURED	build/runs/runs.jsonl	
+R-004	gates	test_port_corrections_runs	test_port_corrections: runs	12		DERIVED	build/runs/runs.jsonl	runs whose start falls inside the transcript's span
+R-004	gates	test_port_corrections_modes_honoured	test_port_corrections: control modes HONOURED	1		DERIVED	build/runs/runs.jsonl	runs whose start falls inside the transcript's span; a control mode is honoured when the gate reached its own FAIL
+R-004	gates	test_port_corrections_modes	test_port_corrections: control-mode runs	1		DERIVED	build/runs/runs.jsonl	runs whose start falls inside the transcript's span
+R-004	gates	test_readonly_guard_verdict	test_readonly_guard: last verdict	PASS		MEASURED	build/runs/runs.jsonl	
+R-004	gates	test_readonly_guard_cases	test_readonly_guard: cases	73		MEASURED	build/runs/runs.jsonl	
+R-004	gates	test_readonly_guard_declared	test_readonly_guard: controls declared	2		MEASURED	build/runs/runs.jsonl	
+R-004	gates	test_readonly_guard_fired	test_readonly_guard: controls fired	2		MEASURED	build/runs/runs.jsonl	
+R-004	gates	test_readonly_guard_seconds	test_readonly_guard: runtime	4.77	s	MEASURED	build/runs/runs.jsonl	
+R-004	gates	test_readonly_guard_runs	test_readonly_guard: runs	8		DERIVED	build/runs/runs.jsonl	runs whose start falls inside the transcript's span
+R-004	gates	test_rec8_writes_verdict	test_rec8_writes: last verdict	PASS		MEASURED	build/runs/runs.jsonl	
+R-004	gates	test_rec8_writes_cases	test_rec8_writes: cases	6		MEASURED	build/runs/runs.jsonl	
+R-004	gates	test_rec8_writes_declared	test_rec8_writes: controls declared	3		MEASURED	build/runs/runs.jsonl	
+R-004	gates	test_rec8_writes_fired	test_rec8_writes: controls fired	3		MEASURED	build/runs/runs.jsonl	
+R-004	gates	test_rec8_writes_seconds	test_rec8_writes: runtime	14.85	s	MEASURED	build/runs/runs.jsonl	
+R-004	gates	test_rec8_writes_runs	test_rec8_writes: runs	2		DERIVED	build/runs/runs.jsonl	runs whose start falls inside the transcript's span
+R-004	gates	test_rec8_writes_modes_honoured	test_rec8_writes: control modes HONOURED	1		DERIVED	build/runs/runs.jsonl	runs whose start falls inside the transcript's span; a control mode is honoured when the gate reached its own FAIL
+R-004	gates	test_rec8_writes_modes	test_rec8_writes: control-mode runs	1		DERIVED	build/runs/runs.jsonl	runs whose start falls inside the transcript's span
+R-004	health	red_min	Minutes with a gate red	0.2	min	DERIVED	build/runs/runs.jsonl	per gate, from the end of a normal run that FAILed to the start of its next normal run (or the session's end), summed; control-mode runs aside

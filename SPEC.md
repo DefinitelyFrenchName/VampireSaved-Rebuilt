@@ -118,6 +118,13 @@ question, `rec8_a` and `rec8_b`, turned out not to be the tenant's own data. The
 `char*8`, but the original's notes put the real records at `id*0x30` (`jump_params`) and `id*0x20` (the pursuit
 record). So they stay as written in `extraction/values.tsv`, and the README explains why (#4).
 
+The maintainer's answer on the newcomers' own rows of the table at `PRG:0x0BE3FA` (2026-10-19, R-004; quoting Claude's
+recommendation, then verbatim in bold): *"I recommend (c), then (a) if the difference turns out to be the newcomers'
+own."* **"yes, (c) then (a) if need be"**. In the original's build, Donovan, Huitzil and Pyron read Victor's, Bulleta's
+and Demitri's rows there; vs2's own rows differ, and both games index the table by the raw id. So (c) comes first: a
+capture in play of which move enters that state and how native vs2 and the original's build differ there
+([VSR-43]). Then (a): phase 1 ports vs2's three rows if the difference is the newcomers' own (#4).
+
 ## 1. What the rebuild is, and what it is not
 
 **The same project, rebuilt.** The goal, the non-goals and the background facts are the original's `SPEC.md` §1-§2 and its
