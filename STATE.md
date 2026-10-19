@@ -6,7 +6,7 @@ head). A session key is `R-NNN`, one per sitting, never renamed or renumbered ([
 their own namespaces. A group's form, kept from the original: `## Session KEY — banner`, then `### opened with` and one
 `### (N) TITLE` section per piece of work. An open list holds only what is open.
 
-## Session R-003 — **Phase 0: the generators' constants tabled (in progress).** Opened 2026-10-18 on Opus 5.5 (the ruled orchestrator).
+## Session R-003 — **Phase 0 closed on parse-equality (the build proof moved to phase 1); vhunt2's role found (#4); the original's corrections per tenant gathered; R-002 archived.** Opened 2026-10-18 on Opus 5.5 (the ruled orchestrator); transcript `5e9e8b49`.
 
 ### opened with
 
@@ -102,63 +102,18 @@ Saved to gather all the missing/wrong parts that had to be added/fixed for each 
 - **Guard refusal (1).** A command mixing a heredoc and escaped backticks was refused as unparseable. It was split
   into two calls.
 
-## Session R-002 — **#3 built and closed: the figures, their gate, the run log, the dashboard; R-001 archived.** Opened 2026-10-18 on Opus 5.5 (the ruled orchestrator); transcript `c6b8c007`.
+### CLOSE (R-003, 2026-10-19)
 
-### opened with
-
-*"read state.nd"*, then *"yes"* to opening R-002 and starting on #3.
-
-### (1) #3: THE FIGURES, THEIR GATE, THE RUN LOG, THE BACKFILL
-
-`tools/metrics.py` writes `docs/project/metrics/figures.tsv` (one row per figure per session, `{value, class,
-source, rule}`, ABSENT rows for what no source holds); what each figure is and how it is timed:
-`docs/project/metrics/README.md`. `tools/runlog.py`: every gate appends one JSON line per run to
-`build/runs/runs.jsonl`; the two existing gates and the new one write it. Gate `tests/test_metrics.py`: a synthetic
-session whose every figure is known by construction, ten checks (C1–C10), five controls (`late-result`,
-`usage-twice`, `ask-as-tool`, `absent-filled`, `rule-dropped`), all FIRED, every mode FAIL. Its first green was read
-by its printed values ([VSR-21]): the first run's two reds were the fixture's (an answer placed at minute 202 where
-its design said 203), not the tool's.
-
-Found while building it: the transcript carries a `cost-state` record with the harness's own totals, which R-001's
-survey missed. On R-001 the DERIVED buckets agree with it: working is 5.8 % under its API time, and tool calls are
-12.2 % over its tool time once the two `AskUserQuestion` waits (610 s) are given to the maintainer. A worker
-transcript's `usage.output_tokens` is a streaming snapshot (201 against the harness's 4,600), so workers' tokens come
-from the harness. Backfilled: R-001 (88 figures) and 14z-205's drafting share (13; EXTRAPOLATED, an undercount, its
-rule says why). Committed `bb79816`, the three gates green on the staged tree.
-
-### (2) #3: THE DASHBOARD
-
-The view: "Rebuilt Session Ledger", a private claude.ai dashboard (https://claude.ai/artifact/EpBKcPyqtdSbePUso6jDd5)
-over one source, the tracked table uploaded as `figures.csv`. A tab per session; time (the four buckets beside the
-harness's cross-check, and session by session), activity, tokens and workers, commits by area, phase 0 against the
-census, gates and the inventory by class, health, gate runs, and every figure with its source and rule. Each figure
-shows its class as a chip. It is re-published from the table at each close (`docs/project/metrics/README.md`).
-
-### (3) 14z-205 RULED OUT OF THE TABLE
-
-The maintainer, on the dashboard: *"dashboard looks good, session 14z=205 that you inherited from Vampire Savior can
-honestly be removed."* Its 13 rows were dropped with a new `tools/metrics.py drop` (the table is never hand-edited);
-the gate gained C11 (drop removes exactly one session's rows and refuses a key with none) and its control
-`drop-overreach`. The backfill line of (1) is superseded by this: the table holds R-001 alone before R-002.
-
-### (4) THE CLOSE'S OWN FINDING: GUARD REFUSALS WERE COUNTED BY TEXT
-
-Collecting R-002 counted 1 guard refusal where there was none: my survey of R-001's errors had printed R-001's
-refusal text. R-001's 4 was inflated the same way (gate outputs quote the message); its real refusals are 2, as its
-record says. A refusal is now the hook's own error result (`PreToolUse:<tool> hook error:` and the message); the
-gate's fixture quotes the message in a passing result, and the control `guard-by-text` (C3) proves the case is read.
-R-001 and R-002 re-collected. Gotcha in `docs/project/metrics/README.md`.
-
-### CLOSE (R-002, 2026-10-18)
-
-Delivered: #3 built and closed (`tools/metrics.py`, `tools/runlog.py`, `tests/test_metrics.py`,
-`docs/project/metrics/`, the dashboard "Rebuilt Session Ledger"); R-001 moved verbatim to `STATE_HISTORY.md`, which
-opens with its index. Figures: R-001 88 rows, R-002 96 rows, collected before the close commit, so R-002's count of
-commits (2) and its last commit (`7b1fea3`) leave out the close commit, and it has no `cost-state` record yet
-(ABSENT). Gates at the close, on the committed tree: the three gates (verdicts in the close commit's message). Not
-done: no rule-checker ran before any action ([VSR-48]; the tool does not exist yet). Left outside git: the run log
-`build/runs/runs.jsonl` and the export `build/export_bf92acd2` (both git-ignored). No background process is left
-running.
+Delivered: phase 0 met as amended (`SPEC.md` §3): the census's code column, the uncounted values, the layout,
+the renderer, the five held values from the dumps; #4 opened, with the maintainer's direction and the corrections
+catalogue (`docs/project/port_corrections.*`); #5 opened (the measurer's side-by-side runs, evidence only). Four
+commits, `a002c98` to `7c9b3ce`, plus this close. Figures: R-003 127 rows, collected before the close commit, so its
+commits (4) and `tickets_open` (2: the committed list, before #5) leave out this close. `red_min` 353.7 is mostly
+`build_proof`'s one FAIL (02:01, the vhunt2 stop), which no PASS follows: the proof is phase 1's by ruling. The
+dashboard "Rebuilt Session Ledger" was re-published from the table (311 figures). Gates at the close, on the
+committed tree: the six gates (verdicts in the close commit's message). Not done: no rule-checker ran before any
+action ([VSR-48]; the tool does not exist yet); the extraction measurements are not tabled (the next session's first
+item). Left outside git: the export `build/export_bf92acd2` and the run log. No background process is left running.
 
 # STANDING SECTIONS (current state — never archived)
 
@@ -169,12 +124,14 @@ validation of `CLAUDE.md` v1.0, the read-only sources, phase 0's place and pin).
 
 ## Decisions pending (human)
 
-none.
+1. **#5: whether the swarm changes after the measurer's three side-by-side runs** ([VSR-50]; evidence in the issue).
+   Options: (a) a sentence in `.claude/agents/measurer.md` that commands run one per tool call; (b) a hook that
+   refuses a worker's concurrent tool calls; (c) no change. Recommendation: (a) now, (b) if it recurs.
 
 ## The next session starts with
 
-1. Phase 0: the 30 generator constants (the census's `code` column).
-2. Phase 0: the keys the census does not count (`name`, `note` and the rest of its `IGNORE_KEYS`, JSON's `_` keys),
-   carried so the renderer can reproduce the manifests whole.
-3. Phase 0: the renderer (tables to manifests, parse-equal to the original's under its own `_minitoml`) and the
-   byte-for-byte build proof on an export; the five held values come from generators run on the reference sets.
+1. #4: table the extraction measurements, the three `regions.json` (Donovan `build/m5_wide/extract`, Huitzil
+   `build/hui32/extract`, Pyron `build/pyron21/extract`) in native-column TSVs, with `jump_params`, `byte2d_a` and
+   `byte2d_b` decoded into a readable gameplay table (ruled, `SPEC.md` §0), and a gate.
+2. #4: the corrections catalogue's completeness: map each tenant manifest row (phase 0's tables) to a part of
+   `docs/project/port_corrections.tsv`, reading what the readers did not (`reconciliation_*.toml`, `moves_*.toml`).

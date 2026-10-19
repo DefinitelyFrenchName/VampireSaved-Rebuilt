@@ -99,6 +99,11 @@ had to be added/fixed for each of the three VS2 characters"**. So the extraction
 regions: vs2 address, vhunt2 twin, length, SHA-1, relocation refs) become tables, and the original's history is
 searched for every part the extraction missed or got wrong, per character (#4).
 
+The maintainer's answer on the three vs2 rows each extraction record carries as raw bytes (`jump_params`,
+`byte2d_a`, `byte2d_b`; 2026-10-18, R-003, AskUserQuestion; the option chosen, verbatim in bold): **"Readable
+gameplay table (Recommended)"**. They are decoded into named fields in a gameplay table the community can review and
+adjust, with provenance to vs2's row, and the build writes them from the table ([VSR-6]).
+
 ## 1. What the rebuild is, and what it is not
 
 **The same project, rebuilt.** The goal, the non-goals and the background facts are the original's `SPEC.md` §1-§2 and its
