@@ -1,0 +1,243 @@
+diff --git a/src/mame/capcom/cps2.cpp b/src/mame/capcom/cps2.cpp
+index 8602b6ca..bbde2ac1 100644
+--- a/src/mame/capcom/cps2.cpp
++++ b/src/mame/capcom/cps2.cpp
+@@ -661,6 +661,7 @@ public:
+ 	{ }
+ 
+ 	void cps2(machine_config &config) ATTR_COLD;
++	void cps2wide(machine_config &config) ATTR_COLD;   // CPS-2 WIDE v1
+ 	void cps2comm(machine_config &config) ATTR_COLD;
+ 	void gigaman2(machine_config &config) ATTR_COLD;
+ 	void dead_cps2(machine_config &config) ATTR_COLD;
+@@ -699,6 +700,27 @@ private:
+ 	template <unsigned Xor> uint16_t cps2_objram_r(offs_t offset);
+ 	template <unsigned Xor> void cps2_objram_w(offs_t offset, uint16_t data, uint16_t mem_mask = ~0);
+ 
++	// ── CPS-2 WIDE v1: the 19-bit sprite tile address ──────────────────
++	// The stock address is 16 code bits plus 2 bank bits taken from the
++	// y-word (0x6000): 18 bits, 32MB. WIDE needs a 19th, and y-word bit 15
++	// CANNOT carry it — find_last_sprite() uses bit 15 as the END-OF-LIST
++	// marker, so setting it on a live sprite would truncate the sprite list
++	// (measured, Phase A/A2). Capcom hit the same wall on CPS-2 Turbo and
++	// solved it by promoting bit 12 into bit 15 AFTER the list has been
++	// walked; WIDE adopts that rule verbatim rather than inventing an
++	// encoding. Phase A confirmed vanilla vsav never sets bit 12 on a live
++	// sprite, so this is inert for stock content.
++	// This is the profile's ONLY change to emulation logic. Everything else
++	// is descriptor table data. See docs/cps2_wide.md.
++	int cps2_wide_bankbits(int y) const
++	{
++		if (m_cps2_wide_canary && (y & 0x4000))
++			y = (y & ~0x4000) | 0x1000;   // TEST-ONLY: banks 2/3 -> WIDE 4/5
++		if (y & 0x1000)
++			y |= 0x8000;                  // bit 12 -> bit 15
++		return y & 0xe000;                // 19 bits once shifted left by 3
++	}
++
+ 	void unshuffle(uint64_t *buf, int len);
+ 	void cps2_gfx_decode();
+ 	virtual void find_last_sprite() override;
+@@ -714,6 +736,8 @@ private:
+ 	void dead_cps2_comm_map(address_map &map) ATTR_COLD;
+ 	void dead_cps2_map(address_map &map) ATTR_COLD;
+ 	void decrypted_opcodes_map(address_map &map) ATTR_COLD;
++	void cps2_wide_map(address_map &map) ATTR_COLD;                // CPS-2 WIDE v1
++	void decrypted_opcodes_wide_map(address_map &map) ATTR_COLD;   // CPS-2 WIDE v1
+ 
+ 	void init_cps2_video() ATTR_COLD;
+ 	void init_cps2crypt() ATTR_COLD;
+@@ -736,6 +760,17 @@ private:
+ 	int32_t m_objram_bank = 0;
+ 	int32_t m_cps2_obj_size = 0;
+ 
++	// CPS-2 WIDE v1 profile (Vampire Saved project; docs/cps2_wide.md).
++	// Driver state, not a file-scope global: MAME builds a fresh driver
++	// object per run, so the profile cannot leak into another game the way
++	// FBNeo's Cps2Wide has to be explicitly cleared in DrvExit.
++	bool m_cps2_wide = false;
++	// TEST-ONLY (CPS2_WIDE_CANARY=1): relocates bank-2/3 sprites into the
++	// WIDE banks 4/5 at draw time WITHOUT touching the ROM, so game state is
++	// identical by construction and only pixels can move. Never set in a
++	// shipped build; the B4 positive control (docs/cps2_wide.md).
++	bool m_cps2_wide_canary = false;
++
+ 	// misc
+ 	std::unique_ptr<uint16_t[]> m_gigaman2_dummyqsound_ram;
+ 	int32_t m_readpaddle = 0; // pzloop2
+@@ -898,7 +933,12 @@ void cps2_state::cps2_render_sprites(screen_device &screen, bitmap_ind16 &bitmap
+ 		int x = base[i + 0];
+ 		int y = base[i + 1];
+ 		const int priority = (x >> 13) & 0x07;
+-		const int code = base[i + 2] + ((y & 0x6000) << 3);
++		// CPS-2 WIDE v1 gate. `y` itself is deliberately NOT modified: it
++		// also carries the sprite's Y position below, and keeping the bank
++		// arithmetic in a separate expression makes it structurally
++		// impossible for the profile to move a sprite by a pixel.
++		const int code = base[i + 2]
++				+ ((m_cps2_wide ? cps2_wide_bankbits(y) : (y & 0x6000)) << 3);
+ 		const int colour = base[i + 3];
+ 		const int col = colour & 0x1f;
+ 		const bool flipx = BIT(colour, 5);
+@@ -1325,6 +1365,36 @@ void cps2_state::decrypted_opcodes_map(address_map &map)
+ 	map(0x000000, 0x3fffff).rom().share(m_decrypted_opcodes); // 68000 ROM
+ }
+ 
++// ── CPS-2 WIDE v1: program ROM 4MB -> 6MB (docs/cps2_wide.md) ───────────
++// Descriptor-class change: only the mapped extent moves. Phase A/A1
++// measured zero vanilla reads into $400000-$5FFFFF across the whole legacy
++// corpus, so the newly-covered window shadows nothing live.
++//
++// The ROM range is declared FIRST and cps2_map() re-declares
++// $400000-$40000B as the CPS2 output registers afterwards; later entries
++// win in MAME, so the registers keep working exactly as on stock hardware.
++// The profile reserves $400000-$40000F, never allocate.
++//
++// NOTE, a real emulator-level divergence worth stating plainly: FBNeo maps
++// program ROM with SekMapMemory(CpsRom, 0, nCpsRomLen-1), which READ-shadows
++// those registers with ROM (writes still reach the handler), whereas MAME
++// keeps them readable. The reservation is what makes the difference
++// unobservable — no WIDE content may live there in either emulator.
++void cps2_state::cps2_wide_map(address_map &map)
++{
++	map(0x000000, 0x5fffff).rom();
++	cps2_map(map);
++}
++
++void cps2_state::decrypted_opcodes_wide_map(address_map &map)
++{
++	// Everything above $0FFFFF is outside the CPS-2 encryption window, so
++	// cps2_decrypt() copies it through verbatim (dec[a] = rom[a]) and the
++	// extension is plain in the opcode space too — extension content is
++	// authored RAW.
++	map(0x000000, 0x5fffff).rom().share(m_decrypted_opcodes);
++}
++
+ void cps2_state::dead_cps2_map(address_map &map)
+ {
+ 	cps2_base_map(map);
+@@ -1779,6 +1849,29 @@ void cps2_state::cps2(machine_config &config)
+ 	m_qsound->add_route(1, "speaker", 1.0, 1);
+ }
+ 
++// ── CPS-2 WIDE v1 (Vampire Saved project; docs/cps2_wide.md) ───────────
++// Rule 1 v2: emulator changes are permitted only inside a named, versioned,
++// PROFILE-GATED hardware profile. This config is the gate — it is reached
++// only from the vsavjw driver entry, so stock vsavj and every other CPS-2
++// game are untouched by construction.
++//
++// The flag is set here, at machine-config time, which is strictly earlier
++// than any device start, so it is live before the first sprite is drawn and
++// there is no init-order question to reason about.
++void cps2_state::cps2wide(machine_config &config)
++{
++	cps2(config);
++
++	m_cps2_wide = true;
++	// TEST-ONLY positive control (B4). Off by default; never set in a
++	// shipped build. Read here rather than at draw time so the whole run
++	// uses one consistent value.
++	m_cps2_wide_canary = (getenv("CPS2_WIDE_CANARY") != nullptr);
++
++	m_maincpu->set_addrmap(AS_PROGRAM, &cps2_state::cps2_wide_map);
++	m_maincpu->set_addrmap(AS_OPCODES, &cps2_state::decrypted_opcodes_wide_map);
++}
++
+ void cps2_state::cps2comm(machine_config &config)
+ {
+ 	cps2(config);
+@@ -9728,6 +9821,71 @@ ROM_START( vsavj )
+ 	ROM_LOAD( "vsavj.key",    0x000000, 0x000014, CRC(36d28ab8) SHA1(7de11dbe4a7ea0e8b68ab332f80e32cb6c1bf48e) )
+ ROM_END
+ 
++// ── CPS-2 WIDE v1 (Vampire Saved project; docs/cps2_wide.md) ───────────
++// vsavj on the extended hardware profile: PRG 6MB / GFX 48MB / QSound 16MB.
++// This is the MAME twin of emu/fbneo-patches/0002 and MUST stay member-for-
++// member identical to it (same names, sizes, CRCs) — one romset zip is
++// loaded by both emulators, and dual-emulator agreement is meaningless if
++// they are fed different bytes.
++//
++// The appended members here are the state build_wide_romset.py produces with
++// --gfx-copy-group-b: PRG/QSound extensions zero-filled, gfx group C a byte
++// copy of group B (the B4 canary). Regenerate the CRC/SHA1 rows from that
++// tool's output whenever the overlay changes — it prints them for exactly
++// this purpose, because a stale CRC is silent (docs/GOTCHAS.md).
++ROM_START( vsavjw )
++	ROM_REGION( 0x600000, "maincpu", 0 ) // 68000 code — WIDE v1: 4MB -> 6MB
++	ROM_LOAD16_WORD_SWAP( "vm3j.03d", 0x000000, 0x80000, CRC(2a2e74a4) SHA1(e9e7bce3c2ad0c9eebcbcd5139979d1fa19187ad) )
++	ROM_LOAD16_WORD_SWAP( "vm3j.04d", 0x080000, 0x80000, CRC(1c2427bc) SHA1(9047ac0ccd875d91a8ceafdf1ccf9d21c4c71644) )
++	ROM_LOAD16_WORD_SWAP( "vm3j.05a", 0x100000, 0x80000, CRC(95ce88d5) SHA1(ba5e64c2551d97a71d2f4d7a78663aede4b722e8) )
++	ROM_LOAD16_WORD_SWAP( "vm3j.06b", 0x180000, 0x80000, CRC(2c4297e0) SHA1(3a7103456ba3937f63c28dd42020cac1955b5741) )
++	ROM_LOAD16_WORD_SWAP( "vm3j.07b", 0x200000, 0x80000, CRC(a38aaae7) SHA1(0a5719eb2b0bbde955f605b1057ed6a8eb54ad80) )
++	ROM_LOAD16_WORD_SWAP( "vm3j.08a", 0x280000, 0x80000, CRC(5773e5c9) SHA1(551afc5d921f9ef1fe928ca83d072b6a6105ab0e) )
++	ROM_LOAD16_WORD_SWAP( "vm3j.09b", 0x300000, 0x80000, CRC(d064f8b9) SHA1(09f77f7b466c147a5d894a4ec3b40bd068dfab26) )
++	ROM_LOAD16_WORD_SWAP( "vm3j.10b", 0x380000, 0x80000, CRC(434518e9) SHA1(ce1c8557a9e6c5451ab41a96f01b0cd4ba02ea3e) )
++	// WIDE v1 program extension. Everything above $0FFFFF is outside the
++	// CPS-2 encryption window, so this space is RAW.
++	// Reserved, never allocate: $400000-$40000F (CPS2 output registers).
++	ROM_LOAD16_WORD_SWAP( "vsw.41",   0x400000, 0x80000, CRC(dec0de41) SHA1(88167cba6551bd84e438804de0c792b6a70856da) )
++	ROM_LOAD16_WORD_SWAP( "vsw.42",   0x480000, 0x80000, CRC(dec0de42) SHA1(1e8c204f22cc8fc91aa7ab361a16fa4ed0117ef2) )
++	ROM_LOAD16_WORD_SWAP( "vsw.43",   0x500000, 0x80000, CRC(dec0de43) SHA1(ed0bcf9903f3cb31a9879b687f0840e5ba2c7b5e) )
++	ROM_LOAD16_WORD_SWAP( "vsw.44",   0x580000, 0x80000, CRC(dec0de44) SHA1(1ad9c5e3f2ebe9ef3c32937361d5503fbcfa9e36) )
++
++	ROM_REGION( 0x3000000, "gfx", 0 )    // WIDE v1: 32MB -> 48MB
++	ROM_LOAD64_WORD( "vm3.13m",   0x0000000, 0x400000, CRC(fd8a11eb) SHA1(21b9773959e17976ff46b75a6a405042836b2c5f) )
++	ROM_LOAD64_WORD( "vm3.15m",   0x0000002, 0x400000, CRC(dd1e7d4e) SHA1(30476e061cdebdb1838b83f4ebd5efae12b7dbfb) )
++	ROM_LOAD64_WORD( "vm3.17m",   0x0000004, 0x400000, CRC(6b89445e) SHA1(2abd489839d143c46e25f4fc3db476b70607dc03) )
++	ROM_LOAD64_WORD( "vm3.19m",   0x0000006, 0x400000, CRC(3830fdc7) SHA1(ebd3f559c254d349e256c9feb3477f1ed7518206) )
++	ROM_LOAD64_WORD( "vm3.14m",   0x1000000, 0x400000, CRC(c1a28e6c) SHA1(012803af33174c0602649d2a2d84f6ee79f54ad2) )
++	ROM_LOAD64_WORD( "vm3.16m",   0x1000002, 0x400000, CRC(194a7304) SHA1(a19a9a6fb829953b054dc5c3b0dc017f60d37928) )
++	ROM_LOAD64_WORD( "vm3.18m",   0x1000004, 0x400000, CRC(df9a9f47) SHA1(ce29ff00cf4b6fdd9b3b1ed87823534f1d364eab) )
++	ROM_LOAD64_WORD( "vm3.20m",   0x1000006, 0x400000, CRC(c22fc3d9) SHA1(df7538c05b03a4ad94d369f8083799979e6fac42) )
++	// WIDE v1 gfx group C. Members are appended in whole groups of FOUR,
++	// all the same size — a structural requirement of both loaders, not a
++	// style choice. Reached via the 19-bit tile address above.
++	// Currently a byte copy of group B: that is the B4 canary payload.
++	ROM_LOAD64_WORD( "vsw.31m",   0x2000000, 0x400000, CRC(dec0de31) SHA1(af06d6963bec3672eb3a591eec98e3833ccb5120) )
++	ROM_LOAD64_WORD( "vsw.33m",   0x2000002, 0x400000, CRC(dec0de33) SHA1(facbd8fa45c17680f4c76e308b4f383a2cbc3743) )
++	ROM_LOAD64_WORD( "vsw.35m",   0x2000004, 0x400000, CRC(dec0de35) SHA1(f813580566e7a41bcb5df8704a3e48a623d94540) )
++	ROM_LOAD64_WORD( "vsw.37m",   0x2000006, 0x400000, CRC(dec0de37) SHA1(0444481dc5526fcc96defbe153562778967b8374) )
++
++	ROM_REGION( QSOUND_SIZE, "audiocpu", 0 ) // 64k for the audio CPU (+banks)
++	ROM_LOAD( "vsw.z01",  0x00000, 0x08000, CRC(dec0de38) SHA1(9d35ba74a9ec5e19325d8bb05317b9c4aaba4020) ) // WIDE v1.1 Z80 content member (14z-86): SENTINEL hashes, resolves by name so builds can patch the sound driver (M5 songs); stock vm3.01 bytes when unpatched
++	ROM_CONTINUE(         0x10000, 0x18000 )
++	ROM_LOAD( "vsw.z02",  0x28000, 0x20000, CRC(dec0de39) SHA1(d6b46b13b927ef03cc89f1b7eaa943476231ecbb) ) // sentinel (see vsw.z01)
++
++	ROM_REGION( 0x1000000, "qsound", 0 ) // QSound samples — WIDE v1: 8MB -> 16MB
++	ROM_LOAD16_WORD_SWAP( "vm3.11m",   0x000000, 0x400000, CRC(e80e956e) SHA1(74181fca4b764fb3c56ceef2cb4c6fd6c18ec4b6) )
++	ROM_LOAD16_WORD_SWAP( "vm3.12m",   0x400000, 0x400000, CRC(9cd71557) SHA1(7059db25698a0b286314c5961c618f6d2e6f24a1) )
++	// The QSound length MUST stay a power of two: the sample reader masks
++	// the address with (length - 1). 8->16MB is legal, 8->12MB is not.
++	ROM_LOAD16_WORD_SWAP( "vsw.21m",   0x800000, 0x400000, CRC(dec0de3a) SHA1(aaaa5e19325d8bb05317b9c4aaba40209d35ba74) ) // WIDE v1.2 QSound content member (14z-86): SENTINEL hashes — the M5 voice batch packs samples here, resolves by name
++	ROM_LOAD16_WORD_SWAP( "vsw.22m",   0xc00000, 0x400000, CRC(dec0de3b) SHA1(bbbb6b13b927ef03cc89f1b7eaa943476231ecbb) ) // sentinel (see vsw.21m)
++
++	ROM_REGION( 0x20, "key", 0 )
++	ROM_LOAD( "vsavj.key",    0x000000, 0x000014, CRC(36d28ab8) SHA1(7de11dbe4a7ea0e8b68ab332f80e32cb6c1bf48e) )
++ROM_END
++
+ ROM_START( vsava )
+ 	ROM_REGION( CODE_SIZE, "maincpu", 0 ) // 68000 code
+ 	ROM_LOAD16_WORD_SWAP( "vm3a.03d", 0x000000, 0x80000, CRC(44c1198f) SHA1(35714b2f6ebeafea93be6467b5b22ea41b9f3826) )
+@@ -12753,6 +12911,10 @@ GAME( 1997, batcirj,    batcir,   cps2,     cps2_4p2b, cps2_state, init_cps2,
+ GAME( 1997, vsav,       0,        cps2,     cps2_2p6b, cps2_state, init_cps2,     ROT0,   "Capcom", "Vampire Savior: The Lord of Vampire (Europe 970519)",                           MACHINE_SUPPORTS_SAVE )
+ GAME( 1997, vsavu,      vsav,     cps2,     cps2_2p6b, cps2_state, init_cps2,     ROT0,   "Capcom", "Vampire Savior: The Lord of Vampire (USA 970519)",                              MACHINE_SUPPORTS_SAVE )
+ GAME( 1997, vsavj,      vsav,     cps2,     cps2_2p6b, cps2_state, init_cps2,     ROT0,   "Capcom", "Vampire Savior: The Lord of Vampire (Japan 970519)",                            MACHINE_SUPPORTS_SAVE )
++// CPS-2 WIDE v1 (Vampire Saved project; docs/cps2_wide.md). The profile is
++// reachable ONLY through this entry — every other CPS-2 driver above and
++// below keeps the stock cps2 machine config and is untouched by construction.
++GAME( 1997, vsavjw,     vsav,     cps2wide, cps2_2p6b, cps2_state, init_cps2,     ROT0,   "Capcom", "Vampire Savior: The Lord of Vampire (Japan 970519, CPS-2 WIDE v1)",             MACHINE_SUPPORTS_SAVE )
+ GAME( 1997, vsava,      vsav,     cps2,     cps2_2p6b, cps2_state, init_cps2,     ROT0,   "Capcom", "Vampire Savior: The Lord of Vampire (Asia 970519)",                             MACHINE_SUPPORTS_SAVE )
+ GAME( 1997, vsavh,      vsav,     cps2,     cps2_2p6b, cps2_state, init_cps2,     ROT0,   "Capcom", "Vampire Savior: The Lord of Vampire (Hispanic 970519)",                         MACHINE_SUPPORTS_SAVE )
+ GAME( 1997, vsavb,      vsav,     cps2,     cps2_2p6b, cps2_state, init_cps2,     ROT0,   "Capcom", "Vampire Savior: The Lord of Vampire (Brazil 970519)",                           MACHINE_SUPPORTS_SAVE )
+diff --git a/src/mame/mame.lst b/src/mame/mame.lst
+index 3dffc57b..68541716 100644
+--- a/src/mame/mame.lst
++++ b/src/mame/mame.lst
+@@ -16305,6 +16305,7 @@ vsavb
+ vsavd
+ vsavh
+ vsavj
++vsavjw
+ vsavu
+ xmcota
+ xmcotaa

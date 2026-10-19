@@ -127,6 +127,15 @@ and Demitri's rows there; vs2's own rows differ, and both games index the table 
 capture in play of which move enters that state and how native vs2 and the original's build differ there
 ([VSR-43]). Then (a): phase 1 ports vs2's three rows if the difference is the newcomers' own (#4).
 
+The maintainer's ratification of the WIDE profile for this repository (2026-10-19, R-005; [VSR-2]). Asked *"Do you
+ratify the CPS-2 WIDE profile v1.2 for this repository, MAME side, so I can build it and prove it before the
+capture?"*, with the option *"Ratify v1.2 verbatim (Recommended) — Import the original's spec into docs/ as its one
+copy and apply its MAME patch unchanged, canary included. The original's gates (test_mame_wide.sh and the E1 suite)
+then run as written."*, the maintainer chose **"Ratify v1.2 verbatim (Recommended)"**. The spec's one copy is
+`docs/project/cps2_wide.md`, imported from the original at `bf92acd2`; the patch is
+`emu/mame-patches/0002-cps2-wide-v1.patch`, unchanged. The ratification is the MAME side; FBNeo's twin is not yet
+built here.
+
 ## 1. What the rebuild is, and what it is not
 
 **The same project, rebuilt.** The goal, the non-goals and the background facts are the original's `SPEC.md` §1-§2 and its

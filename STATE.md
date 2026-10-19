@@ -6,7 +6,7 @@ head). A session key is `R-NNN`, one per sitting, never renamed or renumbered ([
 their own namespaces. A group's form, kept from the original: `## Session KEY — banner`, then `### opened with` and one
 `### (N) TITLE` section per piece of work. An open list holds only what is open.
 
-## Session R-005 — **vhunt2 provided; the build proof PASSES: the tables rebuild the original's frozen merged build byte for byte (#4); the reference MAME built from the pin and proven the instrument that froze the oracle.** Opened 2026-10-19 on Opus 5.5 (the ruled orchestrator), in R-004's transcript `dc3ff4f7` after its close.
+## Session R-005 — **vhunt2 provided; the build proof PASSES: the tables rebuild the original's frozen merged build byte for byte (#4); the reference MAME built from the pin and proven the instrument that froze the oracle; the WIDE profile ratified, built and proven on MAME.** Opened 2026-10-19 on Opus 5.5 (the ruled orchestrator), in R-004's transcript `dc3ff4f7` after its close.
 
 ### opened with
 
@@ -76,7 +76,28 @@ FAILed a PASSing run. At `bf92acd2` eight `118_*` replays are frozen nowhere and
 every A/B row identical and none skipped.
 
 Not done: no FBNeo reference yet (the original's `tools/setup_fbneo.sh`), which the emulator superset invariant and
-the dual-emulator rule need ([VSR-13], [VSR-16]); the capture needs only MAME WIDE.
+the dual-emulator rule need ([VSR-13], [VSR-16]); the capture needs only MAME WIDE. Committed `3d94486`.
+
+### (5) THE WIDE PROFILE RATIFIED, BUILT AND PROVEN ON MAME
+
+Asked whether to ratify the original's CPS-2 WIDE v1.2 for this repository, MAME side, the maintainer: **"Ratify v1.2
+verbatim (Recommended)"** (question and option verbatim in `SPEC.md` §0). The spec's one copy is
+`docs/project/cps2_wide.md` (the original's, byte for byte below an import note); the patch is
+`emu/mame-patches/0002-cps2-wide-v1.patch`, unchanged. `tools/setup_mame.py --profile wide` builds it beside the
+reference. `tests/test_mame_wide.py` runs the original's `tests/test_mame_wide.sh` unchanged over its 12 replays, on
+work RAM and framebuffer:
+- the emulator superset invariant 12/12;
+- inertness 12/12;
+- the B4 canary 12/12.
+Its control `canary-unreached` (the canary run fed zero-filled banks) fails 11 of 12 on the framebuffer alone.
+Detail: `docs/project/instruments.md`.
+
+Paid for:
+- **A relink moves the instrument.** Re-running the build relinked the proven reference binary, and its SHA-1 changed
+  each time (three relinks). Between two of them the code and data sections are equal; the UUID and one import stub
+  differ. The setup now never rebuilds a binary whose recorded SHA-1 matches, and prints `INSTRUMENT MOVED` when one
+  changes. The relinked reference (`f17f851c`) was proven again: PASS, the same figures.
+- **W2 counted 14 replays**: the original's corpus list continues its lines with `\`. Fixed; the count is 12.
 
 
 ## Session R-004 — **#5 ruled: (a) the measurer runs one command per tool call; #4: the extraction tabled, its jump, cancel and short bank rows decoded; every manifest row mapped to a correction, 16 parts added; the rec8 writes read statically, the newcomers' own rows found to be veterans' copies, ruled (c) then (a); R-003 archived.** Opened 2026-10-19 on Opus 5.5 (the ruled orchestrator); transcript `dc3ff4f7`.
@@ -242,11 +263,9 @@ none.
 
 ## The next session starts with
 
-1. #4, ruled (c) then (a) (`SPEC.md` §0, R-004): when an instrument can run the original's build (R-005 builds it;
-   the reference MAME is built and proven, R-005 (4); the instrument is that MAME with the WIDE profile, which needs
-   the maintainer's ratification, [VSR-2]: present the original's profile spec and its MAME patch, then build it and
-   prove the emulator superset invariant), capture which move enters state `0x02100600` (vsavj `PRG:0x026670`) for
-   each newcomer, native vs2 against the build. Then phase 1 ports vs2's three rows of the table at `PRG:0x0BE3FA`
+1. #4, ruled (c) then (a) (`SPEC.md` §0, R-004): the instrument exists (R-005 (5): MAME with the ratified WIDE
+   profile, proven; the original's merged build is in `build/tmp/proof_r005_3`). Capture which move enters state
+   `0x02100600` (vsavj `PRG:0x026670`) for each newcomer, native vs2 against the build. Then phase 1 ports vs2's three rows of the table at `PRG:0x0BE3FA`
    if the difference is the newcomers' own.
 2. #4: give `tools/build_proof.py` a second control that the original's own checks accept, so the byte compare is
    exercised end to end (R-005 (2): `perturbed-render` is stopped by the original's HUD check first).

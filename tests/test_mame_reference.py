@@ -4,7 +4,7 @@ any profile patch). Its subject is an emulator as an instrument, a class F gate 
 original's own `tests/test_mame_parity.sh`, unchanged, in the export, with this binary as its source build
 (SPEC.md §5.2).
 
-  M1 IDENTITY  build.json names the pin, the binary's SHA-1 is the one build.json recorded, and the binary does not
+  M1 IDENTITY  build.json names the pin and profile `none` (absent before R-005's profiles), the binary's SHA-1 is the one build.json recorded, and the binary does not
                know `vsavjw` (no profile)
   M2 PARITY    the original's gate prints `PASS: MAME parity.`; every frozen row it ran (its section 1, the vsavj
                logs, and 1b, the reference binary's frozen logs) reads `ok`, as many as its section headers count,
@@ -47,7 +47,8 @@ def identity(build, binary):
     rec = json.load(open(os.path.join(build, STAMP)))
     sha = hashlib.sha1(open(binary, "rb").read()).hexdigest()
     wide = knows(binary, "vsavjw")
-    ok = rec.get("pin") == PINNED and sha == rec.get("binary_sha1") and not wide
+    ok = (rec.get("pin") == PINNED and rec.get("profile", "none") == "none" and sha == rec.get("binary_sha1")
+          and not wide)
     return ok, "M1 %s sha1 %s, build.json pin %s sha1 %s, knows vsavjw %s" % (
         binary, sha, rec.get("pin", "-")[:8], rec.get("binary_sha1"), "yes" if wide else "no")
 
