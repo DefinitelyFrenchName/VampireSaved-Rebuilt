@@ -125,7 +125,7 @@ recommendation, then verbatim in bold): *"I recommend (c), then (a) if the diffe
 own."* **"yes, (c) then (a) if need be"**. In the original's build, Donovan, Huitzil and Pyron read Victor's, Bulleta's
 and Demitri's rows there; vs2's own rows differ, and both games index the table by the raw id. So (c) comes first: a
 capture in play of which move enters that state and how native vs2 and the original's build differ there
-([VSR-43]). Then (a): phase 1 ports vs2's three rows if the difference is the newcomers' own (#4).
+([VSR-43]). Then (a): phase 1 ports vs2's three rows if the difference is the newcomers' own (#6).
 
 The maintainer on the same rows (2026-10-20, R-005; verbatim in bold), answering Claude's *"In R-004's speed and
 acceleration table they don't: the newcomers run on Victor's, Bulleta's and Demitri's rows there, not vs2's"*: **"that
@@ -135,7 +135,7 @@ mechanics are vsavj, character-specific are vs2 for the newcomers (the limit bei
 character-specific dark force from vs2 as being triggered by vsavj's dark force for the 3 vs2 characters )"**, and
 **"FYI this is not a new rule, look first into the docs you'll find that already, except maybe the dark force example
 of edge case"**. So (a) no longer waits on the capture: phase 1 ports vs2's three rows of the table at `PRG:0x0BE3FA`
-(#4); the capture still names the state, for the replays [VSR-17] asks for. The ground rule was already the original's
+(#6); the capture still names the state, for the replays [VSR-17] asks for. The ground rule was already the original's
 (its rulings: #222, *"since Phobos is VS2 only, and its air dash is  character-specific, it should abide by VS2
 behavior"*, 2026-10-05; the Dark Force stock cost, *"vanilla stays untouched and guides how the game should be
 played"*, adjustments per character and never to the general mechanic, 2026-08-30; both in its `DECISIONS_HISTORY.md`),

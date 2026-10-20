@@ -6,6 +6,30 @@ head). A session key is `R-NNN`, one per sitting, never renamed or renumbered ([
 their own namespaces. A group's form, kept from the original: `## Session KEY — banner`, then `### opened with` and one
 `### (N) TITLE` section per piece of work. An open list holds only what is open.
 
+## Session R-006 — **#4's off-subject work split into #6 and #7.** Opened 2026-10-20 on Opus 5.5 (the ruled orchestrator); transcript `aebff6ad`.
+
+### opened with
+
+The maintainer: *"read state.md"*. Claude summarised it and noted that #4's GitHub title (the extractor needing
+vhunt2 as its sibling oracle) is narrower than the four start-list items `STATE.md` filed under it. The maintainer:
+*"please fix that gap. Then open R-006"*.
+
+### (1) #4 SPLIT: #6 AND #7
+
+#4 keeps its title's subject: phase 1's extractor bounds regions without vhunt2. That covers the extraction tables,
+the corrections per tenant and the build proof as phase 0's acceptance. Two subjects filed under it in R-004/R-005 now
+have their own tickets (GitHub issues, stories in their bodies; #4 commented with the split):
+- **#6** (evolution): the newcomers read their shell's rows of tables indexed by raw id where vs2 has their own. It
+  covers the doll's hop at `PRG:0x0BE3FA` (ruled 2026-10-20), the census of the other such tables and the height
+  table's figures (start-list items 1, 3, 4).
+- **#7** (bug): the build proof's control is caught by the original's HUD check, so no control exercises the byte
+  compare end to end (item 2).
+
+`docs/project/tickets.tsv` gains both rows; #4's `decided`/`learned` lose the doll's hop (now #6's) and its `wrong`
+records the misfiling. The live pointers move: `SPEC.md` §0's two "phase 1 ports vs2's three rows" (#6), the tables
+README's doll paragraph (#6) and its build-proof control (#7), `tools/state_capture.py`'s header (#6). R-005's group
+above is history and keeps #4.
+
 ## Session R-005 — **vhunt2 provided; the build proof PASSES: the tables rebuild the original's frozen merged build byte for byte (#4); the reference MAME built from the pin and proven the instrument that froze the oracle; the WIDE profile ratified, built and proven on MAME; #4's table at `PRG:0x0BE3FA` found to be the doll's hop, ruled vs2's rows for the newcomers; [VSR-40] re-worded by the maintainer, `CLAUDE.md` v1.1; R-004 archived.** Opened 2026-10-19 on Opus 5.5 (the ruled orchestrator), in R-004's transcript `dc3ff4f7` after its close.
 
 ### opened with
@@ -203,14 +227,14 @@ none.
 
 ## The next session starts with
 
-1. #4: phase 1 ports vs2's three rows of the table at `PRG:0x0BE3FA` (ruled 2026-10-20, `SPEC.md` §0: universal
+1. #6: phase 1 ports vs2's three rows of the table at `PRG:0x0BE3FA` (ruled 2026-10-20, `SPEC.md` §0: universal
    mechanics are vsavj's, character-specific ones vs2's). The state is the doll's hop after Royal Judgement (R-005
    (7)); the `doll` rig becomes the port's gate once phase 1 builds: each newcomer's hops equal native vs2's, Victor's
    unchanged ([VSR-17]).
-2. #4: give `tools/build_proof.py` a second control that the original's own checks accept, so the byte compare is
+2. #7: give `tools/build_proof.py` a second control that the original's own checks accept, so the byte compare is
    exercised end to end (R-005 (2): `perturbed-render` is stopped by the original's HUD check first).
-3. #4: a census of the per-character tables the engine reads by the raw id, for the newcomers: where the build gives a
+3. #6: a census of the per-character tables the engine reads by the raw id, for the newcomers: where the build gives a
    newcomer its shell's row and vs2 has its own, the ground rule ([VSR-40]) asks for vs2's. The doll table was found
    by accident; the census makes the port's list complete before phase 1.
-4. #4: the height table (`word_y_off`, `PRG:0x0BE7FA`) figures into the README, reproduced by a measurer first
+4. #6: the height table (`word_y_off`, `PRG:0x0BE7FA`) figures into the README, reproduced by a measurer first
    (vs2's own row, the shell's row, the patched romset: Phobos 0, Donovan 0, Pyron 78, the same on all three).

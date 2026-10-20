@@ -1,4 +1,4 @@
-"""state_capture.py — #4's capture (SPEC.md §0, ruled R-004 "(c) then (a)"): which move enters the fighter state
+"""state_capture.py — #6's capture (SPEC.md §0, ruled R-004 "(c) then (a)"): which move enters the fighter state
 `+0x04` = 0x02100600 (the handler at vsavj PRG:0x026670, whose substate 0 reads the table at vsavj PRG:0x0BE3FA by the
 raw id `+0x382`) for each newcomer, on native vs2 and on the original's merged build, and how the two legs move while
 in it ([VSR-43]: captures before conclusions; docs/project/tables/README.md "What the build wrote for rec8_a and

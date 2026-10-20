@@ -186,7 +186,7 @@ Measured (R-005, a measurer, from the run logs):
   the original's own HUD check (*"expected one poke16 at 0x898aa val 0x8690"*), so this control does not reach the
   byte compare.
   - **Not exercised end to end:** a perturbation the original's own checks accept, which only the compare would
-    catch. `compare()`'s sensitivity is P2's, on synthetic files.
+    catch. `compare()`'s sensitivity is P2's, on synthetic files (#7).
 
 ## The extraction tables, under `extraction/`, and the three gameplay tables decoded from them (#4)
 
@@ -383,7 +383,7 @@ first hop, by a measurer from the report (`build/tmp/capture_r005_doll.report`, 
 So every newcomer reaches the state, and its doll hops differently on the build. The control is identical, so the
 difference is the newcomers' rows, not the instrument. On the build Donovan's first straight hop is Victor's frame for
 frame (the report's dx,dy lists), as his row is Victor's. Ruled (`SPEC.md` §0, 2026-10-20): phase 1 ports vs2's
-three rows (#4). Pixels are the traced RAM position words, not measured against the screen.
+three rows (#6). Pixels are the traced RAM position words, not measured against the screen.
 
 `tools/rec8_writes.py <export> <roms>` prints all of the above, with the SHA-1 of each file it read. Its gate is
 `python3 tests/test_rec8_writes.py`, anchored on the reference dumps:
