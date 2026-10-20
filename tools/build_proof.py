@@ -13,10 +13,16 @@ In RUN_DIR (which must not exist; a run owns its directory, SPEC.md §4):
   5. every file each build wrote compared byte for byte (a zip member by member, since a zip's timestamps are its
      container's): the verdict is on every non-log file; logs are reported apart, as they name their own paths.
 
-THE CONTROL ([VSR-22]): `--control perturbed-render` changes one rendered value (the `val` of the first
-`[[aux_poke]]` in donovan.toml the merged build applies, i.e. not `only_base_slot`, +1) after rendering, so the builds
-MUST differ and the proof must FAIL. (Until R-005 it took the first row, `only_base_slot`, which the merged build,
-Donovan at variant id 0x13, never applies: the control ran DEAD on the first build.)
+THE CONTROLS ([VSR-22]), each changing rendered values after rendering, so the builds MUST differ and the proof must
+FAIL:
+  perturbed-render  the `val` of the first `[[aux_poke]]` in donovan.toml the merged build applies (not
+                    `only_base_slot`), +1. (Until R-005 it took the first row, `only_base_slot`, which the merged
+                    build, Donovan at variant id 0x13, never applies: the control ran DEAD on the first build.) The
+                    original's own HUD check rejects that build (R-005), so this control never reaches the compare.
+  perturbed-shared  the `val` of `[[aux_poke]] boot_title_saved_1` (the boot title, PRG:0x01C822), +1 in each of
+                    donovan.toml, huitzil.toml and pyron.toml alike. The three rows stay one shared row, so the op
+                    count is unchanged, and no check of the original's build reads the boot title: both legs build and
+                    only the byte compare can fail it (#7).
 
 Usage: python3 tools/build_proof.py <original checkout> <pin> <romdir> <tables dir> <run dir> [--control NAME]
 """
@@ -39,7 +45,8 @@ import phase0lib  # noqa: E402
 import render_manifests  # noqa: E402
 import runlog  # noqa: E402
 
-CONTROLS = ("perturbed-render",)
+CONTROLS = ("perturbed-render", "perturbed-shared")
+SHARED = ("boot_title_saved_1", ("donovan.toml", "huitzil.toml", "pyron.toml"))
 VHUNT2_SETS = ("vhunt2.zip", "vhunt2r1.zip")
 OUT = "build/proof_merged"            # the build's output, relative to each leg
 
@@ -68,17 +75,26 @@ def shim_audit(leg, romdir):
     return hashlib.sha1(text.encode()).hexdigest(), absent
 
 
-def perturb(leg):
-    p = os.path.join(leg, "build", "manifest", "donovan.toml")
+def bump(leg, manifest, pick):
+    """The `val` of the `[[aux_poke]]` that `pick(rows)` indexes in `manifest`, +1; returns what changed."""
+    p = os.path.join(leg, "build", "manifest", manifest)
     text = open(p).read()
     rows = tomli.loads(text)["aux_poke"]
-    k = next(i for i, r in enumerate(rows) if not r.get("only_base_slot"))
+    k = pick(rows)
     heads = [h.start() for h in re.finditer(r"(?m)^\[\[aux_poke\]\]$", text)]
     block_end = re.compile(r"(?m)^\[").search(text, heads[k] + 1)
     m = re.compile(r"(?m)^val = (0x[0-9A-Fa-f]+|\d+)(?=[ \t]*(?:#|$))").search(text, heads[k], block_end.start() if block_end else len(text))
     new = text[:m.start(1)] + "%#06x" % (int(m.group(1), 0) + 1) + text[m.end(1):]
     open(p, "w").write(new)
-    return "donovan.toml [[aux_poke]] %s val %s -> %#06x" % (rows[k]["name"], m.group(1), int(m.group(1), 0) + 1)
+    return "%s [[aux_poke]] %s val %s -> %#06x" % (manifest, rows[k]["name"], m.group(1), int(m.group(1), 0) + 1)
+
+
+def perturb(leg, control="perturbed-render"):
+    if control == "perturbed-shared":
+        name, manifests = SHARED
+        return "; ".join(bump(leg, m, lambda rows: next(i for i, r in enumerate(rows) if r["name"] == name))
+                         for m in manifests)
+    return bump(leg, "donovan.toml", lambda rows: next(i for i, r in enumerate(rows) if not r.get("only_base_slot")))
 
 
 def build(leg, romdir):
@@ -169,7 +185,7 @@ def main():
         raise SystemExit("REFUSED: rendered %d manifests, the census names %d" % (len(written), len(canon)))
     print("render %d canonical manifests deleted and rendered from %s" % (len(canon), tables))
     if control:
-        print("MODE: control %s (%s; the proof must FAIL)" % (control, perturb(leg)))
+        print("MODE: control %s (%s; the proof must FAIL)" % (control, perturb(leg, control)))
     results = {}
     for name, lg in legs.items():
         code, secs, last = build(lg, romdir)

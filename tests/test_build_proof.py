@@ -8,8 +8,11 @@ ROM-free. Each check is on synthetic inputs, or on a copy of a file of the expor
   P3 SHIM     shim_audit() applies to the export's tools/audit_roms.py, for a ROMDIR holding neither vhunt2 set and
               for one holding vhunt2.zip alone: the shimmed module, loaded, requires exactly the vhunt2 sets present
               (set, key and manifest rows) and still requires vsav; and the shim refuses a file it does not apply to
-  P4 CONTROL  perturb() changes exactly one value of a rendered donovan.toml: the `val` of the first [[aux_poke]] not
-              `only_base_slot` (one the merged build applies), +1
+  P4 CONTROL  perturb(perturbed-render) changes exactly one value of a rendered donovan.toml: the `val` of the first
+              [[aux_poke]] not `only_base_slot` (one the merged build applies), +1
+  P5 SHARED   perturb(perturbed-shared) changes exactly one value in each of donovan.toml, huitzil.toml and
+              pyron.toml: the `val` of [[aux_poke]] boot_title_saved_1, +1; the three rows are identical before and
+              after, so the original's generator still emits them as one shared row (#7)
 
 CONTROLS ([VSR-22]):
   blind-compare   compare() replaced by one that finds nothing: P2 must fail
@@ -107,6 +110,27 @@ def checks(tmp, export, compare):
     figures.append("P4 %s; values changed %d %s" % (said, len(changed), changed[:2]))
     if not ok:
         failed.add("P4")
+    name, manifests = build_proof.SHARED
+    for m in manifests:
+        if m != "donovan.toml":
+            shutil.copy(os.path.join(export, "build", "manifest", m), os.path.join(man, m))
+    before = {m: tomli.loads(open(os.path.join(man, m)).read()) for m in manifests}
+    said = build_proof.perturb(leg, "perturbed-shared")
+    after = {m: tomli.loads(open(os.path.join(man, m)).read()) for m in manifests}
+    bad = []
+    for m in manifests:
+        changed = [(k, i, key) for k in before[m] if isinstance(before[m][k], list)
+                   for i, (x, y) in enumerate(zip(before[m][k], after[m][k])) for key in x if x[key] != y.get(key)]
+        k = next(i for i, r in enumerate(before[m]["aux_poke"]) if r["name"] == name)
+        if changed != [("aux_poke", k, "val")] or after[m]["aux_poke"][k]["val"] != before[m]["aux_poke"][k]["val"] + 1:
+            bad.append("%s changed %s" % (m, changed[:2]))
+    rows = {w: [next(r for r in d[m]["aux_poke"] if r["name"] == name) for m in manifests]
+            for w, d in (("before", before), ("after", after))}
+    shared = all(all(r == rs[0] for r in rs) for rs in rows.values())
+    figures.append("P5 %s; manifests not changed as declared %d%s; rows identical before and after %s" % (
+        said, len(bad), (": " + bad[0]) if bad else "", shared))
+    if bad or not shared:
+        failed.add("P5")
     return failed, figures
 
 

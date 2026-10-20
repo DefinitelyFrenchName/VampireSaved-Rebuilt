@@ -173,7 +173,9 @@ Its logic is gated without a build by `python3 tests/test_build_proof.py`:
 - P1 and P2: `compare()` in both directions;
 - P3: the shimmed audit, loaded for a ROMDIR with no vhunt2 set and for one with `vhunt2.zip` alone, requires exactly the
   sets present (and still requires vsav);
-- P4: the control's perturbation changes exactly one value, in a row the merged build applies.
+- P4: `perturbed-render`'s perturbation changes exactly one value, in a row the merged build applies;
+- P5: `perturbed-shared`'s changes exactly one value in each of the three tenant manifests, and the three rows stay
+  identical, so the original's generator still emits one shared row (R-006, #7).
 
 Its own control is `blind-compare`.
 
@@ -186,8 +188,19 @@ Measured (R-005, a measurer, from the run logs):
 - **The control** (`perturbed-render`, `hud_mug_entry_13` `val` +1) FAILs. The rendered leg's build is rejected by
   the original's own HUD check (*"expected one poke16 at 0x898aa val 0x8690"*), so this control does not reach the
   byte compare.
-  - **Not exercised end to end:** a perturbation the original's own checks accept, which only the compare would
-    catch. `compare()`'s sensitivity is P2's, on synthetic files (#7).
+  - ~~**Not exercised end to end:** a perturbation the original's own checks accept, which only the compare would
+    catch. `compare()`'s sensitivity is P2's, on synthetic files (#7).~~ RESOLVED (R-006): `perturbed-shared`, below.
+- **The second control** (`perturbed-shared`, R-006, #7): `boot_title_saved_1` (the boot title, `PRG:0x01C822`)
+  `val` +1 in donovan.toml, huitzil.toml and pyron.toml alike. The original's generator emits the three as one
+  shared row, so the op count is unchanged, and no check of its build reads the boot title. Measured (a measurer,
+  from the run log):
+  - both legs build: *"pristine exit 0 in 158 s"*, *"rendered exit 0 in 155 s"*, each ending *"OK: merged build
+    with gfx"*;
+  - *"compare 175 files (25 zip members); differing non-log files 7, differing logs 1"*: `README.txt`,
+    `patch/patch.json`, `patch/patch_notes_fragment.md`, `prg/vm3j.03d`, `rompath/vsavjw.zip` (member `vm3j.03d`),
+    `verify_data.bin`, `verify_op.bin`; the log `patch_prg.log`;
+  - `VERDICT: FAIL (7 files differ)`.
+  So the byte compare is exercised end to end: the original's checks accept the build, and only the compare fails it.
 
 ## The extraction tables, under `extraction/`, and the three gameplay tables decoded from them (#4)
 

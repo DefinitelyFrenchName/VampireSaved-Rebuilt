@@ -6,7 +6,7 @@ head). A session key is `R-NNN`, one per sitting, never renamed or renumbered ([
 their own namespaces. A group's form, kept from the original: `## Session KEY — banner`, then `### opened with` and one
 `### (N) TITLE` section per piece of work. An open list holds only what is open.
 
-## Session R-006 — **#4's off-subject work split into #6 and #7; #6: vs2's doll-hop rows tabled and gated, and the gate PASSES on the original's build with them.** Opened 2026-10-20 on Opus 5.5 (the ruled orchestrator); transcript `aebff6ad`.
+## Session R-006 — **#4's off-subject work split into #6 and #7; #6: vs2's doll-hop rows tabled and gated, and the gate PASSES on the original's build with them; #7 done: a second build-proof control reaches the byte compare.** Opened 2026-10-20 on Opus 5.5 (the ruled orchestrator); transcript `aebff6ad`.
 
 ### opened with
 
@@ -62,6 +62,21 @@ Paid for, in the tools' first runs (each fixed before any figure was quoted):
 
 Also: the phase-0 gate (`tests/test_phase0_tables.py`) and the renderer skip `doll_hop.tsv` by its generator's
 header, as they skip the extraction's gameplay tables.
+
+### (3) #7 DONE: A SECOND BUILD-PROOF CONTROL THAT ONLY THE BYTE COMPARE CATCHES
+
+The maintainer: *"#7"*. `tools/build_proof.py --control perturbed-shared` raises the `val` of
+`[[aux_poke]] boot_title_saved_1` (the boot title, `PRG:0x01C822`) by 1 in donovan.toml, huitzil.toml and pyron.toml
+alike. The original's generator emits the three identical rows as one shared row, so the op count stays 848. No check
+of the original's build reads the boot title. `tests/test_build_proof.py` gains P5: exactly one value changes per
+manifest, and the three rows stay identical.
+
+Measured (a measurer, from the run log):
+- both legs build (`exit 0`, 158 s and 155 s);
+- the compare finds 7 differing non-log files, the program member `vm3j.03d` among them, and 1 differing log;
+- `VERDICT: FAIL (7 files differ)`.
+So the byte compare is exercised end to end. `perturbed-render` stays; it is stopped by the original's HUD check, as
+R-005 found. The run directory was deleted after the measurer read the log (`build/tmp/proof_r006_shared.log` stays).
 
 ## Session R-005 — **vhunt2 provided; the build proof PASSES: the tables rebuild the original's frozen merged build byte for byte (#4); the reference MAME built from the pin and proven the instrument that froze the oracle; the WIDE profile ratified, built and proven on MAME; #4's table at `PRG:0x0BE3FA` found to be the doll's hop, ruled vs2's rows for the newcomers; [VSR-40] re-worded by the maintainer, `CLAUDE.md` v1.1; R-004 archived.** Opened 2026-10-19 on Opus 5.5 (the ruled orchestrator), in R-004's transcript `dc3ff4f7` after its close.
 
@@ -260,13 +275,11 @@ none.
 
 ## The next session starts with
 
-1. #7: give `tools/build_proof.py` a second control that the original's own checks accept, so the byte compare is
-   exercised end to end (R-005 (2): `perturbed-render` is stopped by the original's HUD check first).
-2. #6: a census of the per-character tables the engine reads by the raw id, for the newcomers. Where the build gives
+1. #6: a census of the per-character tables the engine reads by the raw id, for the newcomers. Where the build gives
    a newcomer its shell's row and vs2 has its own, the ground rule ([VSR-40]) asks for vs2's. The doll table was
    found by accident; the census makes the port's list complete before phase 1. Each table found follows the doll's
    pattern (R-006 (2)): a table from vs2, its gate, a rig against native vs2.
-3. #6: the height table (`word_y_off`, `PRG:0x0BE7FA`) figures into the README, reproduced by a measurer first
+2. #6: the height table (`word_y_off`, `PRG:0x0BE7FA`) figures into the README, reproduced by a measurer first
    (vs2's own row, the shell's row, the patched romset: Phobos 0, Donovan 0, Pyron 78, the same on all three).
-4. #6, phase 1's part: its pipeline writes `doll_hop.tsv`, and `tests/test_doll_hop.py` runs on its build (today's
+3. #6, phase 1's part: its pipeline writes `doll_hop.tsv`, and `tests/test_doll_hop.py` runs on its build (today's
    passing leg is `tools/doll_build.py`, R-006 (2)).
