@@ -573,6 +573,71 @@ Measured (R-006, a measurer):
 - **Two pairings disagree.** For 7 bank pointer tables (`PRG:0x0BD17A`–`0x0BD37A`, `PRG:0x0BF31A`, `PRG:0x0BF39A`)
   the site alignment names the next vs2 table, not the bank shift's (the `paired` column says so). All 7 are rewritten
   by the build.
+- **A reader can index more than one table** by the id. The census follows the first indexed access. For example,
+  the reader of `PRG:0x06D6F4` also indexes a table of 8 bytes per id at `PRG:0x06D7CA`, which is not listed.
+
+## What reaches the left-on-shell tables (#6)
+
+**The question.** The census is static. For each table it leaves on the shell's row on the original's build: whose
+code reads it, by whose id, and whether anything in play reaches it. Two tools answer it, one static and one in the
+emulator. Both list the 23 tables from the census run with `--built` on the original's build, the doll table included.
+
+**Whose code: `tools/raw_id_owners.py <export> <roms> <build>`** (its header has the detail). On vsavj's opcode view
+it gives:
+- **whose id each site reads:** `a6`, the running object's own; a register loaded by `movea.w $32(aN)` just before,
+  the fighter linked to `aN`; otherwise unresolved;
+- **who reaches the site:** a backward walk through references. It ends at a per-character bank row (which
+  characters' code it is), at an entry of a pc-relative long table (the two object pools' TYPE tables), or at no
+  reference. The disassembly is linear, so a walk that finds no reference is unanswered.
+
+**Whether anything reaches it: `tools/raw_id_reach.py <export> <roms> <build> <out>`** (its header has the
+detail).
+- **The corpus:** the original's 97 top-level replays, each on its own set (vs2 replays on vsav2, the rest on the
+  original's build).
+- **The instrument:** the original's non-debug read tap on both fighters' `+0x382`. It logs only reads by the tables'
+  reading sites (on vsav2, their twins by the census's alignment) and every write to the field.
+- **The two controls, in every run:** the defense curve's id read (vsavj `PRG:0x018C10`, vs2's twin found by its own
+  bytes) must fire on each set, or the filter is dead; and every replay must write the field.
+- **What it can't show:** a table it does not reach is unanswered, not dead. Absence is the weakest evidence
+  ([VSR-52]).
+
+Measured (R-006, a measurer; the reach run `build/tmp/reach_r006_1` on the original's build, `verify_op.bin`
+`d267496f`):
+- **The controls fired.** *"97 replays, 97 complete"*; the control site read *"4076"* times on the original's build
+  and *"118"* on vsav2; *"every replay wrote +0x382"*.
+- **Reached:** *"5 of 23 tables"*. The other 18 are unanswered, the doll table among them: its own rig reaches it
+  (R-006 (2)), and the corpus doesn't.
+
+| table | read by (owners) | reached (reach) | what the reader does (a reading of its code) |
+|---|---|---|---|
+| `PRG:0x02ADEC` | own id; walk unanswered | 90 replays, all three newcomers' ids | the in-match per-character palette-effect dispatch, every frame. vs2 gives Huitzil and Donovan handlers that upload palette sequences in particular move states (`+0x14E`); their rows here reach the default, a bare `rts`. **Cosmetic** |
+| `PRG:0x02B650` | via effect TYPE `0x07` (table `PRG:0x05E556`) | 94 replays, all three newcomers' ids | the per-character palette routine the original named at 14z-75 (its `pyron.toml`, `palette_routine_row_11_b`). Donovan's row reaches the default where vs2 runs his own. **Cosmetic** |
+| `PRG:0x055344` | via projectile TYPE `0x04` (table `PRG:0x054484`) | 4 replays, Victor's id only, the other fighter Demitri | an object held at the victim's position plus the victim's row, each frame it lives. Demitri's Chaos Flare (QCF+LP in `18_veteran_ctl`). Not reached with a newcomer |
+| `PRG:0x06139C` | via effect TYPE `0x16` (table `PRG:0x05E556`) | 2 replays, ids `00`/`03`, the other fighter Jedah | the same shape: an object at the victim plus its row. Not reached with a newcomer |
+| `PRG:0x0BF59A` | own id; walk at its limit | 1 replay (`08_challenger_join`), the challenger interrupt | a per-character routine both fighters run each frame of the interrupt. The default sets pose animation `0x2D`; Bulleta's (row `0x00`) picks `0x2D` or `0x30` and has substates of its own. **Huitzil's row is Bulleta's routine** where vs2's is the default. Not reached with Huitzil. The original recorded this table as unread (its `bank_map.toml`, 14z-98, one stall) |
+| `PRG:0x02E970` | the opponent's id; bank rows `0x00`/`0x10`, Bulleta | not reached | moves the running fighter (Bulleta) to the victim's position plus the victim's row, then sets animation `0x41` |
+| `PRG:0x0331EA` | the opponent's id; bank rows `0x02`/`0x12`, Gallon | not reached | adds the victim's row to the fighter's `+0x3A` into its `+0x360` |
+| `PRG:0x0373CA` | the opponent's id; bank rows `0x04`/`0x14`, Zabel | not reached | picks the victim's pose by its row and calls the capture-pose entry `PRG:0x027FAA`. The original recorded that entry as never executed (its `engine_internals.md`, 14z-98/99, on one replay); this is a caller of it |
+| `PRG:0x03A60A` | the opponent's id; bank rows `0x05`/`0x15`, Morrigan | not reached | places the VICTIM at a linked object's position plus its row, and sets its `+0x19A` |
+| `PRG:0x0402BA` | the opponent's id; bank rows `0x07`/`0x17`, Felicia | not reached | moves the running fighter (Felicia) to the victim plus its row, then sets animation `0x5A` |
+| `PRG:0x05868A`, `0x058700`, `0x058806` | a projectile's linked fighter; TYPE `0x1B` | not reached | an object placed at the linked fighter plus its row |
+| `PRG:0x0599CC`, `0x05B01E` | projectile TYPEs `0x23`, `0x29` | not reached | the same: at the victim plus its row; `0x05B01E` turns it into a velocity toward that point |
+| `PRG:0x067BC4` | effect TYPE `0x1E` | not reached | the same |
+| `PRG:0x0587A6`, `0x058AD8`, `0x06D6F4` | walk unanswered | not reached | positions from the row (`0x06D6F4`'s reader also indexes `PRG:0x06D7CA`) |
+| `PRG:0x076AB0` | walk unanswered | not reached | a byte added to an id passed to `PRG:0x015084`. vs2's newcomer rows are vsavj's shells plus `0x50` |
+| `PRG:0x073ECA` | own id | not reached | the subtype `+0x0A` of three objects the fighter spawns |
+| `PRG:0x0111F8` | walk unanswered | not reached | an offset into a byte list written as tile codes to `CPU:$901024` (a text or name display). **Cosmetic** |
+
+**What follows.**
+- **The two palette dispatches are reached on every match frame with the newcomers' ids.** So nothing at a caller
+  routes a newcomer around them. Both are cosmetic.
+- **`0x0BF59A` runs Bulleta's routine for Huitzil** if a challenger interrupts a match he is in. That is a spurious
+  inherited routine, the same shape as the original's Pyron blink (14z-75). The corpus has no such replay.
+- **Five veteran moves keyed by the opponent's id** (Bulleta, Gallon, Zabel, Morrigan, Felicia) set a position, a
+  pose or a field from the victim's row. They are the gameplay candidates. None is in the corpus, so each needs a rig,
+  as the doll did.
+- **The projectile and effect rows** place an object relative to its victim. Whether a player could feel one (a
+  hitbox moving with it) is not read here.
 
 ## The format, and why
 

@@ -6,7 +6,7 @@ head). A session key is `R-NNN`, one per sitting, never renamed or renumbered ([
 their own namespaces. A group's form, kept from the original: `## Session KEY — banner`, then `### opened with` and one
 `### (N) TITLE` section per piece of work. An open list holds only what is open.
 
-## Session R-006 — **#4's off-subject work split into #6 and #7; #6: vs2's doll-hop rows tabled and gated, and the gate PASSES on the original's build with them; #7 done: a second build-proof control reaches the byte compare; #6: the raw-id census, 61 newcomer rows in 23 tables left on the shell's row.** Opened 2026-10-20 on Opus 5.5 (the ruled orchestrator); transcript `aebff6ad`.
+## Session R-006 — **#4's off-subject work split into #6 and #7; #6: vs2's doll-hop rows tabled and gated, and the gate PASSES on the original's build with them; #7 done: a second build-proof control reaches the byte compare; #6: the raw-id census, 61 newcomer rows in 23 tables left on the shell's row; #6: what reaches them: 5 of 23 tables reached in the corpus, the two palette dispatches with the newcomers' ids, and Huitzil's challenger-interrupt routine found to be Bulleta's.** Opened 2026-10-20 on Opus 5.5 (the ruled orchestrator); transcript `aebff6ad`.
 
 ### opened with
 
@@ -105,8 +105,48 @@ Paid for, on the way to the tool (each before any figure was quoted):
   members identical to (2)'s build, but `vsavjw.zip`'s SHA-1 differs (`c924f883` against `bdb58c14`). A zip's SHA-1
   names its container, timestamps included, not the build: compare members, as the build proof does.
 
-Not done: the census is static. Which of the 22 other tables a newcomer reaches in play, what each holds, and whether
-a player could feel it, are measured per table.
+Not done in (4): the census is static. (5) takes the next step.
+
+### (5) #6: WHAT REACHES THE LEFT-ON-SHELL TABLES
+
+The maintainer: *"start on them"* (the census's 22 other tables). Two tools, documented in
+`docs/project/tables/README.md`, "What reaches the left-on-shell tables":
+- `tools/raw_id_owners.py`, static: whose id each reading site reads and whose code reaches it (a backward walk to a
+  bank row or an object TYPE table);
+- `tools/raw_id_reach.py`, in the emulator: the original's 97 top-level replays under its non-debug read tap on both
+  fighters' `+0x382`, filtered to the reading sites. Two controls fire in every run (a defense read that runs on every
+  hit, and the select's writes).
+`tools/raw_id_census.py`'s `measure()` now also returns its site alignment (`twins`); its TSV and gate are unchanged.
+
+Measured (a measurer; the run `build/tmp/reach_r006_1`, on the original's build):
+- the controls fired: *"97 replays, 97 complete"*, the control site *"4076"* reads on our build and *"118"* on
+  vsav2, *"every replay wrote +0x382"*;
+- *"5 of 23 tables"* reached. The two palette dispatches (`0x02ADEC`, `0x02B650`) are read with all three newcomers'
+  ids, every match frame. Chaos Flare's (`0x055344`) and a Jedah effect's (`0x06139C`) are reached with veterans'
+  ids only. The challenger interrupt's routine table (`0x0BF59A`) is reached in `08_challenger_join` only;
+- static: five tables are read by veterans' own moves (Bulleta, Gallon, Zabel, Morrigan, Felicia) by the opponent's
+  id. None is reached by the corpus.
+
+Read from the code (addresses only), and what it means:
+- **The palette dispatches are cosmetic** ([VSR-41]): Huitzil and Donovan miss vs2's palette effects in-match,
+  Donovan on the other one too.
+- **Huitzil runs Bulleta's challenger-interrupt routine** (`0x0BF59A` row `0x10` = row `0x00`'s), where vs2 runs the
+  default. It is a spurious inherited routine, the Pyron-blink shape (the original's 14z-75). The original recorded
+  the table as unread (14z-98, one stall).
+- **Zabel's move calls the capture-pose entry `PRG:0x027FAA`.** The original recorded that entry as never executed
+  (14z-98/99, one replay). A caller exists; whether it runs is not measured.
+
+Paid for:
+- the linear disassembly decodes data before `PRG:0x058786` and never lands on it. The owner tool decodes locally
+  there.
+- my first scratch walk printed nothing at pointer ends: a malformed edit made the line an expression that discarded
+  its string. It was caught because the roots all read "no reference", and was rewritten before any figure.
+- the object handlers are reached through pc-relative long tables (the two pool walkers' TYPE tables). Those are read
+  in the opcode view; a scan of the data view finds none ([VSR-87]).
+- the census follows the first indexed access of a reader; `0x06D6F4`'s reader indexes a second per-id table
+  (`PRG:0x06D7CA`), which is not listed. Noted in the README's limits.
+
+No rule-checker was run before this commit ([VSR-48]; the tool is not built yet).
 
 ## Session R-005 — **vhunt2 provided; the build proof PASSES: the tables rebuild the original's frozen merged build byte for byte (#4); the reference MAME built from the pin and proven the instrument that froze the oracle; the WIDE profile ratified, built and proven on MAME; #4's table at `PRG:0x0BE3FA` found to be the doll's hop, ruled vs2's rows for the newcomers; [VSR-40] re-worded by the maintainer, `CLAUDE.md` v1.1; R-004 archived.** Opened 2026-10-19 on Opus 5.5 (the ruled orchestrator), in R-004's transcript `dc3ff4f7` after its close.
 
@@ -305,11 +345,15 @@ none.
 
 ## The next session starts with
 
-1. #6: the census's 22 other tables left on the shell's row (`docs/project/tables/README.md`, "The raw-id census",
-   R-006 (4)). For each one: what it holds, from its readers, and whether a newcomer reaches it. Cheapest first, and
-   gameplay before cosmetic ([VSR-41]). A gameplay table gets the doll's pattern (R-006 (2)): a table from vs2, its
-   gate, a rig against native vs2. Then what the scan does not reach: 36 loads with an outside base, 4 unpaired
-   tables, the 7 pairing disagreements, the pointer tables' content.
+1. #6: rigs for the left-on-shell tables, gameplay first ([VSR-41]; `docs/project/tables/README.md`, "What reaches
+   the left-on-shell tables"). Each rig follows the doll's pattern: a capture of native vs2 against ours, then vs2's
+   rows if the difference is the newcomer's own.
+   - The five veteran moves keyed by the opponent's id (Bulleta `0x02E970`, Gallon `0x0331EA`, Zabel `0x0373CA`,
+     Morrigan `0x03A60A`, Felicia `0x0402BA`), each performed on each newcomer. First find which move each is.
+   - Huitzil in the challenger interrupt (`0x0BF59A`), where our build runs Bulleta's routine.
+   - Then the projectile and effect rows (Chaos Flare `0x055344` and the rest), then the cosmetic palette rows.
+   Still unreached by the census: 36 loads with an outside base, 4 unpaired tables, the 7 pairing disagreements, the
+   pointer tables' content, and second tables read by the same reader.
 2. #6: the height table (`word_y_off`, `PRG:0x0BE7FA`) figures into the README, reproduced by a measurer first
    (vs2's own row, the shell's row, the patched romset: Phobos 0, Donovan 0, Pyron 78, the same on all three).
 3. #6, phase 1's part: its pipeline writes `doll_hop.tsv`, and `tests/test_doll_hop.py` runs on its build (today's

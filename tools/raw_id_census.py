@@ -156,7 +156,8 @@ def load(export_root, romdir, built=None):
 
 
 def measure(inp, perturb=None):
-    """(lines, results): results tables [dict of COLUMNS], counts, built [(table, tenant, class, site patched)]."""
+    """(lines, results): results tables [dict of COLUMNS], counts, built [(table, tenant, class, site patched)],
+    twins {vsavj site: its vs2 twin site, by the alignment}."""
     oj = int(inp["origins"][("bank_map.toml", "origins", "#1", "vsavj")], 16)
     o2 = int(inp["origins"][("bank_map.toml", "origins", "#1", "vsav2")], 16)
     if perturb == "shift-off":
@@ -245,7 +246,8 @@ def measure(inp, perturb=None):
         out.append("built: rows to port %d, left on vanilla's shell row %d in tables %d; %s" % (
             len(port), len(left), len({row["vsavj"] for row, _ in left}),
             ", ".join("%s %d" % kv for kv in sorted(collections.Counter(row["kind"] for row, _ in left).items()))))
-    return out, {"tables": rows, "counts": counts, "built": built}
+    return out, {"tables": rows, "counts": counts, "built": built,
+                 "twins": {s: t["site"] for s, t in twin.items()}}
 
 
 def render(inp, rows):
