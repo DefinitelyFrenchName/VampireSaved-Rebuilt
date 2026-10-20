@@ -7,10 +7,161 @@ VERBATIM, newest first, never edited after the move; the index below is the look
 
 | session | date | banner | line |
 |---|---|---|---|
-| R-003 | 2026-10-18 | Phase 0 closed on parse-equality (the build proof moved to phase 1); vhunt2's role found (#4); the original's corrections per tenant gathered; R-002 archived | 15 |
-| R-002 | 2026-10-18 | #3 built and closed: the figures, their gate, the run log, the dashboard; R-001 archived | 124 |
-| R-001 | 2026-10-18 | CLAUDE.md v1.0 validated, SPEC v0.2 accepted; the read-only guard installed; phase 0 started | 182 |
+| R-004 | 2026-10-19 | #5 ruled: (a) the measurer runs one command per tool call; #4: the extraction tabled, its jump, cancel and short bank rows decoded; every manifest row mapped to a correction, 16 parts added; the rec8 writes read statically, the newcomers' own rows found to be veterans' copies, ruled (c) then (a); R-003 archived | 16 |
+| R-003 | 2026-10-18 | Phase 0 closed on parse-equality (the build proof moved to phase 1); vhunt2's role found (#4); the original's corrections per tenant gathered; R-002 archived | 166 |
+| R-002 | 2026-10-18 | #3 built and closed: the figures, their gate, the run log, the dashboard; R-001 archived | 275 |
+| R-001 | 2026-10-18 | CLAUDE.md v1.0 validated, SPEC v0.2 accepted; the read-only guard installed; phase 0 started | 333 |
 
+
+## Session R-004 — **#5 ruled: (a) the measurer runs one command per tool call; #4: the extraction tabled, its jump, cancel and short bank rows decoded; every manifest row mapped to a correction, 16 parts added; the rec8 writes read statically, the newcomers' own rows found to be veterans' copies, ruled (c) then (a); R-003 archived.** Opened 2026-10-19 on Opus 5.5 (the ruled orchestrator); transcript `dc3ff4f7`.
+
+### opened with
+
+*"read state.md"*, then, on the pending decision #5 quoted back with Claude's recommendation (*"I recommend (a) now
+and (b) if it happens again."*): *"agreed"*.
+
+### (1) #5 RULED: THE MEASURER RUNS ONE COMMAND PER TOOL CALL
+
+The ruling is verbatim in `SPEC.md` §0. (a) is applied: `.claude/agents/measurer.md` step 1 now says commands run one
+at a time, one per Bash call and one tool call per message, even when two look independent. `docs/project/swarm.md`
+§2 records it. (b), a hook that refuses a worker's concurrent calls, is built if it happens again; that recurrence
+opens a ticket with its evidence. #5 is done in `docs/project/tickets.tsv`. The definitions are not edit-locked here
+(`.claude/hooks/guard_readonly.py` locks only the settings and the hooks; `swarm.md` §4 leaves that open), so the
+session made the edit.
+
+Checked on one live run: a measurer given three commands, each printing its start and end times around a 2 s
+sleep, returned C1 1792397861.051–863.056, C2 863.185–865.190, C3 865.309–867.312: in order, no overlap. That is
+one sample. It does not show that the sentence prevents a recurrence, and whether the worker read the edited
+definition or a copy loaded at session start was not measured. The gates were run on the working tree before this
+record: the six gates PASS and `tools/metrics.py check` 311 figures, 0 bad. No rule-checker ran before closing #5
+([VSR-48]; the tool does not exist yet). Committed `4a06b38`.
+
+### (2) #4: THE EXTRACTION TABLED, ITS JUMP AND CANCEL ROWS DECODED
+
+The maintainer: *"yes"* to starting the next-session list's item 1. `tools/extract_regions.py` writes the three
+records the original's merged build reads (`tools/build_merged.sh` lines 36–38: `m5_wide`, `hui32`, `pyron21`;
+the original's `pcrel_escapes.toml` names other extract directories, `don_m27`/`hui61`/`pyron46`, for a pcrel
+measurement, and they are not in the export) into 13 tables under `docs/project/tables/extraction/`, one per section
+of the record, in its own columns. It also writes two gameplay tables: `jump_physics.tsv` (`jump_params` as 16.16
+exact decimals, the original's layout and field names) and `cancel_windows.tsv` (`byte2d_a`/`_b`, the special- and
+EX-cancel windows per move index, from the original's 14z-194 measurement). Each row names its vs2 address. Format,
+sources and figures are in `docs/project/tables/README.md` "The extraction tables". The original notes that
+`m5_wide`'s record predates two `extract_char.py` changes, so the tables are what the merged build consumed, not
+what the extractor computes today.
+
+Gate `tests/test_extraction_tables.py`, E1–E4: fresh, whole (renders back to each record), anchored (every gameplay
+value equals vsav2's byte at an address the gate computes from the fact tables), no ROM runs. Six controls, all FIRED,
+every mode FAIL. Its first green was read by its printed values ([VSR-21]). That reading found one check I had
+written wrong: E3 skipped `vsav2.key` as "not a zip member", and it is one. It is now checked. A measurer reproduced
+the figures (30,401 rows; 153,013 scalar values, R-003's count; E3 189 values, 0 differing), and a reader quoted the
+original's claims the README cites.
+
+Paid for this sitting: the phase-0 gate and the renderer glob every top-level table, so the two new gameplay tables
+crashed G2 and broke G8, and five controls went DEAD with them. Both now skip a table whose header says
+`GENERATED by tools/extract_regions.py`, and all 14 controls fire again. A phase-0 table given that header would
+leave G1 the same way; the README says so.
+
+Left open at this point: the other short bank values were carried as written; the ruling named three rows. (3)
+settles it. Committed `93e25a5`.
+
+### (3) THE SHORT BANK ROWS DECODED; TWO OF THEM ARE NOT THE TENANT'S
+
+Asked whether the other short bank values get readable tables too, the maintainer: *"I lean yes since tables is what
+we decided and that data is valuable"* (verbatim in `SPEC.md` §0). The third gameplay table, `bank_values.tsv`, has
+33 rows: per tenant, `param32_a` (walk speeds), `param32_b` (the pursuit leap, by the original's 14z-121 note; its
+two fields named by position, their meaning not measured), the minimum air-dash height (`gap_be23a`, a real table
+among the auto gaps, #222 there), and the five words and one byte, whose meaning is not recorded. Each row names
+its vs2 address. The gate's E3 covers it (222 values, 0 differing), with a seventh control, `air-dash-zeroed`.
+Donovan's forward walk reads 3, which agrees with the original's measurement in play after his vs2 rows were ported
+(the X-velocity word 2.5 -> 3.0, 14z-119 there).
+
+Found while decoding: `rec8_a` and `rec8_b` are not the tenant's data. The extractor reads every `rec8` row 8 bytes
+at `char*8`, but the original's 14z-121 notes put `rec8_a` inside `jump_params` (`id*0x30`) and `rec8_b` inside the
+pursuit record (four longs × 2 variants, `id*0x20`). So Donovan's 8 bytes are char 3's neutral-jump `yv`/`gravity`
+and char 4's second pursuit variant's `yv`/`yacc` (arithmetic: `0x13*8 = 0x98`). They stay as written in
+`extraction/values.tsv`. **Not measured, for #4's next item:** what the original's build wrote for these two rows
+and where, and whether the tenants' own pursuit records (`id*0x20`) were ported at all. They are not in the
+extraction record.
+
+Paid for this sitting: the README's first measurement quoted `extraction/` as 1,484 KB from `du -sk`. That counts
+allocated disk blocks, and it read 2,372 KB after the files were rewritten with nearly the same content (the
+apparent size is 1,456 KB). The figure was dropped from the README, not replaced: a size is no part of what the
+tables claim.
+
+### (4) #4: EVERY MANIFEST ROW MAPPED TO A CORRECTION; 16 PARTS THE READERS MISSED
+
+The maintainer: *"continue"*, to the next-session list's item 1. `docs/project/port_corrections_map.tsv` (hand-written)
+has one line for each of the 714 rows of the tenants' manifests, move lists and reconciliation overlays that phase 0's
+tables carry. Each line gives a role: `fix` with the parts it carries, or `frame` (where the character lives, who it
+is, its move list, a feature). Each also has a verbatim anchor from the row's own comments. Three forks drafted it,
+one per tenant. The orchestrator then made it consistent across the tenants: a row a part names maps to that part,
+and the same row in another tenant maps to that tenant's part for the same fix. Figures (a measurer): fix 176/246/118, frame
+66/58/50, unclear 0; 12 rows carry several parts. The catalogue grew from 146 to 162 parts (Donovan 56–62, Huitzil
+60–62, Pyron 33–38): three `reloc`, eight engine differences, five sound and gfx. The extraction's own parts are now 30
+and the engines' differences 93. Parts with no map row: 18/23/9. Most are fixed in a generator or recorded only in a
+history, which a map of manifests cannot see. So the catalogue is complete for manifest rows, not beyond. Read while
+mapping and not settled (`port_corrections.md` "The map"): Donovan 9's thunk now serves the class-0x52 route; Donovan 33
+and Huitzil 61 are live bytes under a retracted reading; Pyron 7 has no row.
+
+The gate `tests/test_port_corrections.py` gains C3 (coverage: every manifest row once, roles and parts known) and C4
+(each anchor at its line, inside its row's reach), with three controls (`row-dropped`, `part-unknown`,
+`anchor-outside`). All five controls FIRED, `--control part-unknown` FAILs, and the first green was read by its
+printed values. That reading found 20 reconciliation rows anchored on a bare `vsav2 = `; they now quote their whole line.
+
+### (5) #4: WHAT THE BUILD WROTE FOR REC8_A/REC8_B; THE NEWCOMERS' OWN ROWS ARE VETERANS' COPIES
+
+The maintainer: *"take than on"*, to the next-session item, read from the generator because the original's image
+cannot be built here (no vhunt2). `tools/rec8_writes.py` and its gate `tests/test_rec8_writes.py` (R1–R3, three
+controls, all FIRED; the first green read by its printed values). Detail and quotes: `docs/project/tables/README.md`
+"What the build wrote for rec8_a and rec8_b".
+- **The six writes change nothing.** The generator writes each tenant's 8 bytes at the table's vsavj base + id*8
+  (Donovan at 0x13 on the merged build's profile). That lands inside veterans' rows. A measurer: *"rec8 writes equal
+  to vsavj's bytes: 6 of 6"*. A reader quoted the write rule, the empty skip set (`port_param32 = true` in all three
+  manifests) and the disabled gap tables.
+- **The newcomers' own rows of the table at `PRG:0x0BE3FA` (id*0x20) are never written**, by reading the generator
+  and phase 0's tables (absence, [VSR-52]).
+  - In vsavj they equal rows 3, 0 and 1: Donovan, Huitzil and Pyron hold Victor's, Bulleta's and Demitri's.
+  - vs2's rows for the three differ.
+  - Both games' one load of the table (vsavj `PRG:0x026646`, vs2 `PRG:0x0252DC`) indexes by `+0x382`, the raw id. So
+    a newcomer in that state takes a veteran's values.
+- **Not measured:** which move the state (`+0x04` = `0x02100600`) is, and whether a newcomer reaches it. The original
+  calls the table "the PURSUIT physics record pair", tied to chain `a2:0x4C`, and this reading does not confirm it.
+  A capture in play settles it ([VSR-43]). Porting vs2's rows has gameplay consequences, so it is under "Decisions
+  pending".
+
+The disassembly was read in a scratch, and nothing of it is committed beyond addresses and the instruction shapes the
+gate checks.
+
+### (6) RULED: CAPTURE FIRST, THEN PORT VS2'S ROWS IF NEED BE
+
+On the decision (5) put under "Decisions pending", quoting Claude's recommendation (*"I recommend (c), then (a) if
+the difference turns out to be the newcomers' own."*), the maintainer: **"yes, (c) then (a) if need be"** (verbatim
+in `SPEC.md` §0). It left the pending list in the close commit. The capture is the next session's item 1; it waits
+on an instrument that can run the original's build.
+
+### CLOSE (R-004, 2026-10-19)
+
+**Delivered:**
+- #5 ruled and done: the measurer runs one command per tool call.
+- #4:
+  - the extraction tabled, with three gameplay tables (jump physics, cancel windows, bank values);
+  - every manifest row mapped to a correction (16 parts added, 162 in all);
+  - the `rec8` writes read statically, and the newcomers' own rows at `PRG:0x0BE3FA` found to be veterans' copies,
+    ruled (c) then (a).
+- R-003 moved verbatim to `STATE_HISTORY.md`, with its index row.
+
+Five commits, `4a06b38` to `830e809`, plus this close.
+
+**Figures:** R-004 131 rows, collected before the close commit, so its `commits` (5) leave out this close;
+`tools/metrics.py check` 442 figures, 0 bad. The dashboard "Rebuilt Session Ledger" now reads the re-uploaded table.
+
+**Gates at the close**, on the staged tree: the eight gates (verdicts in the close commit's message).
+- #5 is commented with its ruling, and the close commit's subject closes it on GitHub at the push.
+- #4 stays open: its capture item is on the list.
+
+**Not done:** no rule-checker ran before any action ([VSR-48]; the tool does not exist yet), the closing of #5
+included. Left outside git: the export `build/export_bf92acd2` and the run log. No background process is left
+running.
 
 ## Session R-003 — **Phase 0 closed on parse-equality (the build proof moved to phase 1); vhunt2's role found (#4); the original's corrections per tenant gathered; R-002 archived.** Opened 2026-10-18 on Opus 5.5 (the ruled orchestrator); transcript `5e9e8b49`.
 

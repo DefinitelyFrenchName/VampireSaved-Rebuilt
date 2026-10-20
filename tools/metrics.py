@@ -34,7 +34,10 @@ Usage:
       KEY's transcript is the id on its STATE heading (`transcript `<8 hex>``) unless --transcript names it. Replaces
       KEY's rows in --out (default docs/project/metrics/figures.tsv) and prints them. --share-pattern makes the time
       figures a SHARE of a session that also did other work (a backfill): only the requests and tool calls whose tool
-      inputs match the pattern (a regex) are counted, and the result is EXTRAPOLATED.
+      inputs match the pattern (a regex) are counted, and the result is EXTRAPOLATED. --after REV counts only the
+      transcript's records timed after REV's committer time (a session that continues an earlier one's transcript,
+      bounded by that session's close commit); the untimed records, the harness's cost-state among them, cover the
+      whole transcript and are dropped, so its harness figures are ABSENT.
   python3 tools/metrics.py drop KEY [--out FILE]
       removes KEY's rows from the table (a session the maintainer ruled out of it); refuses a key with no rows.
   python3 tools/metrics.py check [FILE]
@@ -263,7 +266,12 @@ def transcript_of(repo, key):
 
 # ---------------------------------------------------------------- collect
 
-def collect(key, path, repo, runs, share=None, how=""):
+def after_of(recs, at):
+    """the records timed strictly after `at` (epoch seconds); untimed records cover the whole transcript, dropped"""
+    return [r for r in recs if r.get("timestamp") and ts(r["timestamp"]) > at]
+
+
+def collect(key, path, repo, runs, share=None, how="", after=None):
     rows = []
 
     def F(section, metric, label, value, unit, cls, source, rule=""):
@@ -274,9 +282,12 @@ def collect(key, path, repo, runs, share=None, how=""):
         rows.append(dict(zip(COLUMNS, (key, section, metric, label, value, unit, cls, source, rule))))
 
     mins = lambda s: round(s / 60, 1)
-    p = parse(load(path)) if path and os.path.exists(path) else None
+    recs = load(path) if path and os.path.exists(path) else None
+    if recs is not None and after:
+        recs = after_of(recs, after[1])
+    p = parse(recs) if recs is not None else None
     tid = os.path.basename(path)[:8] if p and p["span"] else None
-    tsrc = "transcript %s" % tid if tid else "no transcript"
+    tsrc = ("transcript %s" % tid + (" after %s" % after[0][:7] if after else "")) if tid else "no transcript"
     t0, t1 = (p["span"]["t0"], p["span"]["t1"]) if tid else (None, None)
     commits = session_commits(repo, key, t0, t1) if not share else []
     # -- time
@@ -586,6 +597,7 @@ def main():
     c.add_argument("--runs", default=runlog.RUNS)
     c.add_argument("--out", default=FIGURES)
     c.add_argument("--share-pattern")
+    c.add_argument("--after")
     dp = sp.add_parser("drop")
     dp.add_argument("key")
     dp.add_argument("--out", default=FIGURES)
@@ -609,7 +621,14 @@ def main():
         hits = glob.glob(os.path.join(a.projects, tid + "*.jsonl")) if tid else []
         path = hits[0] if len(hits) == 1 else None
         how = how if path else "no transcript id on the session's STATE heading, or no single file matching it"
-    rows = collect(a.key, path, a.repo, a.runs, a.share_pattern, how)
+    after = None
+    if a.after:
+        sha = (git(a.repo, "rev-parse", "--verify", a.after + "^{commit}") or "").strip()
+        if not sha:
+            raise SystemExit("REFUSED: --after %r is not a commit of %s" % (a.after, a.repo))
+        after = (sha, int(git(a.repo, "log", "-1", "--format=%ct", sha).strip()))
+        how += "; records after %s" % sha[:7]
+    rows = collect(a.key, path, a.repo, a.runs, a.share_pattern, how, after)
     kept = [r for r in read_figures(a.out) if r["session"] != a.key]
     write_figures(a.out, kept + rows)
     for r in rows:

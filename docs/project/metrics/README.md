@@ -93,3 +93,6 @@ the close. Sessions before R-002 have no run log, so their gate figures are ABSE
 At every close, before the close commit: `python3 tools/metrics.py collect <key>` (the transcript is the id on the
 session's STATE heading), then `python3 tools/metrics.py check`, then re-publish the dashboard from the table. A
 transcript is deleted after `cleanupPeriodDays`, so a session not collected at its close cannot be collected later.
+A session that continues an earlier session's transcript (R-005 in R-004's `dc3ff4f7`) is collected with `--after
+<the earlier session's close commit>`: only the records after that commit count, and the harness's whole-transcript
+figures are ABSENT (gate check C12).

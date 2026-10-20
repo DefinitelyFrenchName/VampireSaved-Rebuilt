@@ -1,6 +1,6 @@
 # CLAUDE.md — Vampire Saved Rebuilt
 
-**v1.0 (2026-10-18): VALIDATED by the maintainer** (v0.1 with the maintainer's own edits). This file governs how Claude Code works in this repository.
+**v1.1 (2026-10-20): [VSR-40] re-worded by the maintainer** (v1.0, 2026-10-18: VALIDATED by the maintainer, v0.1 with the maintainer's own edits). This file governs how Claude Code works in this repository.
 Read it fully at the start of every session, then `SPEC.md` (until `STATE.md` exists, the spec is the plan of record).
 
 **Where it comes from.** It is the original project's `CLAUDE.md` (`DefinitelyFrenchName/VampireSaved` at `6dee2be7`)

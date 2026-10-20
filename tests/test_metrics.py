@@ -15,6 +15,8 @@ equal the expected value AND carry the expected class, and every expected ABSENT
   C8 ABSENT    a session without a cost-state record, and one without a transcript, give ABSENT rows
   C9 SCHEMA    `metrics.py check` passes on the output, and fails on a known-bad row
   C10 SHARE    --share-pattern counts only the calls naming the pattern, as EXTRAPOLATED
+  C12 AFTER    --after REV counts only the records after REV's commit: the span, the commits by span, and the
+               harness's whole-transcript figures ABSENT
   C11 DROP     `metrics.py drop` removes exactly one session's rows, keeps every other row as it was, and refuses a key
                with no rows
 
@@ -22,10 +24,11 @@ CONTROLS ([VSR-22], docs/project/must_fire_contract.md):
   late-result      perturbed copy: the first Bash call's result 30 s later. C1, C7 must fail.
   usage-twice      shadow tool: usage kept per record instead of per message id. C2 must fail.
   ask-as-tool      shadow tool: AskUserQuestion timed as a tool. C1 must fail.
-  absent-filled    shadow tool: a missing cost-state read as zeros. C8 must fail.
+  absent-filled    shadow tool: a missing cost-state read as zeros. C8 and C12 must fail.
   rule-dropped     shadow tool: every row's rule blanked. C9 must fail.
   drop-overreach   shadow tool: `drop` also removes the other sessions' time rows. C11 must fail.
   guard-by-text    shadow tool: any result quoting the guard's message counts as a refusal. C3 must fail.
+  after-ignored    shadow tool: --after bounds nothing. C12 must fail.
 Shadow tools are copies under build/tmp/ (the tracked tool is never written). A normal run runs each control and
 reports it FIRED or DEAD; `--control <name>` makes the perturbed input the gate's input and the gate must FAIL.
 
@@ -57,13 +60,16 @@ SHADOWS = {
                       '                k["guard"] = GUARD_MARK in (text or "") or re.match('),
     "drop-overreach": ('        kept = [r for r in rows if r["session"] != a.key]',
                        '        kept = [r for r in rows if r["session"] != a.key and r["section"] != "time"]'),
+    "after-ignored": ('    return [r for r in recs if r.get("timestamp") and ts(r["timestamp"]) > at]',
+                      '    return recs'),
     "rule-dropped": ("        rows.append(dict(zip(COLUMNS, (key, section, metric, label, value, unit, cls, source, "
                      "rule))))",
                      "        rows.append(dict(zip(COLUMNS, (key, section, metric, label, value, unit, cls, source, "
                      "''))))"),
 }
-CONTROLS = {"late-result": {"C1", "C7"}, "usage-twice": {"C2"}, "ask-as-tool": {"C1"}, "absent-filled": {"C8"},
-            "rule-dropped": {"C9"}, "drop-overreach": {"C11"}, "guard-by-text": {"C3"}}
+CONTROLS = {"late-result": {"C1", "C7"}, "usage-twice": {"C2"}, "ask-as-tool": {"C1"}, "absent-filled": {"C8", "C12"},
+            "rule-dropped": {"C9"}, "drop-overreach": {"C11"}, "guard-by-text": {"C3"},
+            "after-ignored": {"C12"}}
 
 # (session, metric) -> (value as written, class); the fixture below is built to these numbers
 D, M, E, X, A = "DERIVED", "MEASURED", "ESTIMATED", "EXTRAPOLATED", "ABSENT"
@@ -112,6 +118,9 @@ EXPECT = {
     "C10": {("R-903", "working_min"): ("4.0", X), ("R-903", "tools_min"): ("1.0", X),
             ("R-903", "maintainer_min"): ("0.0", X), ("R-903", "calls_in_share"): ("1", E),
             ("R-903", "span_min"): ("203.0", D)},
+    # R-904: R-900's transcript after the commit at minute 50: its first later record is the result at minute 80
+    "C12": {("R-904", "span_min"): ("123.0", D), ("R-904", "commits"): ("1", D),
+            ("R-904", "harness_duration_min"): ("", A), ("R-904", "cost_usd"): ("", A)},
 }
 
 
@@ -262,7 +271,9 @@ def collect(tool, projects, repo, runs, out):
     logs = []
     for key, extra in (("R-900", []), ("R-901", []), ("R-902", []),
                        ("R-903", ["--transcript", os.path.join(projects, "aaaaaaaa-0000.jsonl"),
-                                  "--share-pattern", "tools/a.py"])):
+                                  "--share-pattern", "tools/a.py"]),
+                       ("R-904", ["--transcript", os.path.join(projects, "aaaaaaaa-0000.jsonl"),
+                                  "--after", "HEAD~2"])):
         p = subprocess.run([sys.executable, tool, "collect", key, "--projects", projects, "--repo", repo, "--runs",
                             runs, "--out", out] + extra, capture_output=True, text=True)
         logs.append((key, p.returncode, (p.stdout + p.stderr).strip().splitlines()[-1:] if p.returncode else []))
