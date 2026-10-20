@@ -127,9 +127,9 @@ rule that carries it ends `(was [VSP-N])` — and session tags, gate names and p
 
 **[VSR-39]** Measure first, ask if necessary.
 
-**[VSR-40]** Vanilla wins ties (was [VSP-21]).
+**[VSR-40]** Vanilla wins every universal mechanic; vs2 wins what is character-specific to the vs2-only characters; in doubt, ask (was [VSP-21], re-worded by the maintainer 2026-10-20).
 
-> **Why:** "vsav vanilla is always better when we can." A console port's choice is evidence of what its designers preferred, not that vanilla is wrong.
+> **Why:** "vsav vanilla is always better when we can." The newcomers' own behaviour has no vanilla to win, so their source game is the reference ([VSR-177]). A console port's choice is evidence of what its designers preferred, not that vanilla is wrong.
 
 **[VSR-41]** Cosmetic is optional.
 

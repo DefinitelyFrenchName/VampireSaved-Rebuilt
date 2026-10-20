@@ -39,7 +39,7 @@ VSR-36	was [VSP-16]
 VSR-37	was [VSP-10]	
 VSR-38	was §5, the three-way diff	v0.1's three-way diff narrowed to vsavj/vsav2 (vhunt2 dropped, SPEC.md §0)
 VSR-39	ruled 2026-09-15, re-worded by the maintainer 2026-09-16	
-VSR-40	was [VSP-21], maintainer 2026-08-05	
+VSR-40	was [VSP-21], maintainer 2026-08-05	re-worded by the maintainer 2026-10-20 (R-005, SPEC.md §0): from "vanilla wins ties" to vanilla for universal mechanics, vs2 for the vs2-only characters' character-specific ones; the ground rule of the original's rulings #222 (2026-10-05) and the Dark Force stock cost (2026-08-30)
 VSR-41	ruled 2026-08-27 in the original	
 VSR-42	ruled 2026-08-31 in the original	
 VSR-43	the original's gotchas and its 14z-131 retraction, "after the maintainer required CAPTURES before accepting the finding"	

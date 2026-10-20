@@ -64,7 +64,7 @@ Produce a modified `vsav` romset in which all 18 series characters (the 15+1 of 
 - **[VSR-37] A decision with gameplay consequences (anything a player could feel) is not Claude's:** record it under "Decisions pending" with options and a recommendation, and continue on unblocked work. A ruling leaves the pending list in the commit that records it.
 - **[VSR-38] Diff-driven reverse engineering:** `vsavj` and `vsav2` are two official builds of one engine; before free-form disassembly of any subsystem, check what their diff says about it.
 - **[VSR-39] Don't assume; measure first; ask if necessary.** The failure is ASSUMING; asking stays right when a measurement cannot settle the question.
-- **[VSR-40] Vanilla wins ties:** when another game or version and arcade vsav differ and both would work, take vanilla. The test is: does keeping vanilla still let the feature work?
+- **[VSR-40] Vanilla wins everything that is not character-specific:** for any universal mechanic, vanilla wins. For character-specific vs2 wins for the vs2-only characters. In doubt, ask the maintainer.
 - **[VSR-41] Cosmetic is optional:** competitive 2P versus is the focus; cosmetic and single-player-only surfaces are nice-to-have.
 - **[VSR-42] Community/external data: measurement is king.** A perfect match or a constant offset validates ours; an inconsistent pattern means re-check OUR measurement first.
 - **[VSR-43] Captures before conclusions:** a behavioural claim about feel gets a capture first.

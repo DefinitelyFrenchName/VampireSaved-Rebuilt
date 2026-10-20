@@ -139,7 +139,7 @@ of edge case"**. So (a) no longer waits on the capture: phase 1 ports vs2's thre
 (its rulings: #222, *"since Phobos is VS2 only, and its air dash is  character-specific, it should abide by VS2
 behavior"*, 2026-10-05; the Dark Force stock cost, *"vanilla stays untouched and guides how the game should be
 played"*, adjustments per character and never to the general mechanic, 2026-08-30; both in its `DECISIONS_HISTORY.md`),
-and here [VSR-40] and the skill's [VSR-177]. R-004 should have answered this table from it instead of putting it under
+and here the skill's [VSR-177]; [VSR-40] said only "vanilla wins ties", and the maintainer re-worded it the same day in `CLAUDE.md` itself (**"Vanilla wins everything that is not character-specific: for any universal mechanic, vanilla wins. For character-specific vs2 wins for the vs2-only characters. In doubt, ask the maintainer."**). R-004 should have answered this table from it instead of putting it under
 "Decisions pending". New in these words: Dark Force is the boundary case: the newcomers' character-specific Dark Force
 comes from vs2, triggered by vsavj's Dark Force.
 
