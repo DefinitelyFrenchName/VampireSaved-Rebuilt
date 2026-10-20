@@ -118,8 +118,33 @@ capture, R-005".
 
 Not done: which hit gives the reaction. A fighter enters routine `0x10` only through `PRG:0x026D9A`, from the damage
 routine's reaction classes `0x16` (air) and `0x36` (ground) (the `0x06FD34` store is an effect object's). The shape
-suggests a stun, which no rig builds up; the README has the trail. The tool is not yet a gate ([VSR-20]: its rerunnable form is the tool;
+~~suggests a stun, which no rig builds up~~ (RETRACTED in (7)); the README has the trail. The tool is not yet a gate ([VSR-20]: its rerunnable form is the tool;
 the gate follows once there is an expectation to freeze).
+
+### (7) RULED: VS2'S ROWS FOR THE NEWCOMERS; THE STATE IS THE DOLL'S HOP AFTER ROYAL JUDGEMENT
+
+The maintainer, on the table at `PRG:0x0BE3FA` (verbatim in `SPEC.md` §0): the newcomers take vs2's rows, by the
+ground rule already on record (universal mechanics vsavj's, character-specific ones vs2's; Dark Force the boundary
+case). There is no universal stun in either game (the maintainer), so the "stun" guess of (6) is dropped.
+
+The trace, continued (scratch reading of vsavj, addresses only, not yet reproduced by a measurer):
+- the hit routine copies the attack record's reaction byte `+0x17` into the victim's `+0x54` (records 0x20 bytes, base
+  attacker `+0x8C`, index the attack box's `+0x0A`; the selector `PRG:0x018438`, tables `PRG:0x018468`/`0x018510`);
+- the damage routine's sequence 0 dispatches on `+0x54` (`PRG:0x02384E`, table `PRG:0x02385C`); entry `0x18` is
+  `PRG:0x023E58`, which sets reaction class `0x36`, the class that leads to routine `0x10`;
+- a scratch scan of every character's attack records for byte `0x18`: in both games, char `0x06` (Anakaris) record
+  `0x24`; other hits at indices `0x5D`–`0x7E` (chars `0x00`, `0x02`, `0x09`, `0x0A`, `0x0D`, `0x0F`), past where
+  the record count is known, so unconfirmed. None in the newcomers' own vs2 records: they would be the victims.
+- the per-id height rows that are not 0 (`0x01`, `0x05`, `0x0C`, `0x0E`, `0x0F`) look like the winged characters; not
+  checked.
+
+**The state is the doll's hop (measured).** The maintainer named Anakaris's Ouke no Sabaki (Royal Judgement, which
+turns the opponent into a paper doll). `tools/state_capture.py --rigs doll` (8 parts, 16 legs, all traced complete):
+the doll hops while the victim holds up or up-forward, and the hop is sequence 6 of routine `0x10`, the STATE. Victor
+(the control) hops identically on native vs2 and the build; each newcomer's first hop differs (a measurer from the
+report: Donovan straight up peaks 76 native, 87 on the build, Victor's hop frame for frame; Phobos 60 against 76;
+Pyron 76 both, airborne 30 against 32 frames). Table in `docs/project/tables/README.md`. So the rows are the
+newcomers' own, as ruled. The rig is not yet a gate: its expectation (vs2's hops) can only be met once phase 1 builds.
 
 
 ## Session R-004 — **#5 ruled: (a) the measurer runs one command per tool call; #4: the extraction tabled, its jump, cancel and short bank rows decoded; every manifest row mapped to a correction, 16 parts added; the rec8 writes read statically, the newcomers' own rows found to be veterans' copies, ruled (c) then (a); R-003 archived.** Opened 2026-10-19 on Opus 5.5 (the ruled orchestrator); transcript `dc3ff4f7`.
@@ -285,9 +310,9 @@ none.
 
 ## The next session starts with
 
-1. #4, ruled (c) then (a) (`SPEC.md` §0, R-004): the instrument exists (R-005 (5): MAME with the ratified WIDE
-   profile, proven; the original's merged build is in `build/tmp/proof_r005_3`). Capture which move enters state
-   `0x02100600` (vsavj `PRG:0x026670`) for each newcomer, native vs2 against the build. Then phase 1 ports vs2's three rows of the table at `PRG:0x0BE3FA`
-   if the difference is the newcomers' own.
+1. #4: phase 1 ports vs2's three rows of the table at `PRG:0x0BE3FA` (ruled 2026-10-20, `SPEC.md` §0: universal
+   mechanics are vsavj's, character-specific ones vs2's). The state is the doll's hop after Royal Judgement (R-005
+   (7)); the `doll` rig becomes the port's gate once phase 1 builds: each newcomer's hops equal native vs2's, Victor's
+   unchanged ([VSR-17]).
 2. #4: give `tools/build_proof.py` a second control that the original's own checks accept, so the byte compare is
    exercised end to end (R-005 (2): `perturbed-render` is stopped by the original's HUD check first).

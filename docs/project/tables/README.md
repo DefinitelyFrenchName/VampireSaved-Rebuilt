@@ -308,15 +308,14 @@ this was read from its generator and the reference dumps. R-005 rebuilt it (the 
   - The state (`+0x04` = `0x02100600`) is entered from `PRG:0x02657A`, which picks the variant from a 32-entry table
     by a call to `PRG:0x014E8A`. It is also entered from `PRG:0x026600`, which picks it from bits of `+0x395`.
 
-So a newcomer that enters that state takes Victor's, Bulleta's or Demitri's values for it, not vs2's own. **Not
-measured:**
-- which move or situation the state is (the original's note calls the table "the PURSUIT physics record pair" and
-  ties it to chain `a2:0x4C`; this reading does not confirm either);
-- whether a newcomer reaches it;
-- how the difference feels.
+So a newcomer that enters that state takes Victor's, Bulleta's or Demitri's values for it, not vs2's own. Not
+measured at R-004, and answered since (R-005, "The state is the DOLL's hop" below):
+- which move or situation the state is: the doll's hop after Anakaris's Royal Judgement, not the pursuit (the
+  original's "PURSUIT physics record pair" label does not hold);
+- whether a newcomer reaches it: yes, all three, and each hops differently on the original's build;
+- how the difference feels: not asked; the ruling made it moot.
 
-Those need a capture in play ([VSR-43]). Whether to port vs2's rows is the maintainer's call; ruled (c) then (a)
-(`SPEC.md` §0, R-004): the capture first.
+Ruled (c) then (a) (`SPEC.md` §0, R-004), then (2026-10-20) port vs2's rows by the ground rule.
 
 **The capture, R-005 (first pass): the pursuit is not that state, and nothing captured reaches it.** `tools/state_capture.py`
 runs the original's own rigs on native vs2 and on its merged build (the R-005 build proof's pristine leg), on the
@@ -352,10 +351,39 @@ sequence 2 dispatches on the reaction class `+0x140`:
   routine `0x10`.
 Both classes are assigned together, `0x36` on the ground and `0x16` in the air (`+0x38`), by the damage routine's
 sequence 0 (`PRG:0x023E58`/`0x023E8C`, and sub-state `0x12` at `PRG:0x02479C`/`0x0247AE` after a `+0x5C` countdown).
-Routine `0x10` then counts `+0x156` down and, for 30 frames, takes one of three inputs. Which hit gives that reaction
-is not read; the shape (a timed state after a hit, shortened by input, death checked) suggests a stun, which nothing
-captured builds up. **Still not measured:** what the reaction is, so whether a newcomer can reach it and how vs2's
-rows would differ there.
+Routine `0x10` then counts `+0x156` down and, for 30 frames, takes one of three inputs. ~~The shape (a timed state
+after a hit, shortened by input, death checked) suggests a stun~~ RETRACTED (R-005, the maintainer): neither game has
+a universal stun. What replaces it, a further scratch reading (R-005 (7) in `STATE.md`): `PRG:0x023E58` is entry
+`0x18` of sequence 0's dispatch on the victim's `+0x54` (`PRG:0x02385C`), and `PRG:0x023E8C` is the branch taken when
+`+0x156` is already set, so the "ground/air by `+0x38`" pairing above is unconfirmed. `+0x54` is the attack record's
+reaction byte `+0x17`, copied at the hit (`PRG:0x018438`). So the state follows an attack whose record says `0x18`.
+Which moves those are was not read (a scan finds char `0x06`'s record `0x24` in both games, and unconfirmed high
+indices for others); the next paragraph measured the one the maintainer named.
+
+**The state is the DOLL's hop (R-005, measured).** The maintainer: Anakaris's "Ouke no Sabaki" fits (mizuumi's Royal
+Judgement, j.236P: *"On successful hit this move will morph the opponent into their paper doll form"*). The rig kind
+`doll` of `tools/state_capture.py`: P1 Anakaris (0x06) lands it, P2 holds a direction through the doll; native vs2
+against the original's merged build, speed level pinned ([VSR-26]). Holding up or up-forward makes the doll hop, and
+the hop is sequence 6 of routine `0x10`, `0x021006xx`; holding left or right walks it (sequence 4, scratch runs). So
+the table at `PRG:0x0BE3FA` is each character's doll-hop physics (`+0x0A` picks the variant: 1 on every leg here). The
+first hop, by a measurer from the report (`build/tmp/capture_r005_doll.report`, WIDE MAME `5b08cce7`, the build's
+`vsavjw.zip` `29252167`):
+
+| P2 | held | native vs2: frames, airborne, peak dy, end dx | original's build | first hops |
+|---|---|---|---|---|
+| Victor 0x03 (control) | U | 44, 36, 87, 0 | 44, 36, 87, 0 | identical |
+| Victor 0x03 (control) | UR | 42, 34, 81, 87 | 42, 34, 81, 87 | identical |
+| Donovan 0x13 | U | 43, 33, 76, 0 | 46, 36, 87, 0 | differ |
+| Donovan 0x13 | UR | 43, 33, 78, 90 | 43, 34, 81, 87 | differ |
+| Phobos 0x10 | U | 33, 23, 60, 0 | 42, 32, 76, 0 | differ |
+| Phobos 0x10 | UR | 33, 23, 60, 69 | 42, 32, 78, 90 | differ |
+| Pyron 0x11 | U | 41, 30, 76, 0 | 43, 32, 76, 0 | differ |
+| Pyron 0x11 | UR | 41, 30, 78, 67 | 43, 32, 78, 90 | differ |
+
+So every newcomer reaches the state, and its doll hops differently on the build. The control is identical, so the
+difference is the newcomers' rows, not the instrument. On the build Donovan's first straight hop is Victor's frame for
+frame (the report's dx,dy lists), as his row is Victor's. Ruled (`SPEC.md` §0, 2026-10-20): phase 1 ports vs2's
+three rows (#4). Pixels are the traced RAM position words, not measured against the screen.
 
 `tools/rec8_writes.py <export> <roms>` prints all of the above, with the SHA-1 of each file it read. Its gate is
 `python3 tests/test_rec8_writes.py`, anchored on the reference dumps:

@@ -127,6 +127,22 @@ and Demitri's rows there; vs2's own rows differ, and both games index the table 
 capture in play of which move enters that state and how native vs2 and the original's build differ there
 ([VSR-43]). Then (a): phase 1 ports vs2's three rows if the difference is the newcomers' own (#4).
 
+The maintainer on the same rows (2026-10-20, R-005; verbatim in bold), answering Claude's *"In R-004's speed and
+acceleration table they don't: the newcomers run on Victor's, Bulleta's and Demitri's rows there, not vs2's"*: **"that
+is something that will need corrected: the speed and acceleration being character specific, the shell should not be
+used since we have values in VS2."** Then: **"FYI my speed-table ruling is based on our ground rules: universal
+mechanics are vsavj, character-specific are vs2 for the newcomers (the limit being dark force since we'll backport the
+character-specific dark force from vs2 as being triggered by vsavj's dark force for the 3 vs2 characters )"**, and
+**"FYI this is not a new rule, look first into the docs you'll find that already, except maybe the dark force example
+of edge case"**. So (a) no longer waits on the capture: phase 1 ports vs2's three rows of the table at `PRG:0x0BE3FA`
+(#4); the capture still names the state, for the replays [VSR-17] asks for. The ground rule was already the original's
+(its rulings: #222, *"since Phobos is VS2 only, and its air dash is  character-specific, it should abide by VS2
+behavior"*, 2026-10-05; the Dark Force stock cost, *"vanilla stays untouched and guides how the game should be
+played"*, adjustments per character and never to the general mechanic, 2026-08-30; both in its `DECISIONS_HISTORY.md`),
+and here [VSR-40] and the skill's [VSR-177]. R-004 should have answered this table from it instead of putting it under
+"Decisions pending". New in these words: Dark Force is the boundary case: the newcomers' character-specific Dark Force
+comes from vs2, triggered by vsavj's Dark Force.
+
 The maintainer's ratification of the WIDE profile for this repository (2026-10-19, R-005; [VSR-2]). Asked *"Do you
 ratify the CPS-2 WIDE profile v1.2 for this repository, MAME side, so I can build it and prove it before the
 capture?"*, with the option *"Ratify v1.2 verbatim (Recommended) — Import the original's spec into docs/ as its one

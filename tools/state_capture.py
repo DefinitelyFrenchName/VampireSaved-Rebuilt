@@ -19,7 +19,13 @@ RNG 0000 from 2363 on both kinds.
           through the knockdown landing (3058-3088, the gate's `roll` line, `L1`, and the other direction `R1`); P2
           Victor 0x03 (the gate's legacy control) and each tenant (0x13, 0x10, 0x11, the ids the original's gates poke
           on both games); traced 3020-3250 as the gate does, on both legs.
-A third kind, `corpus`, is a census rather than a rig: every replay of the original's
+  doll    THE DOLL (R-005): P1 Anakaris 0x06 jumps into Royal Judgement (j.236 HP, "morph the opponent into their
+          paper doll form", mizuumi), which gives the victim reaction 0x18 and routine 0x10; P2 (Victor 0x03, the
+          legacy control, and each tenant by the same ids) holds U or UR through the doll, which makes it hop:
+          sequence 6, the STATE. The roll rig's prologue and id pokes, speed level 06 from 2000 ([VSR-26]); traced
+          2840-3300; the report lists every hop per leg (frames, airborne, peak dy, end dx; the first hop's dx,dy
+          per frame) and whether the two legs' first hops are identical.
+A fourth kind, `corpus`, is a census rather than a rig: every replay of the original's
 tests/replays/ (no gate's pokes, so a KO a gate forces by an HP poke may not happen), a vs2 replay (`*_vsav2`,
 `*_vs2_*`) on vsav2, every other on our build, run to its last scripted frame + 200; its report lists every stretch
 any fighter spends in a `0x0210xxxx` state (the routine the STATE belongs to), with the states before it. Native is set vsav2 from ROMDIR; ours is set vsavjw from <build>/rompath;ROMDIR
@@ -35,7 +41,7 @@ Prints the SHA-1 of every rig, of the WIDE binary and of the build's vsavjw.zip 
 positions, no ROM bytes ([VSR-8]).
 
 Usage: python3 tools/state_capture.py <export root> <rom dir> <build dir> <out dir> [--bin MAME] [--jobs N]
-                                       [--rigs naming,victim]
+                                       [--rigs naming,victim|roll|doll|corpus]
        python3 tools/state_capture.py --report <out dir>
 """
 import hashlib
@@ -51,9 +57,12 @@ RIGS = {"naming": ("donovan_4", "donovan_7", "huitzil_3", "huitzil_4", "pyron_3"
         "victim": ("donovan_victim_1", "donovan_victim_2", "donovan_victim_3", "huitzil_victim_1", "huitzil_victim_2",
                    "pyron_victim_1", "pyron_victim_2"),
         "roll": tuple("roll_%s_%s" % (d, i) for d in ("L1", "R1") for i in ("03", "13", "10", "11")),
+        "doll": tuple("doll_%s_%s" % (d, i) for d in ("U", "UR") for i in ("03", "13", "10", "11")),
         "corpus": ()}           # filled from the export's tests/replays/ at run time
 ROLL = {"base": os.path.join("tests", "replays", "judge", "03_down_attack.rpl"), "p1": "01", "hold": "3058-3088",
         "from": 3020, "to": 3250, "frames": 3300}
+DOLL = {"p1": "06", "attack": ("2860-2862 p1=U", "2868-2870 p1=D", "2871-2873 p1=DR", "2874-2876 p1=R3"),
+        "hold": "2963-3100", "level": "06", "from": 2840, "to": 3300, "frames": 3300}
 ROUTINE = 0x0210
 CURSOR = {"donovan": "D D DR DR", "huitzil": "D D D", "pyron": "D D D D"}
 CELL = {"donovan": "13", "huitzil": "10", "pyron": "11"}      # the original's victim gate's ids on the merged build
@@ -184,6 +193,11 @@ def corpus_report(out, names):
 
 
 def rig_of(export, part):
+    if part.startswith("doll_"):
+        _, hold, p2 = part.split("_")
+        return {"tenant": "doll", "frames": DOLL["frames"], "events": [
+            {"name": "P2 %s cursed by Royal Judgement, holds %s %s" % (p2, hold, DOLL["hold"]), "frame": DOLL["from"],
+             "gap": DOLL["to"] - DOLL["from"], "doll": True}]}
     if part.startswith("roll_"):
         _, hold, p2 = part.split("_")
         return {"tenant": "roll", "frames": ROLL["frames"], "events": [
@@ -193,18 +207,27 @@ def rig_of(export, part):
 
 
 def roll_leg(export, romdir, build, out, mame, part, side):
-    _, hold, p2 = part.split("_")
+    """The roll rig, or (`doll_*`) the doll rig: the roll rig's prologue (its picks by the same id pokes), P1 Anakaris
+    0x06 jumping into Royal Judgement (j.236 HP), P2 holding a direction through the doll; speed level pinned."""
+    kind, hold, p2 = part.split("_")
+    spec = DOLL if kind == "doll" else ROLL
     d = os.path.join(out, "%s.%s" % (part, side))
     os.makedirs(d)
     rpl = os.path.join(d, "%s.%s.rpl" % (part, side))
-    open(rpl, "w").write(open(os.path.join(export, ROLL["base"])).read() + "%s p2=%s\n" % (ROLL["hold"], hold))
-    pokes = ";".join("%d:%s:%s" % (f, a, v) for a, v in (("ff8782", ROLL["p1"]), ("ff8b82", p2))
+    text = open(os.path.join(export, ROLL["base"])).read()
+    if kind == "doll":
+        text = "\n".join([line for line in text.splitlines() if not line.startswith(("2860-", "3010-", "5000"))]
+                          + list(DOLL["attack"])) + "\n"
+    open(rpl, "w").write(text + "%s p2=%s\n" % (spec["hold"], hold))
+    pokes = ";".join("%d:%s:%s" % (f, a, v) for a, v in (("ff8782", spec["p1"]), ("ff8b82", p2))
                      for f in (1400, 1450, 1500))
+    if kind == "doll":
+        pokes += ";2000-%d:ff8116:%s;2363-%d:ff80d4:0000" % (DOLL["frames"] - 1, DOLL["level"], DOLL["frames"] - 1)
     s, rp = ("vsav2", romdir) if side == "native" else ("vsavjw", os.path.join(build, "rompath") + ";" + romdir)
     trace = os.path.join(out, "tr_%s.%s.txt" % (part, side))
     env = dict(os.environ, ROMDIR=romdir, MAME_BIN=mame, MAME_SANDBOX=os.path.join(d, "sb"), MAME_ROMPATH=rp,
-               REPLAY=rpl, POKES=pokes, FIELDS=FIELDS, FIELD_OUT=trace, FIELD_FROM=str(ROLL["from"]),
-               FIELD_TO=str(ROLL["to"]), FRAMES=str(ROLL["frames"]))
+               REPLAY=rpl, POKES=pokes, FIELDS=FIELDS, FIELD_OUT=trace, FIELD_FROM=str(spec["from"]),
+               FIELD_TO=str(spec["to"]), FRAMES=str(spec["frames"]))
     with open(os.path.join(d, "mame.log"), "w") as log:
         subprocess.run([os.path.join(export, "tools", "run_mame.sh"), s, "-autoboot_script",
                         os.path.join(export, "tests", "lua", "field_trace.lua")], cwd=d, env=env, stdout=log,
@@ -214,7 +237,7 @@ def roll_leg(export, romdir, build, out, mame, part, side):
 
 
 def leg(export, romdir, build, out, mame, route, part, side):
-    if part.startswith("roll_"):
+    if part.startswith(("roll_", "doll_")):
         return roll_leg(export, romdir, build, out, mame, part, side)
     rig = json.load(open(os.path.join(export, "tests", "replays", "naming", part + ".json")))
     fr = rig["frames"]
@@ -275,6 +298,25 @@ def event_rows(rows, f0, gap, p="p1"):
     return seen, info
 
 
+def hops(rows, p="p2"):
+    """The doll's hops: each stretch of sequence 6 of routine 0x10 (`+0x04` & 0xFFFFFF00 = the STATE), a new hop
+    where it re-enters sub-step 0 or 2 from sub-step 4 (hops back to back), as (first frame, [(dx, dy) from its first
+    frame])."""
+    out, cur, last = [], None, None
+    for f in sorted(rows):
+        r = rows[f]
+        st = r[p + "_st"] & 0xFFFFFFFF
+        if (st & 0xFFFFFF00) == STATE:
+            if cur is None or (last == STATE + 4 and st in (STATE, STATE + 2)):
+                cur = (f, r[p + "_x"], r[p + "_y"], [])
+                out.append((f, cur[3]))
+            cur[3].append((r[p + "_x"] - cur[1], r[p + "_y"] - cur[2]))
+        else:
+            cur = None
+        last = st
+    return out
+
+
 def report(out):
     meta = json.load(open(os.path.join(out, "capture.json")))
     for p, h in meta["read"]:
@@ -290,6 +332,19 @@ def report(out):
             legs[side] = rows
             print("%s %s: %d frames traced, %s" % (part, side, len(rows), "complete" if done else "INCOMPLETE"))
         for ev in rig["events"]:
+            if ev.get("doll"):
+                got = {side: hops(legs[side]) for side in legs}
+                for side in ("native", "ours"):
+                    for n, (f, path) in enumerate(got[side]):
+                        air = [i for i, (_, dy) in enumerate(path) if dy > 0]
+                        print("  %s %-6s hop %d @%d: %d frames, airborne %d, peak dy %d, end dx %d%s" % (
+                            part, side, n + 1, f, len(path), len(air), max(dy for _, dy in path), path[-1][0],
+                            "; dx,dy: " + " ".join("%d,%d" % xy for xy in path) if n == 0 else ""))
+                first = [g[0][1] if g else None for g in (got["native"], got["ours"])]
+                print("  %s first hop: %s" % (part, "IDENTICAL" if first[0] and first[0] == first[1] else "DIFFERS"))
+                summary.append((part, ev["name"], "p2", "-", bool(got["native"]), bool(got["ours"]),
+                                bool(first[0] and first[0] == first[1])))
+                continue
             if ev.get("movement") or ev["gap"] <= 0:
                 continue
             for p, _, _ in PLAYERS:
@@ -346,9 +401,9 @@ def main():
                                  sha1(os.path.join(build, "rompath", "vsavjw.zip")))]
     for z in ("vsav2.zip", "vsavj.zip", "vsav.zip"):
         read.append((os.path.join(romdir, z), sha1(os.path.join(romdir, z))))
-    if any(p.startswith("roll_") for p in parts):
+    if any(p.startswith(("roll_", "doll_")) for p in parts):
         read.append((os.path.join(export, ROLL["base"]), sha1(os.path.join(export, ROLL["base"]))))
-    for part in (p for p in parts if not p.startswith("roll_")):
+    for part in (p for p in parts if not p.startswith(("roll_", "doll_"))):
         for x in ("rpl", "json"):
             p = os.path.join(export, "tests", "replays", "naming", "%s.%s" % (part, x))
             read.append((p, sha1(p)))
