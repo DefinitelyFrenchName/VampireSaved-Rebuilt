@@ -6,7 +6,7 @@ head). A session key is `R-NNN`, one per sitting, never renamed or renumbered ([
 their own namespaces. A group's form, kept from the original: `## Session KEY — banner`, then `### opened with` and one
 `### (N) TITLE` section per piece of work. An open list holds only what is open.
 
-## Session R-006 — **#4's off-subject work split into #6 and #7.** Opened 2026-10-20 on Opus 5.5 (the ruled orchestrator); transcript `aebff6ad`.
+## Session R-006 — **#4's off-subject work split into #6 and #7; #6: vs2's doll-hop rows tabled and gated, and the gate PASSES on the original's build with them.** Opened 2026-10-20 on Opus 5.5 (the ruled orchestrator); transcript `aebff6ad`.
 
 ### opened with
 
@@ -29,6 +29,39 @@ have their own tickets (GitHub issues, stories in their bodies; #4 commented wit
 records the misfiling. The live pointers move: `SPEC.md` §0's two "phase 1 ports vs2's three rows" (#6), the tables
 README's doll paragraph (#6) and its build-proof control (#7), `tools/state_capture.py`'s header (#6). R-005's group
 above is history and keeps #4.
+
+### (2) #6: VS2'S DOLL-HOP ROWS TABLED, GATED, AND PROVEN ON AN INTERIM BUILD
+
+The maintainer: *"yes"* (to starting #6's first item). Phase 1's pipeline does not exist yet, so the port has three
+parts, each now in the tree (`docs/project/tables/README.md`, "The doll's hop, vs2's rows"):
+- **The rows as a gameplay table.** `docs/project/tables/doll_hop.tsv` (6 rows: 3 newcomers x 2 variants, 16.16
+  fields, each row's vs2 address), written by `tools/doll_hop.py` from vs2's data view. Its gate,
+  `tests/test_doll_hop_table.py`, is anchored on the dumps: H1 the table equals vs2's rows, H2 each game's one reader
+  indexed by the raw id, H3 each vs2 row differs from vsavj's at the id. PASS; its three controls fire.
+- **The rig as a gate.** `tests/test_doll_hop.py <build> <out>` runs the R-005 `doll` rig unchanged. It judges every
+  hop's per-frame (dx, dy): K1 traced, hopped, and the right id (a void part is never judged); K2 Victor identical
+  (the instrument check); K3 each newcomer identical to native vs2.
+- **A build that can pass it.** `tools/doll_build.py` is the build proof's rendered leg plus vs2's rows as 24
+  `poke32` `[[aux_poke]]` rows, with the original's frozen op count raised by exactly 24 (848 -> 872).
+
+Measured (a measurer, from the run logs):
+- the build: `exit 0 in 154 s`; the built table differs from vanilla in 19 bytes and from the expected rows in 0;
+- the gate on the original's merged build: `VERDICT: FAIL (K3)`, K3 0 of 6 identical (the defect);
+- the gate on the build with vs2's rows: `VERDICT: PASS`, K3 6 of 6, every hop of every part;
+- each control's mode: `VERDICT: FAIL` with its own check.
+
+So for what the rig reaches (variant 1, U and UR), vs2's three rows are the whole difference. Variant 0 is unreached.
+
+Paid for, in the tools' first runs (each fixed before any figure was quoted):
+- the table gate's first run was red from its own code: it compared the header's `../ROMS/…` against the resolved
+  paths;
+- `unfixed` returns bytes, not an integer;
+- the original's build refused 872 ops against its frozen 848, which led to the shim;
+- the doll gate's `hop-missing` control first failed K3 as well, because K3 counted judged parts. A void part is
+  K1's alone.
+
+Also: the phase-0 gate (`tests/test_phase0_tables.py`) and the renderer skip `doll_hop.tsv` by its generator's
+header, as they skip the extraction's gameplay tables.
 
 ## Session R-005 — **vhunt2 provided; the build proof PASSES: the tables rebuild the original's frozen merged build byte for byte (#4); the reference MAME built from the pin and proven the instrument that froze the oracle; the WIDE profile ratified, built and proven on MAME; #4's table at `PRG:0x0BE3FA` found to be the doll's hop, ruled vs2's rows for the newcomers; [VSR-40] re-worded by the maintainer, `CLAUDE.md` v1.1; R-004 archived.** Opened 2026-10-19 on Opus 5.5 (the ruled orchestrator), in R-004's transcript `dc3ff4f7` after its close.
 
@@ -227,14 +260,13 @@ none.
 
 ## The next session starts with
 
-1. #6: phase 1 ports vs2's three rows of the table at `PRG:0x0BE3FA` (ruled 2026-10-20, `SPEC.md` §0: universal
-   mechanics are vsavj's, character-specific ones vs2's). The state is the doll's hop after Royal Judgement (R-005
-   (7)); the `doll` rig becomes the port's gate once phase 1 builds: each newcomer's hops equal native vs2's, Victor's
-   unchanged ([VSR-17]).
-2. #7: give `tools/build_proof.py` a second control that the original's own checks accept, so the byte compare is
+1. #7: give `tools/build_proof.py` a second control that the original's own checks accept, so the byte compare is
    exercised end to end (R-005 (2): `perturbed-render` is stopped by the original's HUD check first).
-3. #6: a census of the per-character tables the engine reads by the raw id, for the newcomers: where the build gives a
-   newcomer its shell's row and vs2 has its own, the ground rule ([VSR-40]) asks for vs2's. The doll table was found
-   by accident; the census makes the port's list complete before phase 1.
-4. #6: the height table (`word_y_off`, `PRG:0x0BE7FA`) figures into the README, reproduced by a measurer first
+2. #6: a census of the per-character tables the engine reads by the raw id, for the newcomers. Where the build gives
+   a newcomer its shell's row and vs2 has its own, the ground rule ([VSR-40]) asks for vs2's. The doll table was
+   found by accident; the census makes the port's list complete before phase 1. Each table found follows the doll's
+   pattern (R-006 (2)): a table from vs2, its gate, a rig against native vs2.
+3. #6: the height table (`word_y_off`, `PRG:0x0BE7FA`) figures into the README, reproduced by a measurer first
    (vs2's own row, the shell's row, the patched romset: Phobos 0, Donovan 0, Pyron 78, the same on all three).
+4. #6, phase 1's part: its pipeline writes `doll_hop.tsv`, and `tests/test_doll_hop.py` runs on its build (today's
+   passing leg is `tools/doll_build.py`, R-006 (2)).
