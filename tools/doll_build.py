@@ -74,10 +74,12 @@ def pokes(tables):
         tid = profile_id(roster, tenant)
         for cid, var, vals in rs:
             if cid != tid:
-                raise SystemExit("REFUSED: %s's vs2 row is id %#04x, its id on %s is %#04x" % (tenant, cid, PROFILE, tid))
+                raise SystemExit("REFUSED: %s's vs2 row is id %#04x, its id on %s is %#04x" % (
+                    tenant, cid, PROFILE, tid))
             for k, (f, v) in enumerate(zip(FIELDS, vals)):
-                out.setdefault(tenant, []).append(("doll_hop_%s_v%d" % (f, var), base + tid * ROW + var * VARIANT + 4 * k,
-                                                   int.from_bytes(unfixed(v), "big")))
+                addr = base + tid * ROW + var * VARIANT + 4 * k
+                val = int.from_bytes(unfixed(v), "big")
+                out.setdefault(tenant, []).append(("doll_hop_%s_v%d" % (f, var), addr, val))
     return out, base
 
 
@@ -132,7 +134,8 @@ def main():
                        capture_output=True, text=True, check=True)
     print("export %s" % " ".join(l.strip() for l in p.stdout.splitlines()[:2]))
     sha, absent = shim_audit(leg, romdir)
-    print("shim   tools/audit_roms.py sha1 %s; vhunt2 sets dropped (not in ROMDIR): %s" % (sha, ", ".join(absent) or "none"))
+    print("shim   tools/audit_roms.py sha1 %s; vhunt2 sets dropped (not in ROMDIR): %s" % (
+        sha, ", ".join(absent) or "none"))
     a = phase0lib.load_census(leg)
     canon = [rel[len("build/manifest/"):] for rel in a.canon(Path(leg))]
     for m in canon:
@@ -152,7 +155,8 @@ def main():
     for tenant, rs in rows.items():
         print("append %s.toml: %d [[aux_poke]] poke32 rows, PRG:0x%06X-0x%06X" % (
             tenant, len(rs), rs[0][1], rs[-1][1] + 4))
-    print("shim   tests/test_tenant_loop.sh 3-tenant op count %d -> %d" % shim_ops(leg, sum(len(r) for r in rows.values())))
+    added = sum(len(r) for r in rows.values())
+    print("shim   tests/test_tenant_loop.sh 3-tenant op count %d -> %d" % shim_ops(leg, added))
     code, secs, last = build(leg, romdir)
     print("build  exit %d in %.0f s; last line: %s" % (code, secs, last))
     ok = code == 0

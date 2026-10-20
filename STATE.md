@@ -6,7 +6,7 @@ head). A session key is `R-NNN`, one per sitting, never renamed or renumbered ([
 their own namespaces. A group's form, kept from the original: `## Session KEY — banner`, then `### opened with` and one
 `### (N) TITLE` section per piece of work. An open list holds only what is open.
 
-## Session R-006 — **#4's off-subject work split into #6 and #7; #6: vs2's doll-hop rows tabled and gated, and the gate PASSES on the original's build with them; #7 done: a second build-proof control reaches the byte compare.** Opened 2026-10-20 on Opus 5.5 (the ruled orchestrator); transcript `aebff6ad`.
+## Session R-006 — **#4's off-subject work split into #6 and #7; #6: vs2's doll-hop rows tabled and gated, and the gate PASSES on the original's build with them; #7 done: a second build-proof control reaches the byte compare; #6: the raw-id census, 61 newcomer rows in 23 tables left on the shell's row.** Opened 2026-10-20 on Opus 5.5 (the ruled orchestrator); transcript `aebff6ad`.
 
 ### opened with
 
@@ -77,6 +77,36 @@ Measured (a measurer, from the run log):
 - `VERDICT: FAIL (7 files differ)`.
 So the byte compare is exercised end to end. `perturbed-render` stays; it is stopped by the original's HUD check, as
 R-005 found. The run directory was deleted after the measurer read the log (`build/tmp/proof_r006_shared.log` stays).
+
+### (4) #6: THE RAW-ID CENSUS
+
+The maintainer: *"Start census"*. `tools/raw_id_census.py` lists every table vsavj reads by the raw id `+0x382`, its
+vs2 twin and the newcomers' rows; `docs/project/tables/raw_id_census.tsv` (79 rows, the dumps' facts) and its gate
+`tests/test_raw_id_census.py` (C1 regenerates, C2 the doll table as measured, C3 the scans; three controls fire).
+Method and limits: `docs/project/tables/README.md`, "The raw-id census".
+
+Measured (a measurer):
+- 196 id loads in vsavj, 209 in vs2; 79 tables paired, 4 unpaired;
+- to port (vsavj's row a shell copy, vs2's its own): 167 rows in 61 tables;
+- on the original's merged build, 61 of them in 23 tables are left on the shell's row: the doll table (the anchor,
+  reproduced), one pointer table (`PRG:0x0BF59A`, Huitzil), 2 code dispatches, and 19 value tables inside code.
+
+Paid for, on the way to the tool (each before any figure was quoted):
+- **The original's bank map is not the engine's layout.** Compared by its slices, the doll table reads as vs2's for
+  all three (`rec8_b` slices 8 bytes per id; the engine reads 0x20). So the census takes row sizes from the readers.
+- **A `(d8,PC,Xn)` read is a program-space fetch**, decrypted like an opcode: a pc-indexed table is read in the
+  opcode view, others in the data view. Read in the data view, the dispatch tables' shell copies were invisible.
+- **A word dispatch table's entry count** must stop at the running smallest offset. The first version read past the
+  table into code and gave 0 or 1 entries.
+- **A walk that cannot resolve the index's base** must stop there; the first version ran on to a later instruction.
+- the read-only guard refused a heredoc naming `../ROMS` on the line that writes the script; scratch scripts take
+  the rom dir as an argument now.
+- `tools/doll_build.py` was re-wrapped (line width only) and rebuilt to prove it unchanged: 175 files and 25 zip
+  members identical to (2)'s build, but `vsavjw.zip`'s SHA-1 differs (`c924f883` against `bdb58c14`). A zip's SHA-1
+  names its container, timestamps included, not the build: compare members, as the build proof does.
+
+Not done: the census is static. Which of the 22 other tables a newcomer reaches in play, what each holds, and whether
+a player could feel it, are measured per table.
 
 ## Session R-005 — **vhunt2 provided; the build proof PASSES: the tables rebuild the original's frozen merged build byte for byte (#4); the reference MAME built from the pin and proven the instrument that froze the oracle; the WIDE profile ratified, built and proven on MAME; #4's table at `PRG:0x0BE3FA` found to be the doll's hop, ruled vs2's rows for the newcomers; [VSR-40] re-worded by the maintainer, `CLAUDE.md` v1.1; R-004 archived.** Opened 2026-10-19 on Opus 5.5 (the ruled orchestrator), in R-004's transcript `dc3ff4f7` after its close.
 
@@ -275,10 +305,11 @@ none.
 
 ## The next session starts with
 
-1. #6: a census of the per-character tables the engine reads by the raw id, for the newcomers. Where the build gives
-   a newcomer its shell's row and vs2 has its own, the ground rule ([VSR-40]) asks for vs2's. The doll table was
-   found by accident; the census makes the port's list complete before phase 1. Each table found follows the doll's
-   pattern (R-006 (2)): a table from vs2, its gate, a rig against native vs2.
+1. #6: the census's 22 other tables left on the shell's row (`docs/project/tables/README.md`, "The raw-id census",
+   R-006 (4)). For each one: what it holds, from its readers, and whether a newcomer reaches it. Cheapest first, and
+   gameplay before cosmetic ([VSR-41]). A gameplay table gets the doll's pattern (R-006 (2)): a table from vs2, its
+   gate, a rig against native vs2. Then what the scan does not reach: 36 loads with an outside base, 4 unpaired
+   tables, the 7 pairing disagreements, the pointer tables' content.
 2. #6: the height table (`word_y_off`, `PRG:0x0BE7FA`) figures into the README, reproduced by a measurer first
    (vs2's own row, the shell's row, the patched romset: Phobos 0, Donovan 0, Pyron 78, the same on all three).
 3. #6, phase 1's part: its pipeline writes `doll_hop.tsv`, and `tests/test_doll_hop.py` runs on its build (today's
