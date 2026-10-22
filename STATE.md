@@ -6,6 +6,51 @@ head). A session key is `R-NNN`, one per sitting, never renamed or renumbered ([
 their own namespaces. A group's form, kept from the original: `## Session KEY — banner`, then `### opened with` and one
 `### (N) TITLE` section per piece of work. An open list holds only what is open.
 
+## Session R-007 — **(open)** Opened 2026-10-22 on Opus 5.5 (the ruled orchestrator); transcript `7512124a`.
+
+### opened with
+
+The maintainer: *"read state.md"*. Claude summarised it and offered to open R-007 on the start list's item 1 (#6:
+rigs for the left-on-shell tables, gameplay first). The maintainer: *"yes"*.
+
+### (1) #6: THE FIVE VETERAN MOVES NAMED, RIGGED AND GATED
+
+Documented in `docs/project/tables/README.md`, "The five veteran moves".
+
+**Which moves, from the code.** The five sites hang off the bank tables `PRG:0x0BD1FA`/`0x0BD27A`/`0x0BD2FA`, the
+per-character handlers of seq `0x0E`/`0x10`/`0x12`, each dispatching on the command id `+0x106` and the sub-state:
+Bulleta's ES pursuit (`0x0A`), Gallon's Wild Circular (`0x14`), Zabel's Hell Dunk (EX, `0x0A`), Morrigan's Cryptic
+Needle (EX, `0x0A`) and Felicia's headsit (`0x10`, no input: a jump landing on a standing opponent). Named from the
+stamping branches and mizuumi's move lists, then confirmed by the site firing on the move's input.
+
+**The rig and its gate.** `tools/vet_moves.py` (P1 the veteran, P2 Victor or a newcomer by the doll rig's id pokes,
+native vs2 against ours, the read tap at the sites plus the field trace) and `tests/test_vet_moves.py` (K1 fired, K2
+Victor identical, K3 each newcomer identical; positions for 60 frames from the read, and for Zabel and Morrigan the
+victim's capture pose index; four controls).
+
+Measured (a measurer, from the run log; the original's merged build `29252167`, WIDE MAME `5b08cce7`):
+- `VERDICT: FAIL (K3)`: K1 20 parts, 0 void; K2 5 of 5 identical; K3 1 of 15 identical (Gallon against Huitzil, whose
+  vs2 row is the shell's, as the census says);
+- three controls FIRED; `newcomer-moved` UNJUDGEABLE (K3 already fails);
+- the differences: Felicia sits on Huitzil at 0,83 against native 22,96 and on Pyron at height 98 against 118;
+  Bulleta's ES pursuit ends at dx −35 against −19/−22; Zabel's Hell Dunk puts Donovan, Huitzil and Pyron in pose
+  `0x23`/`0x2D`/`0x2D` against `0x30`/`0x36`/`0x32` (the shells'); Morrigan's needle and Gallon's Wild Circular place
+  them differently.
+
+**Learned on the way.**
+- The motion step codes are relative to the facing: forward `2`, back `1`, down `4`. My first inputs, decoded the
+  other way, gave three other commands; the trace's `+0x106` showed it.
+- vs2's 63214 needs all five steps: the four-step input that gives Wild Circular on vsavj gives a kick throw on vs2.
+- Bulleta's site follows only the ES pursuit (`+0x102` = 6, two buttons and a stock: `PRG:0x02904A`).
+- Felicia's site, read first as her air throw, is her headsit; the site fired with no button pressed.
+- Zabel's row is a pose index, which no position shows ([VSR-178]): positions were identical on every leg. The pose
+  is read by mapping P2's `+0x1C` through each leg's own pose table.
+- **`PRG:0x027FAA` runs in play** (Zabel's and Morrigan's sites jump to it in straight-line code, and the victim's node
+  is then a pose of its table), where the original recorded it as never executed (14z-98/99, one replay).
+- Morrigan's capture also reads a second per-victim table, `PRG:0x03A5EA` (the pose; identical on both legs here),
+  which the census does not list.
+- The read tap numbers a frame one lower than the field trace; both legs carry the same offset.
+
 ## Session R-006 — **#4's off-subject work split into #6 and #7; #6: vs2's doll-hop rows tabled and gated, and the gate PASSES on the original's build with them; #7 done: a second build-proof control reaches the byte compare; #6: the raw-id census, 61 newcomer rows in 23 tables left on the shell's row; #6: what reaches them: 5 of 23 tables reached in the corpus, the two palette dispatches with the newcomers' ids, and Huitzil's challenger-interrupt routine found to be Bulleta's; R-005 archived.** Opened 2026-10-20 on Opus 5.5 (the ruled orchestrator); transcript `aebff6ad`.
 
 ### opened with
@@ -194,8 +239,8 @@ none.
 1. #6: rigs for the left-on-shell tables, gameplay first ([VSR-41]; `docs/project/tables/README.md`, "What reaches
    the left-on-shell tables"). Each rig follows the doll's pattern: a capture of native vs2 against ours, then vs2's
    rows if the difference is the newcomer's own.
-   - The five veteran moves keyed by the opponent's id (Bulleta `0x02E970`, Gallon `0x0331EA`, Zabel `0x0373CA`,
-     Morrigan `0x03A60A`, Felicia `0x0402BA`), each performed on each newcomer. First find which move each is.
+   - The five veteran moves (R-007 (1)): a build with vs2's rows of their five tables on which
+     `tests/test_vet_moves.py` passes (the `tools/doll_build.py` pattern), and the gate's control modes on it.
    - Huitzil in the challenger interrupt (`0x0BF59A`), where our build runs Bulleta's routine.
    - Then the projectile and effect rows (Chaos Flare `0x055344` and the rest), then the cosmetic palette rows.
    Still unreached by the census: 36 loads with an outside base, 4 unpaired tables, the 7 pairing disagreements, the

@@ -635,9 +635,78 @@ Measured (R-006, a measurer; the reach run `build/tmp/reach_r006_1` on the origi
   inherited routine, the same shape as the original's Pyron blink (14z-75). The corpus has no such replay.
 - **Five veteran moves keyed by the opponent's id** (Bulleta, Gallon, Zabel, Morrigan, Felicia) set a position, a
   pose or a field from the victim's row. They are the gameplay candidates. None is in the corpus, so each needs a rig,
-  as the doll did.
+  as the doll did: "The five veteran moves" (R-007) below.
 - **The projectile and effect rows** place an object relative to its victim. Whether a player could feel one (a
   hitbox moving with it) is not read here.
+
+## The five veteran moves (#6, R-007)
+
+**Which moves.** Each site is reached from the three bank tables `PRG:0x0BD1FA`, `0x0BD27A` and `0x0BD2FA`. Those are
+the per-character handlers of the fighter's seq `0x0E`, `0x10` and `0x12`, dispatched from the class-02 stepper's
+table (`PRG:0x0225EE`, entries 7, 8, 9). Each veteran's handler dispatches on the command id `+0x106`, and then on the
+sub-state `+0x07` (a reading of the code, the owners' walks):
+
+| table | veteran | `+0x106`, sub-state | the move (what stamps the id) | its input in the rig |
+|---|---|---|---|---|
+| `PRG:0x02E970` | Bulleta | `0x0A`, `0x0C` | the ES PURSUIT: the pursuit's entry (bank table 8, `PRG:0x0BD4FA`) stamps `0x0A`; sub-state `0x0C` follows only at strength `+0x102` = 6, which `PRG:0x02904A` gives two buttons when a stock is there | sweep, then U + LP MP during the fall, a stock poked |
+| `PRG:0x0331EA` | Gallon | `0x14`, `0x06` | WILD CIRCULAR (63214 + MK/HK) | 63214 + MK at point blank |
+| `PRG:0x0373CA` | Zabel | `0x0A`, `0x04` | HELL DUNK (EX, 623 + PP) | 623 + LP MP, a stock poked |
+| `PRG:0x03A60A` | Morrigan | `0x0A`, `0x04` | CRYPTIC NEEDLE (EX, 6 HP MP LP 6) | the same from the round's start distance, a stock poked |
+| `PRG:0x0402BA` | Felicia | `0x10`, `0x00` | the HEADSIT: no command; her eval stamps `0x10` when she falls onto a standing opponent within 24 px (mizuumi: *"Jumping on a standing opponent will cause this move to activate, there's no real input for it."*) | a forward jump from about 110 px |
+
+The motion steps are relative to the facing: forward `2`, back `1`, down `4` (read from the tracker Zabel's 6324
+input matched; Bulleta's EX branches then read as mizuumi's 4123PP and 6324KK). vs2 retuned the 63214 motion: the
+four-step input that gives Wild Circular on vsavj gives a throw on vs2, and the rig uses the full five steps
+([VSE-46]).
+
+**What each row does** (a reading of the code, then measured below):
+- Bulleta: at the end of the ES pursuit, she is put at the victim's position plus the row (dx flipped by facing).
+- Gallon: the row is added to her `+0x3A` into `+0x360`; the position shows it late in the move.
+- Zabel: the row is a POSE index. It is passed to the capture-pose entry `PRG:0x027FAA` (family `0x0C`), which sets
+  the victim's anim node `+0x1C` from the victim's own pose table. No position shows it ([VSR-178]).
+- Morrigan: when the needle catches, the victim is put at the needle's position plus the row, and its pose is set
+  through `PRG:0x027FAA` (family `0x08`) from a SECOND per-victim table, `PRG:0x03A5EA` (one byte per id), which the
+  census does not list (it follows a reader's first indexed access).
+- Felicia: she is put at the victim's position plus the row: the height and offset she sits at.
+
+**`PRG:0x027FAA` runs in play.** The original recorded it as never executed (its `engine_internals.md`, 14z-98/99,
+one replay). In both Zabel's and Morrigan's sites the read is followed by straight-line code to `jsr $27FAA`, and
+after the read the victim's node is a pose of its own pose table on both legs (K1 below).
+
+**The rig, `tools/vet_moves.py <export> <roms> <build> <out>`** (its header has the detail). P1 is the veteran, P2
+Victor `0x03` or a newcomer (`0x13`, `0x10`, `0x11`), forced by the doll rig's id pokes on both games; speed level and
+RNG pinned. Each leg runs twice on the same inputs: the read tap at the five sites (on vsav2 their twins), and the
+field trace (both fighters' state, position and id, P1's `+0x106` and stock, P2's node). The tap numbers a frame one
+lower than the trace; both legs carry the same offset. Every veteran row of the five tables is the same on both
+games, so Victor is the instrument check. The victim's pose index is read through each leg's own pose tables, so on
+the build it names the index the move asked for, not whether the build's pose table is right ([VSR-51]).
+
+**The gate, `tests/test_vet_moves.py <build dir> <out dir>`:**
+- K1: on every leg the tap is live and the trace complete, the site read P2's id and only it, P1's `+0x106` is the
+  move's within two trace frames, a stock poked is spent, and for Zabel and Morrigan the victim's node is a pose of
+  its table. A part failing it is VOID.
+- K2: against Victor, P1's (dx, dy) to P2 for 60 frames from the read, and the victim's pose index, identical on both
+  legs.
+- K3: against each newcomer, the same.
+
+Its controls (`victor-moved`, `newcomer-moved`, `site-missing`, `victor-pose`) perturb the recorded legs.
+
+Measured (R-007, a measurer, from the run log; the original's merged build `29252167`, WIDE MAME `5b08cce7`):
+- `VERDICT: FAIL (K3)`. K1 20 parts, 0 void; K2 5 of 5 identical; K3 1 of 15 identical (Gallon against Huitzil,
+  whose vs2 row equals the shell's in that table, as the census says).
+- `victor-moved`, `site-missing` and `victor-pose` FIRED; `newcomer-moved` is unjudgeable, as K3 already fails.
+
+| part | native | ours (the shell's row) |
+|---|---|---|
+| Bulleta's ES pursuit, P1 to P2 after the read | Donovan −20,18; Huitzil −19,13; Pyron −22,16 | −22,13; −35,13; −35,18 |
+| Gallon's Wild Circular, first difference at +55 | Donovan 20,0; Pyron 16,12 | 22,4; 4,0 |
+| Zabel's Hell Dunk, the victim's pose index | Donovan `0x30`; Huitzil `0x36`; Pyron `0x32` | `0x23`; `0x2D`; `0x2D` (Victor `0x23` on both) |
+| Morrigan's Cryptic Needle, P1 to P2 after the read | Donovan −164,−2; Huitzil −164,−12; Pyron −188,−9 | −187,−13; −176,−12; −191,−10 (the pose index identical on both) |
+| Felicia's headsit, P1 to P2 | Donovan 10,92; Huitzil 22,96; Pyron −3,118 | 2,90; 0,83; −3,98 |
+
+So all five moves read the victim's row in play, and on the original's build every newcomer victim but one gets the
+shell's figures. What is not done: a build with vs2's rows on which K3 passes (the doll's `tools/doll_build.py`
+pattern), the control modes on it, and the other strengths, distances and sides.
 
 ## The format, and why
 
