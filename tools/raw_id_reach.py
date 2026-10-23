@@ -47,14 +47,16 @@ PLAYER = {0xFF8782: "P1", 0xFF8B82: "P2"}
 NEWCOMER = {cid: name for name, cid in TENANTS}
 
 
-def sites(export, romdir, build, views=False):
-    """{set: {pc: table}} for the left-on-shell tables, plus each set's control PC; and what the census read (and,
-    with `views`, the two games' (opcode, data) views)."""
+def sites(export, romdir, build, views=False, tables=None):
+    """{set: {pc: table}} for the left-on-shell tables (or, given `tables`, for those vsavj tables, whatever the build
+    holds in them), plus each set's control PC; and what the census read (and, with `views`, the two games' (opcode,
+    data) views)."""
     inp = load(export, romdir, build)
     _, res = measure(inp)
-    left = sorted({t for t, name, cls, _ in res["built"] if cls == "vanilla"
-                   for row in res["tables"] if row["vsavj"] == t
-                   and name[0] in row["shell"] and name[0] in row["vs2_own"]})
+    left = sorted(tables) if tables is not None else sorted(
+        {t for t, name, cls, _ in res["built"] if cls == "vanilla"
+         for row in res["tables"] if row["vsavj"] == t
+         and name[0] in row["shell"] and name[0] in row["vs2_own"]})
     out = {"vsavjw": {}, "vsav2": {}}
     for row in res["tables"]:
         if row["vsavj"] in left:

@@ -51,6 +51,39 @@ Measured (a measurer, from the run log; the original's merged build `29252167`, 
   which the census does not list.
 - The read tap numbers a frame one lower than the field trace; both legs carry the same offset.
 
+### (2) #6: VS2'S ROWS OF THE FIVE TABLES TABLED, BUILT, AND THE GATE PASSES
+
+The maintainer: *"yes"* (to building a leg with vs2's rows of the five tables). Documented in
+`docs/project/tables/README.md`, "The five veteran moves", "vs2's rows, and a build that passes".
+- **The rows as a gameplay table.** `docs/project/tables/vet_rows.tsv` (15 rows: 5 tables x 3 newcomers), written by
+  `tools/vet_rows.py` from vs2 at the census's twin, row size and view. Its gate, `tests/test_vet_rows_table.py`, is
+  anchored on the dumps and the census: V1 the table is vs2's rows, V2 the shape (vsavj's variant half a copy of its
+  base half and vs2's base half equal to vsavj's, on all 32 ids of each table), V3 vs2's row differs from vsavj's where
+  the census says. PASS; its three controls fire.
+- **A build that can pass the gate.** `tools/vet_build.py` is `tools/doll_build.py`'s leg plus the rows, word by word:
+  `poke16` `[[aux_poke]]` rows for the two tables read in the data view, `[[code_word]]` rows (checked against vanilla's
+  opcode view, stored re-encrypted) for the three read pc-relatively, in the opcode view. `tools/doll_build.py`'s steps
+  are now its `prepare` and `finish`, shared by both.
+
+Measured (a measurer, from the logs and a rerun of the table gate):
+- the build: 19 words, the op count 848 -> 867, `exit 0 in 155 s`; each table equals the expected rows; against the
+  build proof's build, both whole views differ in exactly the 19 words written;
+- `tests/test_vet_moves.py` on it: `VERDICT: PASS`. K1 20 parts, 0 void; K2 5 of 5; K3 15 of 15; Zabel's poses are
+  native's (`0x30`/`0x36`/`0x32`); all four controls FIRED;
+- each control's mode on it: `VERDICT: FAIL` on its own check (K2, K3, K1, K2);
+- on the original's build, after the rig's fix below: `VERDICT: FAIL (K3)`, K3 1 of 15, the figures of (1).
+
+So for what the rig reaches (one strength, distance and side per move), vs2's rows are the whole difference.
+
+Paid for (each fixed before a figure was quoted):
+- **the rig took its sites from the build under test.** `raw_id_reach.sites` keeps only the tables still on the
+  shell's row on the build it is given, so on the build with vs2's rows the five tables left the list and the rig
+  had no site to tap. `tools/vet_moves.py` now names its tables (`sites(..., tables=)`) ([VSR-51]);
+- the renderer and the phase-0 gate read every table in `docs/project/tables/`, and took `vet_rows.tsv`'s moves for
+  manifest names. Both skip it now by its generator's header, as they skip `doll_hop.tsv`;
+- the table gate's first V3 control (vsavj given vs2's rows) failed V1 and V2 as well; it is now the census read as
+  saying all of Gallon's rows differ, which V3 alone sees.
+
 ## Session R-006 — **#4's off-subject work split into #6 and #7; #6: vs2's doll-hop rows tabled and gated, and the gate PASSES on the original's build with them; #7 done: a second build-proof control reaches the byte compare; #6: the raw-id census, 61 newcomer rows in 23 tables left on the shell's row; #6: what reaches them: 5 of 23 tables reached in the corpus, the two palette dispatches with the newcomers' ids, and Huitzil's challenger-interrupt routine found to be Bulleta's; R-005 archived.** Opened 2026-10-20 on Opus 5.5 (the ruled orchestrator); transcript `aebff6ad`.
 
 ### opened with
@@ -239,13 +272,13 @@ none.
 1. #6: rigs for the left-on-shell tables, gameplay first ([VSR-41]; `docs/project/tables/README.md`, "What reaches
    the left-on-shell tables"). Each rig follows the doll's pattern: a capture of native vs2 against ours, then vs2's
    rows if the difference is the newcomer's own.
-   - The five veteran moves (R-007 (1)): a build with vs2's rows of their five tables on which
-     `tests/test_vet_moves.py` passes (the `tools/doll_build.py` pattern), and the gate's control modes on it.
+   - The five veteran moves' other strengths, distances and sides: the rig reaches one of each (R-007 (2)).
    - Huitzil in the challenger interrupt (`0x0BF59A`), where our build runs Bulleta's routine.
    - Then the projectile and effect rows (Chaos Flare `0x055344` and the rest), then the cosmetic palette rows.
    Still unreached by the census: 36 loads with an outside base, 4 unpaired tables, the 7 pairing disagreements, the
    pointer tables' content, and second tables read by the same reader.
 2. #6: the height table (`word_y_off`, `PRG:0x0BE7FA`) figures into the README, reproduced by a measurer first
    (vs2's own row, the shell's row, the patched romset: Phobos 0, Donovan 0, Pyron 78, the same on all three).
-3. #6, phase 1's part: its pipeline writes `doll_hop.tsv`, and `tests/test_doll_hop.py` runs on its build (today's
-   passing leg is `tools/doll_build.py`, R-006 (2)).
+3. #6, phase 1's part: its pipeline writes `doll_hop.tsv` and `vet_rows.tsv`, and `tests/test_doll_hop.py` and
+   `tests/test_vet_moves.py` run on its build (today's passing legs are `tools/doll_build.py`, R-006 (2), and
+   `tools/vet_build.py`, R-007 (2)).

@@ -143,7 +143,8 @@ def pose_maps(views, pcs):
 
 def measure(export, romdir, build, out, mame, parts=PARTS, sides=SIDES, jobs=6):
     """Run every (part, side) leg, both runs; returns the run's meta (also written to <out>/vet.json)."""
-    pcs, control, _, read, views = sites(export, romdir, build, views=True)
+    pcs, control, _, read, views = sites(export, romdir, build, views=True,     # the moves' tables, on any build
+                                         tables={m["table"] for m in MOVES.values()})
     views = {"native": views["vsav2"], "ours": tuple(open(os.path.join(build, n), "rb").read()
                                                      for n in ("verify_op.bin", "verify_data.bin"))}
     poses = pose_maps(views, pcs)

@@ -119,15 +119,9 @@ def check(out_dir, rows, base):
     return lines, got == bytes(want) and changed > 0
 
 
-def main():
-    args = sys.argv[1:]
-    if len(args) != 5:
-        raise SystemExit(__doc__.strip().splitlines()[-2])
-    original, pin, romdir, tables, run = args
-    run, romdir, tables = (os.path.realpath(a) for a in (run, romdir, tables))
-    if os.path.exists(run):
-        raise SystemExit("REFUSED: %s exists (a run owns a fresh directory)" % run)
-    rec = runlog.Run("doll_build", "normal")
+def prepare(original, pin, romdir, tables, run):
+    """The original exported at `pin` into <run>/leg, its audit shimmed, its canonical manifests rendered from `tables`
+    with the held values derived from `romdir`: the leg the rows are appended to. Prints each step."""
     os.makedirs(run)
     leg = os.path.join(run, "leg")
     p = subprocess.run([sys.executable, os.path.join(ROOT, "tools", "export_original.py"), original, pin, leg],
@@ -149,24 +143,43 @@ def main():
     if sorted(written) != sorted(canon):
         raise SystemExit("REFUSED: rendered %d manifests, the census names %d" % (len(written), len(canon)))
     print("render %d canonical manifests deleted and rendered from %s" % (len(canon), tables))
+    return leg
+
+
+def finish(leg, romdir, added, check_built):
+    """The leg's op count raised by `added`, the leg built, and `check_built(out dir)` -> (lines, ok) on its output.
+    Prints each step and the verdict line; returns ok."""
+    print("shim   tests/test_tenant_loop.sh 3-tenant op count %d -> %d" % shim_ops(leg, added))
+    code, secs, last = build(leg, romdir)
+    print("build  exit %d in %.0f s; last line: %s" % (code, secs, last))
+    ok = code == 0
+    if ok:
+        lines, ok = check_built(os.path.join(leg, OUT))
+        for line in lines:
+            print(line)
+        print("read %s sha1 %s" % (os.path.join(leg, OUT, "rompath", "vsavjw.zip"),
+                                   sha1_file(os.path.join(leg, OUT, "rompath", "vsavjw.zip"))))
+    print("VERDICT: %s" % ("PASS" if ok else "FAIL"))
+    return ok
+
+
+def main():
+    args = sys.argv[1:]
+    if len(args) != 5:
+        raise SystemExit(__doc__.strip().splitlines()[-2])
+    original, pin, romdir, tables, run = args
+    run, romdir, tables = (os.path.realpath(a) for a in (run, romdir, tables))
+    if os.path.exists(run):
+        raise SystemExit("REFUSED: %s exists (a run owns a fresh directory)" % run)
+    rec = runlog.Run("doll_build", "normal")
+    leg = prepare(original, pin, romdir, tables, run)
     rows, base = pokes(tables)
     print("read %s sha1 %s" % (os.path.join(tables, "doll_hop.tsv"), rows_of(tables)[1]))
     append(leg, rows)
     for tenant, rs in rows.items():
         print("append %s.toml: %d [[aux_poke]] poke32 rows, PRG:0x%06X-0x%06X" % (
             tenant, len(rs), rs[0][1], rs[-1][1] + 4))
-    added = sum(len(r) for r in rows.values())
-    print("shim   tests/test_tenant_loop.sh 3-tenant op count %d -> %d" % shim_ops(leg, added))
-    code, secs, last = build(leg, romdir)
-    print("build  exit %d in %.0f s; last line: %s" % (code, secs, last))
-    ok = code == 0
-    if ok:
-        lines, ok = check(os.path.join(leg, OUT), rows, base)
-        for line in lines:
-            print(line)
-        print("read %s sha1 %s" % (os.path.join(leg, OUT, "rompath", "vsavjw.zip"),
-                                   sha1_file(os.path.join(leg, OUT, "rompath", "vsavjw.zip"))))
-    print("VERDICT: %s" % ("PASS" if ok else "FAIL"))
+    ok = finish(leg, romdir, sum(len(r) for r in rows.values()), lambda out: check(out, rows, base))
     rec.record("PASS" if ok else "FAIL", cases=sum(len(r) for r in rows.values()))
     sys.exit(0 if ok else 1)
 
