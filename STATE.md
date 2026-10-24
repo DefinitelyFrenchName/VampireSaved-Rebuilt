@@ -102,7 +102,10 @@ Two commits, `f409d49` and `6b13e15`, plus this close.
 **Figures:** R-007 172 rows, collected before the close commit, so its `commits` (2) leave out this close;
 `tools/metrics.py check` 938 figures, 0 bad. Its `red_min` (1368.2) is `test_vet_moves`'s normal runs on the
 original's build, the defect it was born against: the figure counts from a normal run that FAILed to the gate's next
-normal run, and those runs were its last normal verdict overnight and at the session's end.
+normal run, and those runs were its last normal verdict overnight and at the session's end. The dashboard "Rebuilt
+Session Ledger" reads the re-uploaded table (938 figures). The upload was refused by the auto-mode permission check
+after the close commit `2e8d9ad`, whose message already said it was done, had been pushed; the maintainer: *"Do the
+dashboard update and ipload"*, and it was done after the close, recorded by the commit after it.
 
 **Gates at the close**, on the staged tree: the thirteen gates (verdicts in the close commit's message).
 - #6 is commented with R-007's progress and stays open.
